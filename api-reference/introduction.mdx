@@ -1,33 +1,47 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "Introduction"
+description: "Overview of Akapulu API authentication and base usage."
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+The Akapulu API is the programmatic interface for building with Akapulu.
 
-## Welcome
-
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+Today, the public reference starts with Conversations endpoints. Over time, this API will also include additional resources such as Avatars, Scenarios, and more.
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All Akapulu API endpoints require a Bearer API key in the `Authorization` header.
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+```bash
+Authorization: Bearer <YOUR_AKAPULU_API_KEY>
 ```
+
+## API Keys
+
+To get started, create an account, sign in to Akapulu, then create an [API key](https://akapulu-dev.fly.dev/api-keys/) and send it in the `Authorization` header for every request.
+
+## Base URL
+
+```bash
+{{api-base-url}}
+```
+
+## Example Request
+
+```bash
+curl -X POST "https://akapulu-dev.fly.dev/api/conversations/connect/" \
+  -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "scenario_id": "<YOUR_SCENARIO_ID>",
+    "runtime_vars": {
+      "user_name": "Alex",
+      "company_name": "Acme Corp",
+      "support_ticket_id": "TICK-1024"
+    },
+    "voice_only_mode": false
+  }'
+```
+
+## Getting Started
+
+Start with the Conversations section to create a conversation session and connect your client.

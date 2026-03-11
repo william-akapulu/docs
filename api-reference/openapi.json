@@ -1,16 +1,13 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Akapulu API",
+    "version": "1.0.0",
+    "description": "Public Akapulu API reference."
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://akapulu-dev.fly.dev/api"
     }
   ],
   "security": [
@@ -19,76 +16,126 @@
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+    "/conversations/connect": {
+      "post": {
+        "summary": "Connect conversation",
+        "description": "Create a conversation session and return room credentials for joining.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectConversationRequest"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Standard connect request",
+                  "value": {
+                    "scenario_id": "11111111-2222-3333-4444-555555555555",
+                    "runtime_vars": {
+                      "user_name": "Alex",
+                      "company_name": "Acme Corp",
+                      "support_ticket_id": "TICK-1024"
+                    },
+                    "voice_only_mode": false
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Conversation connection created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/ConnectConversationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful connect response",
+                    "value": {
+                      "room_url": "https://your-team.daily.co/room-name",
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "conversation_session_id": "7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d"
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Unexpected error",
+            "description": "Invalid request payload",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_payload": {
+                    "value": {
+                      "error": "scenario_id is required"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Missing or invalid API key",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Plan limits reached or unauthorized scenario access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "limit_reached": {
+                    "value": {
+                      "error": "No minutes remaining for current plan"
+                    }
+                  },
+                  "concurrency_limit_reached": {
+                    "value": {
+                      "error": "Concurrency limit reached for current plan",
+                      "max_concurrency": 2,
+                      "active_calls": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scenario not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_scenario": {
+                    "value": {
+                      "error": "scenario_id not found"
+                    }
+                  }
                 }
               }
             }
@@ -96,32 +143,88 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/conversations/{conversation_session_id}/updates": {
+      "get": {
+        "summary": "Poll conversation updates",
+        "description": "Fetch setup and runtime updates for a conversation session.",
         "parameters": [
           {
-            "name": "id",
+            "name": "conversation_session_id",
             "in": "path",
-            "description": "ID of plant to delete",
             "required": true,
+            "description": "Conversation session ID returned from the connect endpoint.",
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Conversation updates fetched successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ConversationUpdatesResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "conversation_session_id": "7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d",
+                      "updates": [
+                        {
+                          "description": "starting conversation setup",
+                          "timestamp": "2026-03-10T18:10:02.221Z"
+                        },
+                        {
+                          "description": "video room created",
+                          "timestamp": "2026-03-10T18:10:04.481Z"
+                        },
+                        {
+                          "description": "assistant is starting",
+                          "timestamp": "2026-03-10T18:10:05.112Z"
+                        }
+                      ],
+                      "latest_update": {
+                        "description": "assistant is starting",
+                        "timestamp": "2026-03-10T18:10:05.112Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation session not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_session": {
+                    "value": {
+                      "error": "ConversationSession not found"
+                    }
+                  }
                 }
               }
             }
@@ -130,79 +233,105 @@
       }
     }
   },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "ConnectConversationRequest": {
         "type": "object",
+        "required": [
+          "scenario_id"
+        ],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Scenario ID to run for this conversation."
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "runtime_vars": {
+            "type": "object",
+            "description": "Runtime variables injected into scenario templates.",
+            "additionalProperties": true
+          },
+          "voice_only_mode": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, run the conversation in audio-only mode."
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
+      "ConnectConversationResponse": {
+        "type": "object",
         "required": [
-          "error",
-          "message"
+          "room_url",
+          "token",
+          "conversation_session_id"
         ],
+        "properties": {
+          "room_url": {
+            "type": "string",
+            "description": "Daily room URL for the session."
+          },
+          "token": {
+            "type": "string",
+            "description": "Daily access token for joining the room."
+          },
+          "conversation_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Created conversation session ID."
+          }
+        }
+      },
+      "ConversationUpdate": {
         "type": "object",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
+          "description": {
             "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "ISO-8601 timestamp."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ConversationUpdatesResponse": {
+        "type": "object",
+        "required": [
+          "conversation_session_id",
+          "updates"
+        ],
+        "properties": {
+          "conversation_session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "updates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationUpdate"
+            }
+          },
+          "latest_update": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConversationUpdate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message."
           }
         }
       }

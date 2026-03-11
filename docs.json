@@ -2,13 +2,17 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Akapulu",
+  "variables": {
+    "app-url": "https://akapulu-dev.fly.dev",
+    "api-base-url": "https://akapulu-dev.fly.dev/api"
+  },
   "description": "Akapulu builds conversational avatars for natural, real-time voice and video interactions.",
   "colors": {
     "primary": "#2D5C70",
     "light": "#38BDF8",
     "dark": "#1E3F4D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/logo_no_words.png",
   "navigation": {
     "tabs": [
       {
@@ -19,23 +23,64 @@
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "guides/getting-started/next-steps"
             ]
           },
           {
-            "group": "Core guides",
+            "group": "Scenarios",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "guides/scenarios/overview",
+              "guides/scenarios/create-scenario",
+              {
+                "group": "Node Basics",
+                "pages": [
+                  "guides/scenarios/node-basics",
+                  "guides/scenarios/node-structure",
+                  "guides/scenarios/transitions",
+                  "guides/scenarios/tools",
+                  "guides/scenarios/variables",
+                  "guides/scenarios/runtime-variables",
+                  "guides/scenarios/llm-variables",
+                  "guides/scenarios/secrets"
+                ]
+              },
+              "guides/scenarios/endpoints",
+              "guides/scenarios/knowledge-bases"
             ]
           },
           {
-            "group": "Authoring",
+            "group": "Avatars",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "guides/avatars/overview",
+              "guides/avatars/create-avatar",
+              "guides/avatars/avatar-catalog",
+              "guides/avatars/manage-avatar-details"
+            ]
+          },
+          {
+            "group": "Conversations",
+            "pages": [
+              "guides/conversations/overview",
+              "guides/conversations/connect",
+              "guides/conversations/lifecycle",
+              "guides/conversations/usage-and-concurrency",
+              "guides/conversations/recordings-and-transcripts"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "guides/endpoints/overview",
+              "guides/endpoints/create-endpoint",
+              "guides/endpoints/templates-and-variables"
+            ]
+          },
+          {
+            "group": "Knowledge Bases",
+            "pages": [
+              "guides/knowledge-bases/overview",
+              "guides/knowledge-bases/create-knowledge-base",
+              "guides/knowledge-bases/add-and-manage-documents"
             ]
           }
         ]
@@ -44,9 +89,16 @@
         "tab": "API reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Overview",
             "pages": [
               "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Conversations",
+            "pages": [
+              "api-reference/conversations/connect",
+              "api-reference/conversations/updates"
             ]
           }
         ]
@@ -55,12 +107,9 @@
         "tab": "Examples",
         "groups": [
           {
-            "group": "Endpoint examples",
+            "group": "Basic",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "examples/basic/patient-healthcare-screening"
             ]
           }
         ]
@@ -71,6 +120,9 @@
     "light": "/logo/logo_dark.png",
     "dark": "/logo/logo.png",
     "href": "https://akapulu-dev.fly.dev"
+  },
+  "appearance": {
+    "default": "dark"
   },
   "navbar": {
     "links": [

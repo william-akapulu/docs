@@ -1,0 +1,40 @@
+---
+title: "Poll Conversation Updates"
+openapi: "api-reference/openapi.json GET /conversations/{conversation_session_id}/updates"
+---
+
+Use this endpoint to track conversation progress after calling `POST /conversations/connect`.
+
+`updates` is append-only. The `description` field is informational and may include additional values over time.
+
+We recommend using these updates to display a loading progress bar while the bot loads.
+
+## Current update descriptions
+
+Current loading updates include:
+
+- `starting conversation setup`
+- `billing limits validated`
+- `conversation settings validated`
+- `runtime values and secrets loaded`
+- `tools and handlers prepared`
+- `assistant tool parameters prepared`
+- `endpoint configuration prepared`
+- `conversation created`
+- `video room created`
+- `assistant is starting`
+- `loading avatar model and idle video`
+- `avatar model and idle video ready`
+- `demo bot initialization started`
+- `idle animation loaded`
+- `daily transport created`
+- `bot joined daily room`
+- `participant joined`
+- `conversation flow initialized`
+- `frontend client ready`
+- `user microphone ready`
+- `bot ready`
+
+For loading progress UI, you only need to track updates through `bot ready`.
+
+Updates such as `participant left` and `conversation completed` happen after loading, during or after the live conversation.
