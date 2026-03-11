@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Akapulu API",
     "version": "1.0.0",
@@ -312,14 +312,12 @@
             }
           },
           "latest_update": {
-            "anyOf": [
+            "allOf": [
               {
                 "$ref": "#/components/schemas/ConversationUpdate"
-              },
-              {
-                "type": "null"
               }
-            ]
+            ],
+            "nullable": true
           }
         }
       },
