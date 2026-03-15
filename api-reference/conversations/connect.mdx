@@ -2,3 +2,15 @@
 title: "Connect Conversation"
 openapi: "/openapi/akapulu.json POST /conversations/connect"
 ---
+
+Use this endpoint to create a conversation session and receive:
+
+- `room_url`
+- `token`
+- `conversation_session_id`
+
+Optional request fields include:
+
+- `runtime_vars` for template/runtime values
+- `voice_only_mode` for audio-only calls
+- `custom_rtvi_connection` when your frontend uses a custom RTVI connection

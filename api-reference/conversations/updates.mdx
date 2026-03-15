@@ -5,51 +5,13 @@ openapi: "/openapi/akapulu.json GET /conversations/{conversation_session_id}/upd
 
 Use this endpoint to track conversation progress after calling `POST /conversations/connect`.
 
-`updates` is append-only. The `description` field is informational and may include additional values over time.
+This endpoint returns a **single latest status text** plus readiness/progress values.
 
-We recommend displaying a loading indicator until you receive `bot ready`.
+We recommend polling every 0.5 seconds and showing a loading state until `call_is_ready` is `true`.
 
-## Current update descriptions
+## Response behavior
 
-### Bot-side updates (no participant required)
+- `latest_update_text` is a description of the current conversation state and updates as setup/runtime state changes.
+- `completion_percent` is a progress indicator for setup/readiness.
+- `call_is_ready` is the boolean gate for entering the live experience.
 
-These happen before any user joins:
-
-- `starting conversation setup`
-- `billing limits validated`
-- `conversation settings validated`
-- `runtime values and secrets loaded`
-- `tools and handlers prepared`
-- `assistant tool parameters prepared`
-- `endpoint configuration prepared`
-- `conversation created`
-- `video room created`
-- `assistant is starting`
-- `loading avatar model and idle video`
-- `avatar model and idle video ready`
-- `demo bot initialization started`
-- `idle animation loaded`
-- `daily transport created`
-- `core voice stack initialized (stt, llm, tts, flow, pipeline started)`
-- `bot joined daily room`
-- `bot ready`
-
-### Participant-dependent updates
-
-These happen when a participant joins and the client/mic become ready:
-
-- `participant joined`
-- `conversation flow initialized`
-- `frontend client ready`
-- `user microphone ready`
-- `bot and participant ready`
-
-`frontend client ready` and `user microphone ready` may arrive in either order.
-
-### End-of-call updates
-
-These updates occur when the call is ending or has ended:
-
-- `participant left`
-- `duration timer ended call`
-- `conversation completed`
