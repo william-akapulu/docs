@@ -7,11 +7,13 @@ Use this endpoint to track conversation progress after calling `POST /conversati
 
 `updates` is append-only. The `description` field is informational and may include additional values over time.
 
-We recommend using these updates to display a loading progress bar while the bot loads.
+We recommend displaying a loading indicator until you receive `bot ready`.
 
 ## Current update descriptions
 
-Current loading updates include:
+### Bot-side updates (no participant required)
+
+These happen before any user joins:
 
 - `starting conversation setup`
 - `billing limits validated`
@@ -28,13 +30,26 @@ Current loading updates include:
 - `demo bot initialization started`
 - `idle animation loaded`
 - `daily transport created`
+- `core voice stack initialized (stt, llm, tts, flow, pipeline started)`
 - `bot joined daily room`
+- `bot ready`
+
+### Participant-dependent updates
+
+These happen when a participant joins and the client/mic become ready:
+
 - `participant joined`
 - `conversation flow initialized`
 - `frontend client ready`
 - `user microphone ready`
-- `bot ready`
+- `bot and participant ready`
 
-For loading progress UI, you only need to track updates through `bot ready`.
+`frontend client ready` and `user microphone ready` may arrive in either order.
 
-Updates such as `participant left` and `conversation completed` happen after loading, during or after the live conversation.
+### End-of-call updates
+
+These updates occur when the call is ending or has ended:
+
+- `participant left`
+- `duration timer ended call`
+- `conversation completed`

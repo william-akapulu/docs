@@ -107,9 +107,16 @@
         "tab": "Examples",
         "groups": [
           {
+            "group": "Overview",
+            "pages": [
+              "examples/index"
+            ]
+          },
+          {
             "group": "Basic",
             "pages": [
-              "examples/basic/patient-healthcare-screening"
+              "examples/basic/simple-assistant",
+              "examples/basic/custom-rtvi-ui"
             ]
           }
         ]
