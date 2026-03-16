@@ -290,7 +290,7 @@
           },
           "completion_percent": {
             "type": "number",
-            "description": "Progress percentage for setup and readiness."
+            "description": "Progress percentage for setup and readiness (0-100)."
           },
           "latest_update_text": {
             "type": "string",

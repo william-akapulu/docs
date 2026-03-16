@@ -64,6 +64,7 @@
               "guides/conversations/connect",
               "guides/conversations/lifecycle",
               "guides/conversations/usage-and-concurrency",
+              "guides/conversations/customize-conversation-ui",
               "guides/conversations/recordings-and-transcripts"
             ]
           },
