@@ -119,6 +119,12 @@
               "examples/basic/simple-assistant",
               "examples/basic/custom-rtvi-ui"
             ]
+          },
+          {
+            "group": "Scenarios",
+            "pages": [
+              "examples/scenarios/healthcare-intake-scheduling"
+            ]
           }
         ]
       }

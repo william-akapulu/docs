@@ -1,0 +1,174 @@
+---
+title: "Healthcare Intake & Scheduling"
+description: "A full intake scenario with endpoints, scheduling, RAG Q&A, and custom UI integration."
+---
+
+Use this example when you want a realistic multi-node scenario that collects patient intake data, books an appointment, answers clinic questions with a knowledge base, and ends the conversation cleanly.
+
+## What this example shows
+
+- Scenario creation and node configuration (`intro`, `data_intake`, `appointment_booking`, `qa`, `end`)
+- Endpoint usage for `pre_actions`, `post_actions`, and booking HTTP calls
+- RAG integration for clinic-specific Q&A
+- Runtime variables for `patient_id` and `today`
+- Connecting the scenario to the custom RTVI UI example
+
+## Node flow
+
+We recommend opening the node flow image in a new tab for easier viewing and zooming.
+
+<img className="block dark:hidden" src="/images/examples/healthcare-intake-nodes-light.svg" alt="Healthcare intake scenario node flow (light)" />
+<img className="hidden dark:block" src="/images/examples/healthcare-intake-nodes-dark.svg" alt="Healthcare intake scenario node flow (dark)" />
+
+## Node JSON to paste
+
+Replace these placeholders:
+
+- `<YOUR_PRE_ACTION_ENDPOINT_ID>`
+- `<YOUR_POST_ACTION_ENDPOINT_ID>`
+- `<YOUR_BOOK_APPOINTMENT_ENDPOINT_ID>`
+- `<YOUR_RAG_CORPUS_ID>`
+
+```json
+{
+  "nodes": {
+    "intro": {
+      "functions": [
+        {
+          "function": {
+            "name": "transition_to_data_intake",
+            "type": "transition",
+            "description": "Use this function to transition to the data_intake phase after they have given consent to proceed.",
+            "transition_to": "data_intake"
+          }
+        }
+      ],
+      "pre_actions": [],
+      "role_messages": [
+        {
+          "role": "system",
+          "content": "You are a friendly and professional medical screening assistant. Your responses will be converted to audio, so keep them concise and avoid special characters. Speak clearly and warmly to help patients feel comfortable. Do not start sentences with short bursts like sure! or absolutely! since short bursts lead to choppy audio."
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Greet the patient warmly and introduce yourself as a medical screening assistant. Explain that you'll help them with a brief screening questionnaire. After they have given consent to move to next stage, use the transition tool to move forward to the data intake phase."
+        }
+      ],
+      "respond_immediately": true
+    },
+    "data_intake": {
+      "functions": [
+        {
+          "function": {
+            "name": "transition_to_appointment_booking",
+            "type": "transition",
+            "description": "Transition to the appointment booking phase.",
+            "transition_to": "appointment_booking"
+          }
+        },
+        {
+          "function": {
+            "name": "VIEW_CAMERA",
+            "type": "vision",
+            "description": "Use this tool when the user asks you to look at the screen"
+          }
+        }
+      ],
+      "pre_actions": [
+        {
+          "type": "http",
+          "endpoint_id": "<YOUR_PRE_ACTION_ENDPOINT_ID>"
+        }
+      ],
+      "post_actions": [
+        {
+          "type": "http",
+          "endpoint_id": "<YOUR_POST_ACTION_ENDPOINT_ID>"
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Collect the patient's basic information. Ask for their full name, age, primary reason for visit, and any current symptoms or concerns. Be conversational and ask one question at a time. If the patient indicates they are showing something on camera (for example: this part of my hand hurts, can you see this rash, what does this look like), call the vision tool. When you've gathered enough information, use the transition tool to move to appointment booking. If the patient asks questions, politely redirect them to answer the screening questions first, and mention they can ask questions later in the Q&A phase."
+        }
+      ],
+      "respond_immediately": true
+    },
+    "appointment_booking": {
+      "functions": [
+        {
+          "function": {
+            "name": "book_appointment",
+            "type": "http",
+            "description": "Call this tool to book the appointment",
+            "endpoint_id": "<YOUR_BOOK_APPOINTMENT_ENDPOINT_ID>",
+            "transition_to": "qa"
+          }
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Help the patient schedule an appointment. Ask about their preferred date and time, and whether they prefer in-person or virtual consultation. Be flexible and accommodating. When you've collected the appointment details (date, time, and appointment type), use the HTTP booking tool.\n\nNote - today is {{runtime.today}}"
+        }
+      ],
+      "respond_immediately": true
+    },
+    "qa": {
+      "functions": [
+        {
+          "function": {
+            "name": "transition_to_end_screening",
+            "type": "transition",
+            "description": "Transition to the end of the screening session.",
+            "transition_to": "end"
+          }
+        },
+        {
+          "function": {
+            "name": "about_our_clinic",
+            "type": "rag",
+            "corpus_id": "<YOUR_RAG_CORPUS_ID>",
+            "description": "a RAG tool with information about our clinic"
+          }
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Answer the patient's questions about the screening process, our clinic, or anything else they want to know. Be helpful, empathetic, and professional. If you don't know something, suggest they discuss it with their doctor during the appointment. Keep responses concise since they'll be converted to audio. Use the transition tool to end the screening session when the patient is ready to conclude. If they have a question about our clinic use the about_our_clinic rag tool"
+        }
+      ],
+      "respond_immediately": true
+    },
+    "end": {
+      "functions": [],
+      "post_actions": [
+        {
+          "type": "end_conversation"
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Thank the patient for completing the screening. Provide a brief summary of next steps (e.g., 'We'll review your information and confirm your appointment details. A member of our team will contact you soon.'). Keep it brief and friendly, then end the conversation."
+        }
+      ],
+      "respond_immediately": true
+    }
+  },
+  "initial_node": "intro"
+}
+```
+
+## Conversation demo
+
+This is what a conversation using this scenario should look like:
+
+<video controls width="960" src="https://akapulu-public-assets.s3.amazonaws.com/Conversation-Demo-Normal-Speed.mov"></video>
+
+## View on GitHub
+
+- [Healthcare Intake & Scheduling example](https://github.com/william-akapulu/akapulu-examples/tree/main/examples/example-scenarios/healthcare-intake-scheduling)
