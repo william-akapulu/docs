@@ -60,12 +60,8 @@
           {
             "group": "Conversations",
             "pages": [
-              "guides/conversations/overview",
-              "guides/conversations/connect",
               "guides/conversations/lifecycle",
-              "guides/conversations/usage-and-concurrency",
-              "guides/conversations/customize-conversation-ui",
-              "guides/conversations/recordings-and-transcripts"
+              "guides/conversations/customize-conversation-ui"
             ]
           },
           {
@@ -121,7 +117,7 @@
             ]
           },
           {
-            "group": "Scenarios",
+            "group": "Example Scenarios",
             "pages": [
               "examples/scenarios/healthcare-intake-scheduling"
             ]

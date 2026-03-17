@@ -53,7 +53,7 @@ function CustomConversationUI() {
 }
 ```
 
-## Call the connect endpoint and join the call
+## Conversation lifecycle review
 
 Your custom UI starts by calling the Akapulu [connect endpoint](/api-reference/conversations/connect), then using the returned `room_url` and `token` to join the Daily call with Pipecat.
 
@@ -141,6 +141,10 @@ Akapulu then continues by starting the bot runtime and having the bot join the s
 ## Render the live video call UI
 
 After `client.connect(...)` succeeds, you can render the active call UI using the Daily layer from `useDaily()` and the [DailyVideo](https://docs.daily.co/reference/daily-react/daily-video) component.
+
+<Note>
+On macOS, iPhone Continuity Camera can sometimes be selected automatically as the active camera or microphone. If your phone is in your pocket or far away, this can lead to muffled audio quality. We recommend explicitly selecting your intended input devices in your app before starting the call, and turning off Continuity Camera on iPhone when you are not using it (**Settings → General → AirPlay & Continuity → Continuity Camera**).
+</Note>
 
 ```tsx
 import { useDaily, useParticipantIds, DailyVideo } from "@daily-co/daily-react";
