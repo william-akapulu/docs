@@ -67,7 +67,6 @@
           {
             "group": "Endpoints",
             "pages": [
-              "guides/endpoints/overview",
               "guides/endpoints/create-endpoint",
               "guides/endpoints/templates-and-variables"
             ]

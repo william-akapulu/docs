@@ -3,4 +3,152 @@ title: "Templates and Variables"
 description: "Use runtime, LLM, and secret variables in endpoint templates."
 ---
 
-Content coming soon.
+![Variable syntax diagram](/images/examples/variable%20syntax%20diagram.png)
+
+You can use template variables in both `headers` and `body` for HTTP endpoints.
+
+Template format:
+
+```text
+{{var_type.var_name}}
+```
+
+For LLM variables, include a description:
+
+```text
+{{llm.var_name:description}}
+```
+
+
+![Templates and variables diagram](/images/examples/templates%20and%20variables%20diagram.png)
+
+## Secret variables
+
+Syntax:
+
+```text
+{{secret.var_name}}
+```
+
+Use this for sensitive values such as API keys, tokens, and tenant secrets.
+
+`secret` variables must be created in [akapulu.com/secrets](https://akapulu.com/secrets).
+
+<Note>
+Secret variables are allowed only in endpoint headers (function tools and `pre_actions`/`post_actions`). Secret variables are not allowed in request body fields, `role_messages`, or `task_messages`. In custom UI implementations, HTTP tool-call activity is emitted to the frontend via RTVI server-message events and includes the full request body payload. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
+</Note>
+
+Examples:
+
+```json
+{
+  "headers": {
+    "Authorization": "Bearer {{secret.crm_api_key}}",
+    "X-Tenant-Token": "{{secret.tenant_token}}"
+  },
+  "body": {
+    "source": "akapulu_assistant"
+  }
+}
+```
+
+## Runtime variables
+
+Syntax:
+
+```text
+{{runtime.var_name}}
+```
+
+Use this for per-session values that your app passes at connect time (for example user IDs, session IDs, org IDs).
+
+`runtime` variables must be passed to the [connect endpoint](/api-reference/conversations/connect) as `runtime_vars`.
+
+Examples:
+
+```json
+{
+  "headers": {
+    "X-Session-ID": "{{runtime.session_id}}"
+  },
+  "body": {
+    "patient_id": "{{runtime.patient_id}}",
+    "workspace_id": "{{runtime.workspace_id}}"
+  }
+}
+```
+
+## LLM variables
+
+Syntax:
+
+```text
+{{llm.var_name:description}}
+```
+
+Use this for dynamic values the model should fill at tool-call time.
+
+The description is shown to the model as part of normal tool-call parameter guidance, so write it clearly and specifically.
+
+Examples:
+
+```json
+{
+  "body": {
+    "date": "{{llm.date:Appointment date in YYYY-MM-DD format}}",
+    "time": "{{llm.time:Appointment time in HH:MM 24-hour format}}",
+    "reason": "{{llm.reason:Short reason for visit from user request}}"
+  }
+}
+```
+
+## Function tools vs pre/post actions
+
+`{{llm.*}}` variables are only supported for HTTP endpoints configured as function tools. They are not supported in HTTP endpoints configured as pre_actions or post_actions, because those endpoints run automatically without an LLM tool call.
+
+### Function tools (LLM-available)
+
+The LLM can call these tools and fill `{{llm.*}}` variables.
+
+![Akapulu syntax for functions](/images/examples/Akapulu%20syntax%20functions.png)
+
+### Pre-actions and post-actions (automatic)
+
+These run automatically on node lifecycle and are not called by the LLM.
+
+![Akapulu syntax for pre/post actions](/images/examples/akapulu%20syntax%20pre%20post%20action.png)
+
+## Mixed example
+
+You can combine all variable types in one endpoint:
+
+```json
+{
+  "headers": {
+    "Authorization": "Bearer {{secret.crm_api_key}}",
+    "X-Session-ID": "{{runtime.session_id}}"
+  },
+  "body": {
+    "patient_id": "patient_{{runtime.patient_id}}",
+    "appointment_date": "{{llm.date:Appointment date in YYYY-MM-DD format}}",
+    "appointment_time": "{{llm.time:Appointment time in HH:MM 24-hour format}}"
+  }
+}
+```
+
+Example actual request (after variable resolution):
+
+```json
+{
+  "headers": {
+    "Authorization": "Bearer sk_live_abc123",
+    "X-Session-ID": "sess_9f2a1c"
+  },
+  "body": {
+    "patient_id": "patient_2938573456",
+    "appointment_date": "2026-03-18",
+    "appointment_time": "14:00"
+  }
+}
+```
+

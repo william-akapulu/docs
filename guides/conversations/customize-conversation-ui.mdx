@@ -254,7 +254,11 @@ _Example payload:_
 
 - `message.type`: `"http"`
 - `message.function_name`: HTTP tool name.
-- `message.body`: HTTP tool payload/body(headers and body)
+- `message.body`: HTTP tool request body payload
+
+<Note>
+Use care with sensitive values in HTTP endpoint templates. The HTTP tool event includes the full request body payload in frontend-visible RTVI messages, so avoid placing secrets in body fields. Keep secrets in headers and follow the [Templates and Variables](/guides/endpoints/templates-and-variables) guidance.
+</Note>
 
 _Example payload:_
 

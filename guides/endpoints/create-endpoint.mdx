@@ -3,4 +3,172 @@ title: "Create an Endpoint"
 description: "Create and configure an endpoint for scenario tools."
 ---
 
-Content coming soon.
+Endpoints let your assistant call external services during a live conversation.  
+Use them when a scenario needs to trigger backend actions such as CRM updates, scheduling, order lookups, or workflow events.
+
+## What an endpoint includes
+
+Each endpoint has:
+
+- `name`: tool label shown in Akapulu
+- `url`: destination HTTP URL
+- `method`: HTTP method (`GET`, `POST`, `PUT`, `PATCH`, or `DELETE`)
+- `headers`: request headers
+- `body`: JSON payload
+
+## Host your endpoint as an HTTP server
+
+Your endpoint URL must point to a running HTTP server route that can accept requests from Akapulu during live conversations.
+
+- Use a valid `https://` URL for production.
+- The route must be publicly reachable from the internet.
+- Localhost URLs like `http://localhost:3000/...` are not reachable by Akapulu unless you expose them through a tunnel.
+
+## Create an endpoint
+
+1. Go to [akapulu.com/endpoints](https://akapulu.com/endpoints) and click **Create Endpoint**.
+2. In **Setup**, enter:
+   - endpoint `name`
+   - destination `url`
+   - HTTP `method`
+   - example:
+     - `name`: `Book Appointment`
+     - `url`: `https://api.yourcompany.com/v1/book-appointment`
+     - `method`: `POST`
+3. In **Headers**, add a JSON object for request headers.
+   - example:
+```json
+{
+  "Content-Type": "application/json",
+  "Authorization": "Bearer {{secret.crm_token}}"
+}
+```
+4. In **Body**, add a JSON object for the request payload.
+   - example:
+```json
+{
+  "patient_id": "{{runtime.patient_id}}",
+  "date": "{{llm.date:Appointment date in YYYY-MM-DD}}",
+  "time": "{{llm.time:Appointment time in HH:MM}}"
+}
+```
+   - Note: You can use template variables in headers and body. Learn more in [Templates and Variables](/guides/endpoints/templates-and-variables).
+   - Note: Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request bodies, `role_messages`, or `task_messages`.
+5. Save the endpoint and copy its endpoint ID from the details view.
+6. Attach the endpoint to your scenario using one of these methods:
+
+### Attach via JSON
+
+Use your endpoint ID in node JSON:
+
+In `nodes_json`, endpoint references live inside each node object under:
+
+- `functions[].function.endpoint_id` for HTTP tools
+- `pre_actions[].endpoint_id` for node-entry calls
+- `post_actions[].endpoint_id` for post-utterance calls
+
+For HTTP tools, `functions[].function.name` is the tool-call name presented to the LLM. Use clear action names like `book_appointment`, `create_lead`, or `lookup_order`.
+
+Example shape inside `nodes` json:
+```json
+{
+  "nodes": {
+    "<node_name>": {
+      "functions": [
+        {
+          "function": {
+            "type": "http",
+            "name": "function_name",
+            "endpoint_id": "<YOUR_ENDPOINT_ID>"
+          }
+        }
+      ],
+      "pre_actions": [
+        { "type": "http", "endpoint_id": "<YOUR_ENDPOINT_ID>" }
+      ],
+      "post_actions": [
+        { "type": "http", "endpoint_id": "<YOUR_ENDPOINT_ID>" }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "<TASK_MESSAGE_PLACEHOLDER>"
+        }
+      ]
+    }
+  }
+}
+```
+
+- **HTTP function tool** (model-invoked):
+```json
+{
+  "function": {
+    "name": "<function_name>",
+    "type": "http",
+    "endpoint_id": "<YOUR_ENDPOINT_ID>"
+  }
+}
+```
+
+- **Pre action** (runs on node entry):
+```json
+{
+  "type": "http",
+  "endpoint_id": "<YOUR_ENDPOINT_ID>"
+}
+```
+
+- **Post action** (runs after bot's first utterance in that node):
+```json
+{
+  "type": "http",
+  "endpoint_id": "<YOUR_ENDPOINT_ID>"
+}
+```
+
+### Attach via UI
+
+#### HTTP function tool (LLM-invoked)
+
+Use this when you want the model to decide when to call the endpoint during a node:
+
+- open your scenario and go to the target node
+- add a function under **Functions**
+- Make sure you're on the `HTTP Endpoints` tab in the pop up modal
+- select your endpoint by name
+- set a clear function name and description, which becomes the tool metadata shown to the LLM when it decides whether to call the tool
+
+This attaches an HTTP endpoint as a **function tool** the LLM can call within that node.
+
+![Attach HTTP endpoint as function tool in scenario UI (2x speed)](/images/examples/attach-http-function-ui.gif)
+
+*Shown at 2x speed.*
+
+#### Pre-actions and post-actions
+
+Use this when you want automatic endpoint calls tied to node lifecycle:
+
+- open your scenario and go to the target node
+- click **Add pre action** or **Add post action**
+- keep the **HTTP Endpoints** tab selected in the modal
+- select your endpoint
+
+<Note>
+HTTP endpoints attached as `pre_actions` or `post_actions` are not presented to the LLM as tool calls. They run automatically, so they cannot use `{{llm.*}}` variables.
+</Note>
+
+![Attach HTTP endpoint as pre/post action in scenario UI (1.5x speed)](/images/examples/attach-http-action-2.gif)
+
+*Shown at 1.5x speed.*
+
+## Endpoint behavior in conversation flow
+
+- **HTTP function tools (`type: "http"`)** are invoked by the model during node execution.
+- **`pre_actions`** run automatically on node entry.
+- **`post_actions`** run automatically after the bot finishes its first utterance in the node.
+- Endpoints are scoped per user and can be reused across multiple scenarios.
+
+## Next step
+
+After creating an endpoint, configure variables in headers/body using the [Templates and Variables](/guides/endpoints/templates-and-variables) guide.
