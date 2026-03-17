@@ -1,6 +1,87 @@
 ---
-title: "Knowledge Bases Overview"
-description: "Overview of knowledge bases and documents."
+title: "Knowledge Base"
+description: "What knowledge bases are, how to create them, and how to attach them to scenarios."
 ---
 
-Content coming soon.
+Knowledge bases let your scenario retrieve facts from your documents during a live conversation.
+Use them when your assistant should answer with domain-specific information instead of relying only on general model knowledge.
+
+## Overview of knowledge bases
+
+A knowledge base contains:
+
+- a **knowledge base** (container)
+- one or more **documents** (your uploaded files)
+
+During a conversation, your scenario can call a RAG tool function that queries the selected knowledge base and returns relevant context to the model before it responds.
+
+## Create a knowledge base
+
+1. Go to [akapulu.com/knowledge-bases](https://akapulu.com/knowledge-bases).
+2. Click **New Knowledge Base**.
+3. Enter:
+   - `name`
+   - optional `description`
+4. Open the new knowledge base and click **Add Document +**.
+5. set: 
+   - document `name`
+   - optional document `description`
+6. Upload a file 
+
+Save and wait for processing to complete.
+
+After upload, Akapulu creates searchable vector chunks from the document so the knowledge base can be used in RAG calls.
+
+## Attach a knowledge base to a scenario
+
+### Attach via JSON
+
+Attach the knowledge base in your scenario by adding a function with `type: "rag"` and the target `corpus_id`:
+
+The function `name` and `description` are presented to the LLM as tool metadata, so use clear action-oriented wording.
+
+```json
+{
+  "function": {
+    "name": "<knowledge_base_name>",
+    "description": "<description>",
+    "type": "rag",
+    "corpus_id": "<KNOWLEDGE_BASE_ID>"
+  }
+}
+```
+
+For example:
+
+```json
+{
+  "function": {
+    "name": "lookup_insurance_policy",
+    "description": "Search the insurance policy knowledge base for coverage details and return relevant excerpts.",
+    "type": "rag",
+    "corpus_id": "9a7d5d72-4f31-4b9b-8b7a-f3091da2ab6d"
+  }
+}
+```
+
+### Attach via UI
+
+Use the scenario builder when you want to attach a knowledge base without editing JSON:
+
+1. Open your scenario and go to the target node.
+2. Click **Add function**.
+3. In the modal, open the **RAG Tool** tab.
+4. Select your knowledge base by name.
+5. Enter a semantically meaningful function name and description.
+
+The function name and description are shown to the LLM as tool metadata, so they should clearly describe when the tool should be called.
+
+![Attach a knowledge base as a RAG tool (1.5x speed)](/images/guides/tools/knowledge-base/overview/RAG%20tool%20demo.gif)
+
+*Shown at 1.5x speed.*
+
+When this function is included in a node:
+
+- the model can invoke it like any other tool
+- Akapulu queries the specified knowledge base
+- relevant context is returned to the LLM to use in its response

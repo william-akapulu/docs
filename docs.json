@@ -65,18 +65,18 @@
             ]
           },
           {
-            "group": "Endpoints",
+            "group": "Tools",
             "pages": [
-              "guides/endpoints/create-endpoint",
-              "guides/endpoints/templates-and-variables"
-            ]
-          },
-          {
-            "group": "Knowledge Bases",
-            "pages": [
+              "guides/tools/transition-tools",
+              {
+                "group": "Endpoints",
+                "pages": [
+                  "guides/endpoints/create-endpoint",
+                  "guides/endpoints/templates-and-variables"
+                ]
+              },
               "guides/knowledge-bases/overview",
-              "guides/knowledge-bases/create-knowledge-base",
-              "guides/knowledge-bases/add-and-manage-documents"
+              "guides/vision/vision-tool-overview"
             ]
           }
         ]

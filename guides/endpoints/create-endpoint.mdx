@@ -1,10 +1,11 @@
 ---
-title: "Create an Endpoint"
-description: "Create and configure an endpoint for scenario tools."
+title: "Endpoints"
+description: "Create, configure, and attach endpoints for scenario tools."
 ---
 
 Endpoints let your assistant call external services during a live conversation.  
 Use them when a scenario needs to trigger backend actions such as CRM updates, scheduling, order lookups, or workflow events.
+This guide covers endpoint setup and attachment in both JSON and UI flows.
 
 ## What an endpoint includes
 
@@ -141,7 +142,7 @@ Use this when you want the model to decide when to call the endpoint during a no
 
 This attaches an HTTP endpoint as a **function tool** the LLM can call within that node.
 
-![Attach HTTP endpoint as function tool in scenario UI (2x speed)](/images/examples/attach-http-function-ui.gif)
+![Attach HTTP endpoint as function tool in scenario UI (2x speed)](/images/guides/tools/endpoints/create-endpoint/attach-http-function-ui.gif)
 
 *Shown at 2x speed.*
 
@@ -158,7 +159,7 @@ Use this when you want automatic endpoint calls tied to node lifecycle:
 HTTP endpoints attached as `pre_actions` or `post_actions` are not presented to the LLM as tool calls. They run automatically, so they cannot use `{{llm.*}}` variables.
 </Note>
 
-![Attach HTTP endpoint as pre/post action in scenario UI (1.5x speed)](/images/examples/attach-http-action-2.gif)
+![Attach HTTP endpoint as pre/post action in scenario UI (1.5x speed)](/images/guides/tools/endpoints/create-endpoint/attach-http-action-2.gif)
 
 *Shown at 1.5x speed.*
 
