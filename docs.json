@@ -30,31 +30,22 @@
             "group": "Scenarios",
             "pages": [
               "guides/scenarios/overview",
-              "guides/scenarios/create-scenario",
               {
                 "group": "Node Basics",
                 "pages": [
                   "guides/scenarios/node-basics",
-                  "guides/scenarios/node-structure",
-                  "guides/scenarios/transitions",
-                  "guides/scenarios/tools",
-                  "guides/scenarios/variables",
-                  "guides/scenarios/runtime-variables",
-                  "guides/scenarios/llm-variables",
-                  "guides/scenarios/secrets"
+                  "guides/scenarios/role-task-messages",
+                  "guides/scenarios/functions",
+                  "guides/scenarios/actions"
                 ]
-              },
-              "guides/scenarios/endpoints",
-              "guides/scenarios/knowledge-bases"
+              }
             ]
           },
           {
             "group": "Avatars",
             "pages": [
-              "guides/avatars/overview",
-              "guides/avatars/create-avatar",
               "guides/avatars/avatar-catalog",
-              "guides/avatars/manage-avatar-details"
+              "guides/avatars/create-avatar"
             ]
           },
           {

@@ -142,10 +142,6 @@ Akapulu then continues by starting the bot runtime and having the bot join the s
 
 After `client.connect(...)` succeeds, you can render the active call UI using the Daily layer from `useDaily()` and the [DailyVideo](https://docs.daily.co/reference/daily-react/daily-video) component.
 
-<Note>
-On macOS, iPhone Continuity Camera can sometimes be selected automatically as the active camera or microphone. If your phone is in your pocket or far away, this can lead to muffled audio quality. We recommend explicitly selecting your intended input devices in your app before starting the call, and turning off Continuity Camera on iPhone when you are not using it (**Settings → General → AirPlay & Continuity → Continuity Camera**).
-</Note>
-
 ```tsx
 import { useDaily, useParticipantIds, DailyVideo } from "@daily-co/daily-react";
 
@@ -170,6 +166,11 @@ function CustomConversationUI() {
   );
 }
 ```
+
+<Note>
+On macOS, [Continuity Camera](https://support.apple.com/en-us/HT213244) can be selected automatically as camera or microphone input. If the iPhone is far away or in a pocket, this can lead to a drop in speech recognition quality. If this happens, you can disconnect Continuity Camera for the session, or disable it on iPhone (**Settings > General > AirPlay & Handoff > Continuity Camera**).
+</Note>
+
 ## Built-in RTVI events
 
 Pipecat includes built-in RTVI events you can subscribe to in your UI for conversation behavior.  

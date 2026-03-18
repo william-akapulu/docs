@@ -1,6 +1,117 @@
 ---
-title: "Create an Avatar"
-description: "Create a new avatar in Akapulu."
+title: "Create Your Own Avatar"
+description: "Create your own avatar in Akapulu."
 ---
 
-Content coming soon.
+On the [Growth plan or above](https://akapulu.com/pricing), you can record a video and create an AI avatar that looks and sounds like you.
+
+Your created avatar is private and only available to your account.
+
+You can view all of your private avatars on the [Avatars page](https://akapulu.com/avatars).
+
+## How to create your avatar
+
+1. Go to [akapulu.com/avatars](https://akapulu.com/avatars).
+2. Click **Create +**.
+3. Read the instructions on each slide.
+4. Review and accept the [Biometric Information Notice](https://akapulu.com/biometric-notice).
+5. After completing the slides, click **Start recording**.
+
+This takes you to the recording page.
+
+## Recording stages
+
+The recording flow has three stages:
+
+### Stage 1: Consent
+
+The purpose of this stage is to confirm explicit permission to record and train your avatar.
+
+Participants will read these consent lines (shown on screen):
+
+- `I, [FULL NAME], consent to Akapulu recording my audio and video.`
+- `I consent to Akapulu using this recording to create my AI avatar.`
+- Public avatar recordings also include:
+  - `I understand this avatar may be used by other users while using the Akapulu platform.`
+
+### Stage 2: Sentences
+
+The purpose of this stage is to capture enough speech and facial variation to build a stable avatar voice/face model.
+
+Participants will read 20 fixed sentences (shown on screen) clearly while looking at the camera.
+
+### Stage 3: Idle
+
+The purpose of this stage is to capture neutral facial motion for natural idle behavior between speaking turns.
+
+Participants will hold a natural idle stare for 15 seconds while staying as still as possible and looking at the camera.
+
+### Recording demo
+
+This demo shows the expected end-to-end flow for creating your own avatar, from reviewing the New Avatar slides to completing the recording session (consent statements, sentences, and idle capture). For brevity, the sentences and idle capture sections are fast forwarded.
+
+<video controls width="960" src="https://akapulu-public-assets.s3.amazonaws.com/avatar%20recording%20demo.mov"></video>
+
+
+### Recording tips
+
+- **Record in a quiet room with minimal background noise.**
+  - This helps produce clean audio for voice training and improves transcription quality.
+- **If you have long hair, tie it back (for example, a bun).**
+  - This creates a clearer visual boundary between your head and torso for better avatar rendering.
+- **Speak clearly and enunciate each word.**
+  - Accuracy is especially important during the consent statements, where lines should be read exactly.
+- **Avoid touching your face and avoid large head movement.**
+  - Try to keep your head in a consistent position throughout all stages: consent, sentences, and idle.
+- **During the idle stage, keep your torso as still as possible.**
+  - Look naturally at the camera, blink and breathe naturally, and avoid sudden or jolting movements.
+- **Keep your setup consistent for the full recording.**
+  - Maintain stable lighting, camera placement, and framing from start to finish.
+
+#### Continuity Camera note (Mac + iPhone)
+
+[Continuity Camera](https://support.apple.com/en-us/HT213244) lets a Mac automatically use a nearby iPhone camera and microphone as input devices.
+
+<div style={{ display: "flex", justifyContent: "center" }}>
+  <img src="/images/guides/avatars/create-your-own-avatar/continuity%20camera%20on%20phone.png" alt="Continuity Camera setting on iPhone" width="130" />
+</div>
+
+<Note>
+We have seen recording quality issues when Continuity Camera is active unintentionally (for example, if the iPhone is far away or in a pocket and gets selected as the mic). In mixed setups, audio and video can also become out of sync. If this happens, disconnect Continuity Camera for the session, or disable it on iPhone in **Settings > General > AirPlay & Handoff > Continuity Camera**. 
+</Note>
+
+## Training
+
+Avatar training typically takes around 1 hour and reserves one concurrency slot while training is in progress.
+
+You can view the training progress from the [Avatars Table](https://akapulu.com/avatars).
+
+<img src="/images/guides/avatars/create-your-own-avatar/Avatars%20Table.png" alt="Avatars table showing training progress" />
+
+You can click that avatar row to open the avatar detail page, where you can edit the avatar handle and description. Each handle must be unique within your account.
+
+<Note>
+Handle and description format:
+- **Handle:** lowercase letters, numbers, and underscores only; maximum 120 characters; unique within your account.
+- **Description:** free text up to 2000 characters.
+</Note>
+
+<img src="/images/guides/avatars/create-your-own-avatar/Avatar%20Detail.png" alt="Avatar detail page showing training progress" />
+
+## Using private avatars
+
+
+You must wait until an avatar finishes training before it can be used in a scenario.
+
+When creating a scenario, select the **Avatar** tab.
+
+In the avatar dropdown:
+
+- your private avatars appear first, labeled **Custom**
+- public catalog avatars appear after, labeled **Public**
+
+<img src="/images/guides/avatars/create-your-own-avatar/Select%20Avatar.png" alt="Avatar selector showing the newly created private avatar" />
+
+<Note>
+Private avatars can only be selected in scenarios owned by the user who created the avatar. However, any end user who joins a conversation powered by that scenario will interact with that private avatar. Public avatars are different: any user can create scenarios that use public avatars.
+</Note>
