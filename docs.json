@@ -7,6 +7,12 @@
     "api-base-url": "https://akapulu-dev.fly.dev/api"
   },
   "description": "Akapulu builds conversational avatars for natural, real-time voice and video interactions.",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/quickstart"
+    }
+  ],
   "colors": {
     "primary": "#2D5C70",
     "light": "#38BDF8",
@@ -29,6 +35,7 @@
             "group": "Scenarios",
             "pages": [
               "guides/scenarios/overview",
+              "guides/scenarios/context-management",
               {
                 "group": "Node Basics",
                 "pages": [
