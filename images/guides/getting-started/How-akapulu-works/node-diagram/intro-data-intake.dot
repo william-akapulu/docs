@@ -1,0 +1,108 @@
+digraph DataIntakeAppointmentNodes {
+  graph [
+    rankdir=TB,
+    fontsize=12,
+    fontname="Helvetica",
+    pad=0.4,
+    nodesep=0.9,
+    bgcolor="transparent"
+  ];
+
+  node [
+    fontname="Helvetica",
+    fontsize=10,
+    shape=box,
+    style="rounded,filled",
+    penwidth=1.8
+  ];
+
+  edge [
+    fontname="Helvetica",
+    fontsize=10,
+    color="#64748B",
+    arrowsize=0.8
+  ];
+
+  data_intake [
+    color="#1E3A8A",
+    fillcolor="#DBEAFE",
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2">
+        <TR><TD><B>data_intake</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Instructions</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Collect basic patient information</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Ask about symptoms one question at a time</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- View camera only when needed</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Transition only after intake details are complete</FONT></TD></TR>
+      </TABLE>
+    >
+  ];
+
+  appointment_booking [
+    color="#14532D",
+    fillcolor="#DCFCE7",
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2">
+        <TR><TD><B>appointment_booking</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Instructions</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Gather preferred date, time, and visit type</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Confirm details before final booking</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">- Use booking tool after confirmation</FONT></TD></TR>
+      </TABLE>
+    >
+  ];
+
+  book_appointment [
+    color="#6B7280",
+    fillcolor="#F3F4F6",
+    style="rounded,filled,dashed",
+    penwidth=1.6,
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1">
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#6B7280">tool</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><B>book_appointment</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#4B5563">Book the appointment</FONT></TD></TR>
+      </TABLE>
+    >
+  ];
+
+  view_camera [
+    color="#6B7280",
+    fillcolor="#F3F4F6",
+    style="rounded,filled,dashed",
+    penwidth=1.6,
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1">
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#6B7280">tool</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><B>VIEW_CAMERA</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#4B5563">View patient camera input</FONT></TD></TR>
+      </TABLE>
+    >
+  ];
+
+  transition_to_appointment_booking [
+    color="#6B7280",
+    fillcolor="#F3F4F6",
+    style="rounded,filled,dashed",
+    penwidth=1.6,
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1">
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#6B7280">tool</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><B>transition_to_appointment_booking</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#4B5563">Transition to appointment booking</FONT></TD></TR>
+      </TABLE>
+    >
+  ];
+
+  { rank=same; data_intake; appointment_booking; }
+  { rank=same; view_camera; transition_to_appointment_booking; book_appointment; }
+
+  data_intake -> view_camera [style=dashed];
+  data_intake -> transition_to_appointment_booking [style=dashed];
+  transition_to_appointment_booking:e -> appointment_booking:w [constraint=false];
+  appointment_booking -> book_appointment [style=dashed];
+
+  data_intake -> appointment_booking [style=invis, weight=10];
+  view_camera -> transition_to_appointment_booking [style=invis, weight=10];
+  transition_to_appointment_booking -> book_appointment [style=invis, weight=10];
+}

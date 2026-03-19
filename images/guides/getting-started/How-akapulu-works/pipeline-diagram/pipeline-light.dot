@@ -1,0 +1,111 @@
+digraph AkapuluPipeline {
+  graph [
+    rankdir=LR,
+    fontsize=12,
+    fontname="Helvetica",
+    pad=0.8,
+    nodesep=0.6,
+    imagepath="/Users/williambradford/Documents/akapulu/akapulu-ai-2026/docs/images/guides/getting-started/How-akapulu-works/pipeline-diagram"
+  ];
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    shape=box,
+    style="filled",
+    color="#0369A1",
+    fillcolor="#E0F2FE"
+  ];
+
+  edge [
+    fontname="Helvetica",
+    fontsize=10,
+    color="#334155",
+    arrowsize=0.8
+  ];
+
+  user [
+    label="User",
+    shape=box,
+    style="rounded,filled",
+    color="#7C3AED",
+    fillcolor="#EDE9FE",
+    image="user-icon.png",
+    imagescale=true,
+    imagepos="bc",
+    labelloc="t",
+    fixedsize=true,
+    width=0.8,
+    height=0.9
+  ];
+
+  subgraph cluster_akapulu {
+    label="Akapulu";
+    color="#0369A1";
+    penwidth=1.6;
+    style="rounded,filled";
+    fillcolor="#F0F9FF";
+    ranksep=0.8;
+
+    stt [label="Speech-to-Text"];
+    llm [label="LLM"];
+    tts [label="Text-to-Speech"];
+    avatar [label="Avatar Rendering"];
+
+    { rank=same; stt; llm; tts; avatar; }
+    avatar -> tts [style=invis, weight=100];
+    tts -> llm [style=invis, weight=100];
+    llm -> stt [style=invis, weight=100];
+    stt -> llm [
+      constraint=false,
+      label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLPADDING="0" BGCOLOR="#F3F4F6" COLOR="#CBD5E1">
+          <TR><TD><FONT COLOR="#334155">User text:</FONT></TD></TR>
+          <TR><TD><FONT COLOR="#334155">"I need to reschedule my appointment."</FONT></TD></TR>
+        </TABLE>
+      >,
+    ];
+    llm -> tts [
+      constraint=false,
+      weight=3,
+      label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLPADDING="0" BGCOLOR="#F3F4F6" COLOR="#CBD5E1">
+          <TR><TD><FONT COLOR="#334155">LLM response:</FONT></TD></TR>
+          <TR><TD><FONT COLOR="#334155">"I can help with that. What day works best for you?"</FONT></TD></TR>
+        </TABLE>
+      >
+    ];
+    tts -> avatar [
+      constraint=false,
+      label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLPADDING="0" BGCOLOR="#F3F4F6" COLOR="#CBD5E1">
+          <TR><TD><IMG SRC="bot-audiowaves.png" SCALE="TRUE"/></TD></TR>
+          <TR><TD><FONT COLOR="#334155">Bot audio</FONT></TD></TR>
+        </TABLE>
+      >
+    ];
+  }
+
+  user:e -> stt:w [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1">
+        <TR><TD><IMG SRC="user-audio-waves.png" SCALE="TRUE"/></TD></TR>
+        <TR><TD>User input audio</TD></TR>
+      </TABLE>
+    >,
+    minlen=2
+  ];
+  avatar:w -> user:s [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1">
+        <TR>
+          <TD><IMG SRC="avatar_output_thumb.png" SCALE="TRUE"/></TD>
+          <TD><FONT POINT-SIZE="14">+</FONT></TD>
+          <TD><IMG SRC="bot-audiowaves.png" SCALE="TRUE"/></TD>
+        </TR>
+        <TR><TD COLSPAN="3">Bot output video / audio</TD></TR>
+      </TABLE>
+    >,
+    constraint=false
+  ];
+}

@@ -21,9 +21,8 @@
           {
             "group": "Getting started",
             "pages": [
-              "index",
               "quickstart",
-              "guides/getting-started/next-steps"
+              "guides/getting-started/how-akapulu-works"
             ]
           },
           {
