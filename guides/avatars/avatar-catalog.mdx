@@ -1,6 +1,6 @@
 ---
 title: "Using Public Avatars"
-description: "Browse and use public avatars in your scenarios."
+description: "Browse the public catalog and use catalog avatars in your conversations."
 ---
 
 Akapulu provides a public catalog of avatars you can use in your conversations.
@@ -11,19 +11,40 @@ We add new public avatars regularly, so your available options continue to grow 
 If you need a custom avatar (for example custom backgrounds or other specific details), see our [Enterprise plan](https://akapulu.com/pricing).
 </Note>
 
+## Browse the catalog
 
 You can view the public catalog at [akapulu.com/catalog](https://akapulu.com/catalog).
 
-Click on any avatar row to view its details
-
-Each catalog avatar includes a handle, profile image, description, and a sample video of what this avatar looks and sounds like
+Click any avatar row to open its detail page. Each entry includes a handle, profile image, description, and a sample video of how the avatar looks and sounds.
 
 <img src="/images/guides/avatars/use-public-avatar/catalog-avatar-demo.png" alt="Public avatar catalog showing handle, profile image, description, and sample video" style={{ borderRadius: 12 }} />
 
-Public avatar handles use the `public_*` prefix.
+Public avatar handles use the `public_*` prefix. On the detail page, copy the **avatar ID** (UUID)—you will pass it to the API when you start a call.
 
-When creating a scenario, open the **Avatar** tab and select any public catalog avatar.
+<Note>
+The Connect API expects the avatar **ID** (UUID), not the handle. Handles are for display only in the UI.
+</Note>
 
+## Use a catalog avatar in a conversation
+
+Scenarios define **behavior** (nodes, tools, prompts). Which **avatar** performs the conversation is chosen separately when you start the conversation
+
+When you call [`POST /conversations/connect`](/api-reference/conversations/connect), include:
+
+- **`scenario_id`** — the scenario that controls the flow
+- **`avatar_id`** — the catalog avatar’s UUID
+
+Example:
+
+```json
+{
+  "scenario_id": "11111111-2222-3333-4444-555555555555",
+  "avatar_id": "66666666-7777-8888-9999-000000000000"
+}
+```
+
+
+For a fuller walkthrough of how scenarios and avatars fit together, see [How Akapulu works](/guides/getting-started/how-akapulu-works).
 
 <Note>
 Interested in being featured as a public catalog avatar? Approved participants are compensated. Contact [william@akapulu.com](mailto:william@akapulu.com).

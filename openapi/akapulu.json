@@ -32,11 +32,17 @@
                   "summary": "Standard connect request",
                   "value": {
                     "scenario_id": "11111111-2222-3333-4444-555555555555",
+                    "avatar_id": "66666666-7777-8888-9999-000000000000",
                     "runtime_vars": {
                       "user_name": "Alex",
                       "company_name": "Acme Corp",
                       "support_ticket_id": "TICK-1024"
                     },
+                    "stt_keywords": [
+                      "Akapulu",
+                      "Alex",
+                      "Acme"
+                    ],
                     "voice_only_mode": false
                   }
                 }
@@ -223,7 +229,8 @@
       "ConnectConversationRequest": {
         "type": "object",
         "required": [
-          "scenario_id"
+          "scenario_id",
+          "avatar_id"
         ],
         "properties": {
           "scenario_id": {
@@ -231,10 +238,23 @@
             "format": "uuid",
             "description": "Scenario ID to run for this conversation."
           },
+          "avatar_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Avatar ID to use for this conversation."
+          },
           "runtime_vars": {
             "type": "object",
             "description": "Runtime variables injected into scenario templates.",
             "additionalProperties": true
+          },
+          "stt_keywords": {
+            "type": "array",
+            "description": "Optional keywords used in the speech-to-text step of the pipeline to improve recognition of specific words in user speech (maximum 5).",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5
           },
           "voice_only_mode": {
             "type": "boolean",

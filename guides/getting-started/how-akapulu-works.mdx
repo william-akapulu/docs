@@ -157,19 +157,20 @@ flowchart TD
   class B,C stageNode;
 ```
 
-2. Then, to start a conversation, call the [`/connect`](/api-reference/conversations/connect) endpoint and passes the `scenario_id` you want to use to guide bot behavior. 
+2. Then, to start a conversation, call the [`/connect`](/api-reference/conversations/connect) endpoint and pass **`scenario_id`** (which flow and instructions the bot follows) and **`avatar_id`** (which trained avatar performs the conversation). 
 
 Example JSON request body:
 
 ```json
 {
   "scenario_id": "scenario_1234",
+  "avatar_id": "avatar_5678"
 }
 ```
 
 Akapulu then sets up the live call, starts the bot, and has the bot join the call.
 
-3. The user then joins the same call, and your ready to go!
+3. The user then joins the same call, and you're ready to go!
 
 
 ```mermaid

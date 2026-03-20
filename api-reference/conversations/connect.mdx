@@ -1,6 +1,6 @@
 ---
 title: "Connect Conversation"
-openapi: "/openapi/akapulu.json POST /conversations/connect"
+openapi: "openapi/akapulu.json POST /conversations/connect"
 ---
 
 Use this endpoint to create a conversation session and receive:
@@ -9,8 +9,29 @@ Use this endpoint to create a conversation session and receive:
 - `token`
 - `conversation_session_id`
 
+Required request fields:
+
+- `scenario_id` for the scenario to run
+- `avatar_id` for the avatar to use in this conversation
+
 Optional request fields include:
 
 - `runtime_vars` for template/runtime values
+- `stt_keywords` are optional keywords used in the speech-to-text step of the pipeline to improve recognition of specific words in user speech (maximum 5)
 - `voice_only_mode` for audio-only calls
 - `custom_rtvi_connection` when your frontend uses a custom RTVI connection
+
+Example request body:
+
+```json
+{
+  "scenario_id": "scenario_1234",
+  "avatar_id": "avatar_5678",
+  "runtime_vars": {
+    "today": "2026-03-19"
+  },
+  "stt_keywords": ["Akapulu", "Dr. Nguyen", "A1C"],
+  "voice_only_mode": false,
+  "custom_rtvi_connection": false
+}
+```

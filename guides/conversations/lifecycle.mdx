@@ -53,11 +53,14 @@ Your application experience is the interaction between these two participants in
    - Your app sends `POST /api/conversations/connect/` with:
      - `Authorization: Bearer <API_KEY>`
      - `scenario_id`
+     - `avatar_id` (UUID)
      - optional `runtime_vars`
+     - optional `stt_keywords`
      - optional `voice_only_mode`
+   - `scenario_id` controls conversation behavior; `avatar_id` selects the avatar for that specific session.
 
 2. **Session is validated and prepared**
-   - API key ownership, scenario access, and active plan limits are validated.
+   - API key ownership, scenario access, avatar access, and active plan limits are validated.
    - Scenario runtime configuration is prepared for the session.
 
 3. **Daily room and credentials are created**
@@ -74,7 +77,7 @@ Your application experience is the interaction between these two participants in
    - Your frontend uses `room_url` and `token` to join the Daily room.
 
 6. **Assistant runtime starts in parallel**
-   - The bot process starts for the selected scenario.
+   - The bot process starts for the selected scenario and avatar.
 
 7. **Bot joins the room**
    - After initialization completes, the bot joins as the remote participant.

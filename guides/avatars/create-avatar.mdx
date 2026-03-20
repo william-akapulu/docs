@@ -100,18 +100,10 @@ Handle and description format:
 
 ## Using private avatars
 
+You must wait until an avatar finishes training before it can be used in a conversation.
 
-You must wait until an avatar finishes training before it can be used in a scenario.
-
-When creating a scenario, select the **Avatar** tab.
-
-In the avatar dropdown:
-
-- your private avatars appear first, labeled **Custom**
-- public catalog avatars appear after, labeled **Public**
-
-<img src="/images/guides/avatars/create-your-own-avatar/Select%20Avatar.png" alt="Avatar selector showing the newly created private avatar" style={{ borderRadius: 12 }} />
+When starting a conversation, pass the avatar **UUID** (not the handle) to the [`connect`](/api-reference/conversations/connect) endpoint as `avatar_id` (`272ecb56-cb..` in the example above).
 
 <Note>
-Private avatars can only be selected in scenarios owned by the user who created the avatar. However, any end user who joins a conversation powered by that scenario will interact with that private avatar. Public avatars are different: any user can create scenarios that use public avatars.
+When calling the [`connect`](/api-reference/conversations/connect) endpoint, `avatar_id` must reference either a public catalog avatar or a private avatar owned by your Akapulu account. Private avatar IDs are account-scoped and cannot be used by other accounts.
 </Note>

@@ -106,10 +106,11 @@ function CustomConversationUI() {
       },
       body: JSON.stringify({
         scenario_id: "your-scenario-id",
+        avatar_id: "your-avatar-uuid",
       }),
     });
 
-    // Akaulu returns room_url, token, and conversation_session_id
+    // Akapulu returns room_url, token, and conversation_session_id
     const { room_url, token, conversation_session_id } = await response.json();
   }
 }
@@ -393,7 +394,7 @@ function CustomConversationUI() {
 
 ## Full outline snippet
 
-Here's a single snippet showing all the above in a single tempalte file
+Here's a single snippet showing all the above in a single template file
 
 ```tsx
 "use client";
@@ -440,7 +441,10 @@ async function connectConversation(apiKey: string): Promise<ConnectResponse> {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      // TODO: add your connect request payload fields.
+      // Required fields:
+      scenario_id: "your-scenario-id",
+      avatar_id: "your-avatar-uuid",
+
     }),
   });
 
