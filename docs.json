@@ -35,16 +35,8 @@
             "group": "Scenarios",
             "pages": [
               "guides/scenarios/overview",
-              "guides/scenarios/context-management",
-              {
-                "group": "Node Basics",
-                "pages": [
-                  "guides/scenarios/node-basics",
-                  "guides/scenarios/role-task-messages",
-                  "guides/scenarios/functions",
-                  "guides/scenarios/actions"
-                ]
-              }
+              "guides/scenarios/using-json",
+              "guides/scenarios/node-basics"
             ]
           },
           {

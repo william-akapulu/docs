@@ -1,0 +1,107 @@
+digraph ScenarioOutline {
+  graph [
+    rankdir=TB,
+    bgcolor="#0a0d10",
+    pad="0.4",
+    nodesep="0.55",
+    ranksep="0.75",
+    splines=true
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica",
+    color="#475569"
+  ];
+
+  edge [
+    color="#9ca3af",
+    fontname="Helvetica",
+    fontsize=11,
+    arrowsize=0.8
+  ];
+
+  role_message [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="16"><B>Role message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="13">You are an onboarding assistant for Akapulu.</FONT></TD></TR>
+      </TABLE>
+    >,
+    fillcolor="#3a2a14",
+    color="#b45309",
+    style="rounded,dashed,filled",
+    penwidth=1.6
+  ];
+
+  greeting [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#86efac" POINT-SIZE="16"><B>Greeting</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#6ee7b7" POINT-SIZE="11"><B>Task message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">Greet the user and ask open-ended questions</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">about what they want to build with Akapulu.</FONT></TD></TR>
+      </TABLE>
+    >,
+    fillcolor="#10261a",
+    color="#15803d",
+    penwidth=1.5
+  ];
+
+  planning_phase [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#93c5fd" POINT-SIZE="16"><B>Planning Phase</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#60a5fa" POINT-SIZE="11"><B>Task message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Help the user plan their project on the Akapulu platform.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Use Akapulu_RAG to gather platform context.</FONT></TD></TR>
+      </TABLE>
+    >,
+    fillcolor="#172554",
+    color="#1d4ed8",
+    penwidth=1.5
+  ];
+
+  transition_to_planning_phase [
+    label="transition_to_planning_phase",
+    fillcolor="#3f2a1d",
+    color="#c2410c",
+    fontcolor="#fed7aa",
+    style="rounded,dashed,filled",
+    fontsize=12,
+    penwidth=1.2
+  ];
+
+  akapulu_rag [
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+        <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="12">Akapulu_RAG</FONT></TD></TR>
+        <TR><TD ALIGN="CENTER"><FONT POINT-SIZE="11">(RAG tool)</FONT></TD></TR>
+      </TABLE>
+    >,
+    fillcolor="#221638",
+    color="#7c3aed",
+    fontcolor="#c4b5fd",
+    style="rounded,dashed,filled",
+    fontsize=12,
+    penwidth=1.2
+  ];
+
+  { rank=same; akapulu_rag; planning_phase; }
+
+  greeting -> transition_to_planning_phase [
+    label="   Once their project scope is clear,\nmove onto the planning phase",
+    fontsize=10,
+    fontcolor="#9ca3af",
+    color="#6b7280"
+  ];
+  akapulu_rag -> planning_phase [
+    label="Access information on the Akapulu platform.",
+    style="dashed",
+    dir="both",
+    constraint=false
+  ];
+
+  transition_to_planning_phase -> planning_phase;
+}

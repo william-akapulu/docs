@@ -3,4 +3,328 @@ title: "Node Basics"
 description: "Node structure, transitions, tools, and variables."
 ---
 
-This section will cover node structure, transitions, tools, and variables (runtime, LLM, and secrets).
+You can edit nodes in either the visual node editor or the JSON editor. To create a node in the visual editor, click **Add Node** in the lower-left corner.
+
+<div style={{ textAlign: "center", margin: "12px 0 20px" }}>
+  <img
+    src="/images/guides/scenarios/Node_Basics/Add Node.png"
+    alt="Add Node button in the scenario editor"
+    style={{
+      width: "100%",
+      borderRadius: "12px",
+      border: "1px solid var(--border-subtle)"
+    }}
+  />
+</div>
+
+## Name
+
+Each node name must be unique within the scenario.
+
+The node name is used as the identifier for:
+- `initial_node` (the scenario start node)
+- any function `transition_to` targets
+
+When you rename a node in the node editor, Akapulu also updates:
+- `initial_node` if that node is currently the start node
+- any function transitions that point to that node
+
+The first node you create becomes the start node by default. A scenario has one start node at a time.
+
+**JSON**
+
+```json
+{
+  "initial_node": "Greeting",
+  "nodes": {
+    "Greeting": {
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Edit the node title directly to rename it.
+
+![Name field in editor](/images/guides/scenarios/Node_Basics/Name.png)
+
+To set any node as the start node (other than the first one created), click the **3 dots** in the top-right of that node, then click **Set as start node**.
+
+## Role message
+
+Role messages define the assistant's identity and behavior rules, such as tone, boundaries, and style.
+
+Role messages are optional. When present, they are appended to context first when entering a node.
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "role_messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful Akapulu assistant."
+        }
+      ],
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Add or edit the role message in the node card.
+
+![Role message field in node editor](/images/guides/scenarios/Node_Basics/Role%20Message.png)
+
+## Task message
+
+Task messages define what the assistant should do in the current node right now.
+
+Task messages are required. Each node must include at least one non-empty task message.
+
+When entering a node, task messages are appended after role messages (if role messages exist).
+
+Recommended pattern:
+- Put long-lived persona and behavior rules in the **start node** role message.
+- Use task messages in each node for stage-specific goals and instructions.
+- Add role messages in later nodes only when you intentionally want to shift persona or policy for that stage.
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "role_messages": [
+        {
+          "role": "system",
+          "content": "You are a friendly Akapulu onboarding assistant."
+        }
+      ],
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Greet the user and gather what they want to build."
+        }
+      ],
+      ...
+    },
+    "Planning Phase": {
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Help the user plan their project based on gathered requirements."
+        }
+      ],
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Add or edit the task message in the node card.
+
+![Task message field in node editor](/images/guides/scenarios/Node_Basics/Task%20Message.png)
+
+## Pre actions
+
+Pre actions run when the node is entered, before the assistant response for that node.
+
+Allowed pre action types:
+- `http`
+- `end_conversation`
+
+If the type is `http`, the action must include `endpoint_id`.
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "pre_actions": [
+        {
+          "type": "http",
+          "endpoint_id": "<HTTP_ENDPOINT_ID>"
+        }
+      ],
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Click **Add action** to bring up the action modal. Then choose the action type (for example, `http`) and configure it.
+
+![Add action button and action modal](/images/guides/scenarios/Node_Basics/Action%20pop%20up.png)
+
+## Post actions
+
+Post actions are deferred until after the bot finishes its first spoken response in that node.
+
+Allowed post action types:
+- `http`
+- `end_conversation`
+
+If the type is `http`, the action must include `endpoint_id`.
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "post_actions": [
+        {
+          "type": "end_conversation"
+        }
+      ],
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Click **Add action** to bring up the action modal, then configure the post action for this node.
+
+## Functions
+
+Functions are tool calls available to the assistant while the node is active.
+
+Allowed function types:
+- `transition`
+- `http`
+- `rag`
+- `vision`
+
+Function rules:
+- function name is required and must be unique within the node
+- function name can only use letters, numbers, underscores, and hyphens
+- function description is required
+
+Type-specific requirements:
+- `transition` requires `transition_to`
+- `http` requires `endpoint_id`
+- `rag` requires `corpus_id`
+- `vision` has no additional required ID field
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "functions": [
+        {
+          "function": {
+            "name": "transition_to_planning_phase",
+            "description": "Once project scope is clear, move to planning phase.",
+            "type": "transition",
+            "transition_to": "Planning Phase"
+          }
+        },
+        {
+          "function": {
+            "name": "Akapulu_RAG",
+            "description": "Access information on the Akapulu platform.",
+            "type": "rag",
+            "corpus_id": "<KNOWLEDGE_BASE_ID>"
+          }
+        }
+      ],
+      ...
+    },
+    "Planning Phase": {
+      "task_messages": [
+        {
+          "role": "system",
+          "content": "Help the user plan their project on Akapulu."
+        }
+      ],
+      "functions": [
+        {
+          "function": {
+            "name": "create_project_brief",
+            "description": "Create a project brief in your external planning system.",
+            "type": "http",
+            "endpoint_id": "<HTTP_ENDPOINT_ID>"
+          }
+        },
+        {
+          "function": {
+            "name": "inspect_user_whiteboard",
+            "description": "Analyze a camera frame when the user shares a whiteboard or sketch.",
+            "type": "vision"
+          }
+        }
+      ],
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Click **Add function** to bring up the function modal, then choose the function type:
+
+- [`transitions`](/guides/tools/transition-tools)
+
+![Transition tool in function modal](/images/guides/scenarios/Node_Basics/TransitionTool.png)
+
+- [`RAG tool`](/guides/knowledge-bases/overview)
+
+![RAG tool in function modal](/images/guides/scenarios/Node_Basics/RAGTool.png)
+
+- [`Vision tool`](/guides/vision/vision-tool-overview)
+
+![Vision tool in function modal](/images/guides/scenarios/Node_Basics/VisionTool.png)
+
+- [`HTTP Endpoint`](/guides/endpoints/create-endpoint)
+
+![HTTP endpoint selection for function calls](/images/guides/scenarios/Node_Basics/HTTPEndpoint.png)
+
+## Respond immediately
+
+`respond_immediately` controls whether the assistant speaks immediately after entering the node.
+
+- `true` (default): the assistant responds right away
+- `false`: the assistant waits for user input before responding
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "Greeting": {
+      "respond_immediately": false,
+      ...
+    },
+    ...
+  }
+}
+```
+
+**UI**
+
+Open the **Advanced Settings** dropdown, then toggle **Respond Immediately** on or off.
+
+![Respond Immediately toggle in Advanced Settings](/images/guides/scenarios/Node_Basics/RespondImmediately.png)
