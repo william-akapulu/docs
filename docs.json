@@ -3,8 +3,8 @@
   "theme": "mint",
   "name": "Akapulu",
   "variables": {
-    "app-url": "https://akapulu-dev.fly.dev",
-    "api-base-url": "https://akapulu-dev.fly.dev/api"
+    "app-url": "https://akapulu.com",
+    "api-base-url": "https://akapulu.com/api"
   },
   "description": "Akapulu builds conversational avatars for natural, real-time voice and video interactions.",
   "redirects": [
@@ -117,7 +117,7 @@
   "logo": {
     "light": "/logo/logo_dark.png",
     "dark": "/logo/logo.png",
-    "href": "https://akapulu-dev.fly.dev"
+    "href": "https://akapulu.com"
   },
   "appearance": {
     "default": "dark"
@@ -132,7 +132,7 @@
     "primary": {
       "type": "button",
       "label": "Sign in",
-      "href": "https://akapulu-dev.fly.dev/accounts/login/"
+      "href": "https://akapulu.com/accounts/login/"
     }
   },
   "contextual": {

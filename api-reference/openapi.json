@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://akapulu-dev.fly.dev/api"
+      "url": "https://akapulu.com/api"
     }
   ],
   "security": [
