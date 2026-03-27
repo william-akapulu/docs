@@ -102,18 +102,13 @@ Akapulu provides a drag-and-drop UI for building and connecting nodes.
 
 ## Role messages, task messages, and context management
 
-When a conversation starts, Akapulu begins from the node labeled **start node**.
-You can change the start node in the UI by opening the node menu (three dots in the upper-right corner of the node) and clicking **Set as Start**.
+Akapulu builds llm context as the conversation progresses:
 
-Akapulu then builds LLM context in this order:
+1. It starts with the start node's **role message** and **task message**.
+2. It appends each **user** and **assistant** message turn.
+3. On node transition, it appends the new node's **role message** and **task message**.
 
-1. The start node's **role message** is appended first.
-2. The start node's **task message** is appended next.
-3. Any **tool call context** is appended as tools are invoked.
-
-When the LLM transitions to a new node, that node's **role message** (if set) and **task message** are appended to context so the assistant can continue with the correct stage instructions.
-
-We recommend defining your overall LLM persona in the **role message** of the **start node**, then using **task messages** in each individual node to define stage-specific behavior.
+We recommend defining your overall assistant persona in the start node's **role message**, and use each node's **task message** for stage-specific behavior.
 
 ## Create scenario walkthrough
 
@@ -246,6 +241,3 @@ This scenario starts in `Greeting`, where the assistant asks open-ended question
 
 - [Using JSON](/guides/scenarios/using-json)
 - [Node basics](/guides/scenarios/node-basics)
-- [Node structure](/guides/scenarios/node-structure)
-- [Role and task messages](/guides/scenarios/role-task-messages)
-- [Tools overview](/guides/scenarios/tools)

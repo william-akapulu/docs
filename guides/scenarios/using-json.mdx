@@ -79,7 +79,7 @@ Allowed function `type` values:
 ### `transition`
 
 - `name`: unique function name in the node.
-- `description`: when the assistant should call this function.
+- `description`: instruction shown to the LLM that explains when to call this function.
 - `type`: must be `transition`.
 - `transition_to`: target node name to move to.
 
@@ -99,7 +99,7 @@ Example:
 ### `http`
 
 - `name`: unique function name in the node.
-- `description`: what the endpoint does and when to call it.
+- `description`: instruction shown to the LLM that explains what the endpoint does and when to call it.
 - `type`: must be `http`.
 - `endpoint_id`: ID of a saved HTTP endpoint in your account.
 
@@ -119,7 +119,7 @@ Example:
 ### `rag`
 
 - `name`: unique function name in the node.
-- `description`: what knowledge this tool retrieves.
+- `description`: instruction shown to the LLM that explains what knowledge this tool retrieves and when to use it.
 - `type`: must be `rag`.
 - `corpus_id`: knowledge base (corpus) ID to query.
 
@@ -139,7 +139,7 @@ Example:
 ### `vision`
 
 - `name`: unique function name in the node.
-- `description`: when the assistant should inspect user video/screen context.
+- `description`: instruction shown to the LLM that explains when to inspect user video or screen context.
 - `type`: must be `vision`.
 
 Example:
@@ -216,13 +216,6 @@ Actions can be used in both `pre_actions` and `post_actions`.
 - Endpoint `headers` and `body` must be JSON objects with string values.
 - Secret variables are not allowed in endpoint body templates (put secrets in headers).
 - Action endpoint templates cannot use `llm` variables.
-
-### Editor guardrails
-
-- Duplicate function names in the same node are blocked.
-- Duplicate HTTP actions in one list are blocked.
-- Duplicate `end_conversation` actions in one list are blocked.
-- The initial node cannot be deleted.
 
 ## Example scenarios
 
