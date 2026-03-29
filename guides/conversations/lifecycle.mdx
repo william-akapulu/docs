@@ -86,6 +86,10 @@ Your application experience is the interaction between these two participants in
    - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`.
    - Once ready, transition your UI from loading state to live in-call state.
 
+### Pre-join timeout behavior
+
+If no user participant joins the Daily room shortly after connect(45 seconds), Akapulu automatically ends the session to avoid leaving an abandoned bot process running.
+
 ## Understand Usage and Concurrency Limits
 
 Conversation capacity is controlled by your current [plan](https://akapulu.com/pricing). Before a session starts, Akapulu validates usage and concurrency limits for the API key owner.
