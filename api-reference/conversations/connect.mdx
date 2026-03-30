@@ -24,7 +24,12 @@ Optional request fields include:
 - `runtime_vars` for template/runtime values
 - `stt_keywords` are optional keywords used in the speech-to-text step of the pipeline to improve recognition of specific words in user speech (maximum 5)
 - `voice_only_mode` for audio-only calls
-- `custom_rtvi_connection` when your frontend uses a custom RTVI connection
+- `record_conversation` whether to record this conversation session (default `false`)
+- `wait_for_client_ready` controls when the session is marked ready to begin (default `true`)
+  - when `true`, Akapulu waits until your embedded client has fully connected before marking the call ready and starting the conversation flow
+  - when `false`, Akapulu skips that client-ready wait and proceeds once call participants are ready
+  - use `true` for embedded SDK/client integrations (recommended)
+  - use `false` for Daily prebuilt UI
 
 Example request body:
 
@@ -37,6 +42,7 @@ Example request body:
   },
   "stt_keywords": ["Akapulu", "Dr. Nguyen", "A1C"],
   "voice_only_mode": false,
-  "custom_rtvi_connection": false
+  "record_conversation": true,
+  "wait_for_client_ready": true
 }
 ```
