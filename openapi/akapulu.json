@@ -43,7 +43,8 @@
                       "Alex",
                       "Acme"
                     ],
-                    "voice_only_mode": false
+                    "record_conversation": false,
+                    "wait_for_client_ready": true
                   }
                 }
               }
@@ -222,6 +223,181 @@
           }
         }
       }
+    },
+    "/conversations/{conversation_session_id}": {
+      "get": {
+        "summary": "Get conversation detail",
+        "description": "Fetch conversation metadata, recording status, avatar info, and transcript rows for a conversation session.",
+        "parameters": [
+          {
+            "name": "conversation_session_id",
+            "in": "path",
+            "required": true,
+            "description": "Conversation session ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation detail fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetailResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d",
+                      "created_at": "2026-03-10T18:10:02.221Z",
+                      "created_at_text": "Mar 10, 2026 06:10 PM",
+                      "duration_text": "4 minutes",
+                      "avatar": {
+                        "id": "66666666-7777-8888-9999-000000000000",
+                        "href": "/catalog/66666666-7777-8888-9999-000000000000/",
+                        "profile_image_url": "https://signed-avatar-image-url"
+                      },
+                      "scenario_id": "11111111-2222-3333-4444-555555555555",
+                      "recording": {
+                        "has_recording": true,
+                        "status_text": "Recording ready",
+                        "is_ready": true
+                      },
+                      "transcript_rows": [
+                        {
+                          "role": "user",
+                          "content": "Hi, I want to learn more about Akapulu.",
+                          "node_id": "Greeting"
+                        },
+                        {
+                          "role": "assistant",
+                          "content": "Absolutely. What are you hoping to build?",
+                          "node_id": "Greeting"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation session not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_session": {
+                    "value": {
+                      "error": "ConversationSession not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/conversations/{conversation_session_id}/recording": {
+      "get": {
+        "summary": "Get conversation recording",
+        "description": "Redirect to a signed recording download URL when the recording is ready.",
+        "parameters": [
+          {
+            "name": "conversation_session_id",
+            "in": "path",
+            "required": true,
+            "description": "Conversation session ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the recording download URL",
+            "headers": {
+              "Location": {
+                "description": "Signed recording download URL.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation session or recording not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_session": {
+                    "value": {
+                      "error": "ConversationSession not found"
+                    }
+                  },
+                  "recording_not_started": {
+                    "value": {
+                      "error": "Recording not started"
+                    }
+                  },
+                  "recording_unavailable": {
+                    "value": {
+                      "error": "Recording unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Recording is still processing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "recording_processing": {
+                    "value": {
+                      "error": "Recording processing"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -249,22 +425,30 @@
             "additionalProperties": true
           },
           "stt_keywords": {
-            "type": "array",
             "description": "Optional keywords used in the speech-to-text step of the pipeline to improve recognition of specific words in user speech (maximum 5).",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 5
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 5
+              },
+              {
+                "type": "string",
+                "description": "Comma-separated keyword string."
+              }
+            ]
           },
-          "voice_only_mode": {
+          "record_conversation": {
             "type": "boolean",
             "default": false,
-            "description": "If true, run the conversation in audio-only mode."
+            "description": "If true, enable recording for this conversation session."
           },
-          "custom_rtvi_connection": {
+          "wait_for_client_ready": {
             "type": "boolean",
-            "default": false,
-            "description": "If true, requires RTVI client readiness before call-ready state."
+            "default": true,
+            "description": "If true, wait for explicit frontend client readiness before marking the call ready."
           }
         }
       },
@@ -315,6 +499,122 @@
           "latest_update_text": {
             "type": "string",
             "description": "Human-readable latest status text."
+          }
+        }
+      },
+      "ConversationAvatarSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "href",
+          "profile_image_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Avatar ID as text."
+          },
+          "href": {
+            "type": "string",
+            "description": "Relative app URL for the avatar or catalog detail page."
+          },
+          "profile_image_url": {
+            "type": "string",
+            "description": "Signed profile image URL if available, otherwise an empty string."
+          }
+        }
+      },
+      "ConversationRecordingStatus": {
+        "type": "object",
+        "required": [
+          "has_recording",
+          "status_text",
+          "is_ready"
+        ],
+        "properties": {
+          "has_recording": {
+            "type": "boolean"
+          },
+          "status_text": {
+            "type": "string"
+          },
+          "is_ready": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ConversationTranscriptRow": {
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "tool_call_id": {
+            "type": "string"
+          },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "node_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ConversationDetailResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "created_at_text",
+          "duration_text",
+          "avatar",
+          "scenario_id",
+          "recording",
+          "transcript_rows"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "ISO-8601 creation timestamp."
+          },
+          "created_at_text": {
+            "type": "string",
+            "description": "Human-readable local creation timestamp."
+          },
+          "duration_text": {
+            "type": "string",
+            "description": "Human-readable conversation duration."
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/ConversationAvatarSummary"
+          },
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recording": {
+            "$ref": "#/components/schemas/ConversationRecordingStatus"
+          },
+          "transcript_rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationTranscriptRow"
+            }
           }
         }
       },

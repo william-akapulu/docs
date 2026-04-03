@@ -54,7 +54,7 @@ Your endpoint URL must point to a running HTTP server route that can accept requ
 }
 ```
    - Note: You can use template variables in headers and body. Learn more in [Templates and Variables](/guides/endpoints/templates-and-variables).
-   - Note: Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request bodies, `role_messages`, or `task_messages`.
+   - Note: Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request bodies, `role_instruction`, or `task_instruction`.
 5. Save the endpoint and copy its endpoint ID from the details view.
 6. Attach the endpoint to your scenario using one of these methods:
 
@@ -64,11 +64,9 @@ Use your endpoint ID in node JSON:
 
 In `nodes_json`, endpoint references live inside each node object under:
 
-- `functions[].function.endpoint_id` for HTTP tools
-- `pre_actions[].endpoint_id` for node-entry calls
-- `post_actions[].endpoint_id` for post-utterance calls
+- `functions[].endpoint_id` for HTTP tools
 
-For HTTP tools, `functions[].function.name` is the tool-call name presented to the LLM. Use clear action names like `book_appointment`, `create_lead`, or `lookup_order`.
+For HTTP tools, `functions[].name` is the tool-call name presented to the LLM. Use clear action names like `book_appointment`, `create_lead`, or `lookup_order`.
 
 Example shape inside `nodes` json:
 ```json
@@ -77,25 +75,13 @@ Example shape inside `nodes` json:
     "<node_name>": {
       "functions": [
         {
-          "function": {
-            "type": "http",
-            "name": "function_name",
-            "endpoint_id": "<YOUR_ENDPOINT_ID>"
-          }
+          "type": "http",
+          "name": "function_name",
+          "description": "Describe when the assistant should call this endpoint.",
+          "endpoint_id": "<YOUR_ENDPOINT_ID>"
         }
       ],
-      "pre_actions": [
-        { "type": "http", "endpoint_id": "<YOUR_ENDPOINT_ID>" }
-      ],
-      "post_actions": [
-        { "type": "http", "endpoint_id": "<YOUR_ENDPOINT_ID>" }
-      ],
-      "task_messages": [
-        {
-          "role": "system",
-          "content": "<TASK_MESSAGE_PLACEHOLDER>"
-        }
-      ]
+      "task_instruction": "<TASK_INSTRUCTION_PLACEHOLDER>"
     }
   }
 }
@@ -104,25 +90,8 @@ Example shape inside `nodes` json:
 - **HTTP function tool** (model-invoked):
 ```json
 {
-  "function": {
-    "name": "<function_name>",
-    "type": "http",
-    "endpoint_id": "<YOUR_ENDPOINT_ID>"
-  }
-}
-```
-
-- **Pre action** (runs on node entry):
-```json
-{
-  "type": "http",
-  "endpoint_id": "<YOUR_ENDPOINT_ID>"
-}
-```
-
-- **Post action** (runs after bot's first utterance in that node):
-```json
-{
+  "name": "<function_name>",
+  "description": "Describe when the assistant should call this endpoint.",
   "type": "http",
   "endpoint_id": "<YOUR_ENDPOINT_ID>"
 }
@@ -142,32 +111,9 @@ Use this when you want the model to decide when to call the endpoint during a no
 
 This attaches an HTTP endpoint as a **function tool** the LLM can call within that node.
 
-![Attach HTTP endpoint as function tool in scenario UI (2x speed)](/images/guides/tools/endpoints/create-endpoint/attach-http-function-ui.gif)
-
-*Shown at 2x speed.*
-
-#### Pre-actions and post-actions
-
-Use this when you want automatic endpoint calls tied to node lifecycle:
-
-- open your scenario and go to the target node
-- click **Add pre action** or **Add post action**
-- keep the **HTTP Endpoints** tab selected in the modal
-- select your endpoint
-
-<Note>
-HTTP endpoints attached as `pre_actions` or `post_actions` are not presented to the LLM as tool calls. They run automatically, so they cannot use `{{llm.*}}` variables.
-</Note>
-
-![Attach HTTP endpoint as pre/post action in scenario UI (1.5x speed)](/images/guides/tools/endpoints/create-endpoint/attach-http-action-2.gif)
-
-*Shown at 1.5x speed.*
-
 ## Endpoint behavior in conversation flow
 
 - **HTTP function tools (`type: "http"`)** are invoked by the model during node execution.
-- **`pre_actions`** run automatically on node entry.
-- **`post_actions`** run automatically after the bot finishes its first utterance in the node.
 - Endpoints are scoped per user and can be reused across multiple scenarios.
 
 ## Next step

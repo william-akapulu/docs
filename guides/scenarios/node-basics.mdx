@@ -5,27 +5,6 @@ description: "Node structure, transitions, tools, and variables."
 
 You can edit nodes in either the visual node editor or the JSON editor. To create a node in the visual editor, click **Add Node** in the lower-left corner.
 
-<style>{`
-  img,
-  picture img,
-  figure img {
-    border-radius: 12px !important;
-    border: 1px solid var(--border-subtle);
-  }
-`}</style>
-
-<div style={{ textAlign: "center", margin: "12px 0 20px" }}>
-  <img
-    src="/images/guides/scenarios/Node_Basics/Add Node.png"
-    alt="Add Node button in the scenario editor"
-    style={{
-      width: "100%",
-      borderRadius: "12px",
-      border: "1px solid var(--border-subtle)"
-    }}
-  />
-</div>
-
 ## Name
 
 Each node name must be unique within the scenario.
@@ -58,160 +37,61 @@ The first node you create becomes the start node by default. A scenario has one 
 
 Edit the node title directly to rename it.
 
-![Name field in editor](/images/guides/scenarios/Node_Basics/Name.png)
-
 To set any node as the start node (other than the first one created), click the **3 dots** in the top-right of that node, then click **Set as start node**.
 
-## Role message
+## Global role instruction
 
-Role messages define the assistant's identity and behavior rules, such as tone, boundaries, and style.
+Scenarios use one global `role_instruction` at the top level
 
-Role messages are optional. When present, they are appended to context first when entering a node.
+Use `role_instruction` for long-lived identity, tone, boundaries, and behavior that should apply across the full conversation.
 
 **JSON**
 
 ```json
 {
+  "initial_node": "Greeting",
+  "role_instruction": "You are a friendly Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "Greeting": {
-      "role_messages": [
-        {
-          "role": "system",
-          "content": "You are a helpful Akapulu assistant."
-        }
-      ],
       ...
-    },
-    ...
+    }
   }
 }
 ```
 
-**UI**
+## Task instruction
 
-Add or edit the role message in the node card.
+`task_instruction` defines what the assistant should do in the current node.
 
-![Role message field in node editor](/images/guides/scenarios/Node_Basics/Role%20Message.png)
-
-## Task message
-
-Task messages define what the assistant should do in the current node right now.
-
-Task messages are required. Each node must include at least one non-empty task message.
-
-When entering a node, task messages are appended after role messages (if role messages exist).
+Each node must include one non-empty `task_instruction`.
 
 Recommended pattern:
-- Put long-lived persona and behavior rules in the **start node** role message.
-- Use task messages in each node for stage-specific goals and instructions.
-- Add role messages in later nodes only when you intentionally want to shift persona or policy for that stage.
+- Put long-lived persona and behavior rules in the global `role_instruction`
+- Use `task_instruction` in each node for node-specific goals and instructions
 
 **JSON**
 
 ```json
 {
+  "role_instruction": "You are a friendly Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "Greeting": {
-      "role_messages": [
-        {
-          "role": "system",
-          "content": "You are a friendly Akapulu onboarding assistant."
-        }
-      ],
-      "task_messages": [
-        {
-          "role": "system",
-          "content": "Greet the user and gather what they want to build."
-        }
-      ],
+      "task_instruction": "Greet the user and gather what they want to build.",
       ...
     },
-    "Planning Phase": {
-      "task_messages": [
-        {
-          "role": "system",
-          "content": "Help the user plan their project based on gathered requirements."
-        }
-      ],
+    "Planning": {
+      "task_instruction": "Help the user plan their project based on gathered requirements.",
       ...
-    },
-    ...
+    }
   }
 }
 ```
 
 **UI**
 
-Add or edit the task message in the node card.
+The node name is the large header input at the top of the node card.
 
-![Task message field in node editor](/images/guides/scenarios/Node_Basics/Task%20Message.png)
-
-## Pre actions
-
-Pre actions run when the node is entered, before the assistant response for that node.
-
-Allowed pre action types:
-- `http`
-- `end_conversation`
-
-If the type is `http`, the action must include `endpoint_id`.
-
-**JSON**
-
-```json
-{
-  "nodes": {
-    "Greeting": {
-      "pre_actions": [
-        {
-          "type": "http",
-          "endpoint_id": "<HTTP_ENDPOINT_ID>"
-        }
-      ],
-      ...
-    },
-    ...
-  }
-}
-```
-
-**UI**
-
-Click **Add action** to bring up the action modal. Then choose the action type (for example, `http`) and configure it.
-
-![Add action button and action modal](/images/guides/scenarios/Node_Basics/Action%20pop%20up.png)
-
-## Post actions
-
-Post actions are deferred until after the bot finishes its first spoken response in that node.
-
-Allowed post action types:
-- `http`
-- `end_conversation`
-
-If the type is `http`, the action must include `endpoint_id`.
-
-**JSON**
-
-```json
-{
-  "nodes": {
-    "Greeting": {
-      "post_actions": [
-        {
-          "type": "end_conversation"
-        }
-      ],
-      ...
-    },
-    ...
-  }
-}
-```
-
-**UI**
-
-Click **Add action** to bring up the action modal, then configure the post action for this node.
+The task instruction is the text input on the node labeled **Task Input**.
 
 ## Functions
 
@@ -231,7 +111,7 @@ Function rules:
 Type-specific requirements:
 - `transition` requires `transition_to`
 - `http` requires `endpoint_id`
-- `rag` requires `corpus_id`
+- `rag` requires `knowledge_base_id`
 - `vision` has no additional required ID field
 
 **JSON**
@@ -242,46 +122,33 @@ Type-specific requirements:
     "Greeting": {
       "functions": [
         {
-          "function": {
-            "name": "transition_to_planning_phase",
-            "description": "Once project scope is clear, move to planning phase.",
-            "type": "transition",
-            "transition_to": "Planning Phase"
-          }
+          "name": "transition_to_planning_phase",
+          "description": "Once project scope is clear, move to planning phase.",
+          "type": "transition",
+          "transition_to": "Planning Phase"
         },
         {
-          "function": {
-            "name": "Akapulu_RAG",
-            "description": "Access information on the Akapulu platform.",
-            "type": "rag",
-            "corpus_id": "<KNOWLEDGE_BASE_ID>"
-          }
+          "name": "Akapulu_RAG",
+          "description": "Access information on the Akapulu platform.",
+          "type": "rag",
+          "knowledge_base_id": "<KNOWLEDGE_BASE_ID>"
         }
       ],
       ...
     },
     "Planning Phase": {
-      "task_messages": [
-        {
-          "role": "system",
-          "content": "Help the user plan their project on Akapulu."
-        }
-      ],
+      "task_instruction": "Help the user plan their project on Akapulu.",
       "functions": [
         {
-          "function": {
-            "name": "create_project_brief",
-            "description": "Create a project brief in your external planning system.",
-            "type": "http",
-            "endpoint_id": "<HTTP_ENDPOINT_ID>"
-          }
+          "name": "create_project_brief",
+          "description": "Create a project brief in your external planning system.",
+          "type": "http",
+          "endpoint_id": "<HTTP_ENDPOINT_ID>"
         },
         {
-          "function": {
-            "name": "inspect_user_whiteboard",
-            "description": "Analyze a camera frame when the user shares a whiteboard or sketch.",
-            "type": "vision"
-          }
+          "name": "inspect_user_whiteboard",
+          "description": "Analyze a camera frame when the user shares a whiteboard or sketch.",
+          "type": "vision"
         }
       ],
       ...
@@ -293,23 +160,31 @@ Type-specific requirements:
 
 **UI**
 
-Click **Add function** to bring up the function modal, then choose the function type:
+Click **Add function** on the node to open the function modal, then choose the function type:
 
-- [`transitions`](/guides/tools/transition-tools)
+- [`transition`](/guides/tools/transition-tools)
+- [`rag`](/guides/knowledge-bases/overview)
+- [`vision`](/guides/vision/vision-tool-overview)
+- [`http`](/guides/endpoints/create-endpoint)
 
-![Transition tool in function modal](/images/guides/scenarios/Node_Basics/TransitionTool.png)
+In the modal:
 
-- [`RAG tool`](/guides/knowledge-bases/overview)
+- enter a function `name`
+- enter a function `description`
+- set any type-specific fields such as `endpoint_id`, or `knowledge_base_id`
 
-![RAG tool in function modal](/images/guides/scenarios/Node_Basics/RAGTool.png)
+To set `transition_to` in the UI for any function, drag the probe on the right side of the function to the desired node.
 
-- [`Vision tool`](/guides/vision/vision-tool-overview)
+Function name requirements:
 
-![Vision tool in function modal](/images/guides/scenarios/Node_Basics/VisionTool.png)
+- it must be unique within the node
+- it can only use letters, numbers, underscores, and hyphens
+- it should be short and action-oriented so the model can understand when to call it
 
-- [`HTTP Endpoint`](/guides/endpoints/create-endpoint)
+Function description guidance:
 
-![HTTP endpoint selection for function calls](/images/guides/scenarios/Node_Basics/HTTPEndpoint.png)
+- this is the instruction shown to the model for when and why to call the tool
+- be explicit about the trigger, expected use, and what the tool does
 
 ## Respond immediately
 
@@ -336,4 +211,23 @@ Click **Add function** to bring up the function modal, then choose the function 
 
 Open the **Advanced Settings** dropdown, then toggle **Respond Immediately** on or off.
 
-![Respond Immediately toggle in Advanced Settings](/images/guides/scenarios/Node_Basics/RespondImmediately.png)
+## End after bot response
+
+`end_after_bot_response` controls whether the conversation ends after the bot finishes its first utterance in that node.
+
+Use this for terminal nodes like wrap-up, goodbye, or confirmation nodes where the assistant should speak once and then end the conversation.
+
+When `end_after_bot_response` is `true`, interruptions are disabled for that node so the bot can finish its closing response before the conversation ends.
+
+**JSON**
+
+```json
+{
+  "nodes": {
+    "End": {
+      "task_instruction": "Thank the user, summarize next steps briefly, and end the conversation.",
+      "end_after_bot_response": true
+    }
+  }
+}
+```

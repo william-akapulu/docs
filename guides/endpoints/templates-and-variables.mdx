@@ -35,7 +35,7 @@ Use this for sensitive values such as API keys, tokens, and tenant secrets.
 `secret` variables must be created in [akapulu.com/secrets](https://akapulu.com/secrets).
 
 <Note>
-Secret variables are allowed only in endpoint headers (function tools and `pre_actions`/`post_actions`). Secret variables are not allowed in request body fields, `role_messages`, or `task_messages`. In custom UI implementations, HTTP tool-call activity is emitted to the frontend via RTVI server-message events and includes the full request body payload. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
+Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request body fields, `role_instruction`, or `task_instruction`. Keep secrets out of request bodies because tool-call payloads may be exposed to your frontend experience.
 </Note>
 
 Examples:
@@ -102,21 +102,13 @@ Examples:
 }
 ```
 
-## Function tools vs pre/post actions
+## Function tools
 
-`{{llm.*}}` variables are only supported for HTTP endpoints configured as function tools. They are not supported in HTTP endpoints configured as pre_actions or post_actions, because those endpoints run automatically without an LLM tool call.
+`{{llm.*}}` variables are supported for HTTP endpoints configured as function tools because the model fills them at tool-call time.
 
 ### Function tools (LLM-available)
 
 The LLM can call these tools and fill `{{llm.*}}` variables.
-
-<img src="/images/guides/tools/endpoints/templates-and-variables/Akapulu%20syntax%20functions.png" alt="Akapulu syntax for functions" style={{ borderRadius: 12 }} />
-
-### Pre-actions and post-actions (automatic)
-
-These run automatically on node lifecycle and are not called by the LLM.
-
-<img src="/images/guides/tools/endpoints/templates-and-variables/akapulu%20syntax%20pre%20post%20action.png" alt="Akapulu syntax for pre/post actions" style={{ borderRadius: 12 }} />
 
 ## Mixed example
 

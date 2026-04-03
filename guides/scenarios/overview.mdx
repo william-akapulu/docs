@@ -7,8 +7,8 @@ Scenarios are how you control assistant behavior in Akapulu.
 
 When you start a conversation, the scenario provides:
 
-- global role context
-- node-specific stage instructions
+- a global `role_instruction`
+- node-specific `task_instruction` prompts
 - tool access (transitions, HTTP tools, RAG, vision)
 - flow logic for how the conversation moves between stages
 
@@ -94,21 +94,17 @@ The model can move between nodes using transition tools.
 
 Akapulu provides a drag-and-drop UI for building and connecting nodes.
 
-<img
-  src="/images/guides/getting-started/How-akapulu-works/node-diagram/2-nodes.png"
-  alt="Node builder view showing connected nodes and tools"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
 
-## Role messages, task messages, and context management
+## Role instruction, task instruction, and context management
 
-Akapulu builds llm context as the conversation progresses:
+Akapulu builds LLM context as the conversation progresses:
 
-1. It starts with the start node's **role message** and **task message**.
-2. It appends each **user** and **assistant** message turn.
-3. On node transition, it appends the new node's **role message** and **task message**.
+1. It starts with the scenario's global **`role_instruction`**.
+2. It appends the current node's **`task_instruction`**.
+3. It appends each **user** and **assistant** turn.
+4. On node transition, it appends the new node's **`task_instruction`**.
 
-We recommend defining your overall assistant persona in the start node's **role message**, and use each node's **task message** for stage-specific behavior.
+We recommend defining your overall assistant persona in **`role_instruction`**, then using each node's **`task_instruction`** for node-specific behavior.
 
 ## Create scenario walkthrough
 
@@ -116,52 +112,32 @@ We recommend defining your overall assistant persona in the start node's **role 
 
 1. Go to the [Scenarios page](https://akapulu.com/scenarios).
 2. Click **New**.
-3. Click **Add Node** to create your first node.
-4. Enter a node name (for example, `Greeting`).
-5. Add a **role message**.
-   - Example: `You are an onboarding assistant for Akapulu.`
-6. Add a **task message**.
+3. Enter the scenario name.
+4. Open the hamburger icon in the left-side nav, then edit the global **role instruction** in the text area.
+   - Example: `You are an onboarding assistant for Akapulu. Keep responses concise because they will be converted to audio.`
+5. Click **Add Node** to create your first node.
+6. Enter a node name (for example, `Greeting`).
+7. Add a node **task instruction**.
    - Example: `Greet the user, ask what they want to build, and keep your response concise.`
 
 <Note>
 The first node you create is the default **start node**. Each scenario has exactly **one** start node.
 </Note>
 
-For a full beginner flow, see the [Simple Assistant example](/examples/basic/simple-assistant).
-
-<img
-  src="/images/guides/scenarios/overview/Create%20Scenario-2x.gif"
-  alt="Scenario creation flow"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
-
-*Shown at 1.5x speed.*
-
 ## Edit an existing scenario
 
 ### Add another node
 
-1. Go to the [Scenarios](https://akapulu.com/scenarios) table.
-2. Click your target scenario.
-3. Click **Edit** in the bottom-left corner to enter edit mode.
-4. Click **Add Node**.
-5. Enter a node name:
+1. Click **Add Node**.
+2. Enter a node name:
    - `Planning Phase`
-6. Add a task message:
+3. Add a task instruction:
 
 ```text
 Help the user plan their project on the Akapulu platform
 
 Use your Akapulu RAG tool to get information on how Akapulu works
 ```
-
-<img
-  src="/images/guides/scenarios/overview/Editing-Scenadio-2x.gif"
-  alt="Editing a scenario in edit mode"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
-
-*Shown at 1.5x speed.*
 
 ## Add tools and transitions
 
@@ -172,70 +148,55 @@ You can add tools directly to each node.
 1. Create a **[Knowledge Base](/guides/knowledge-bases/overview)**.
 2. Open the node you want to update.
 3. Click **+ Add function** at the bottom of the node.
-
-<img
-  src="/images/guides/scenarios/overview/Add%20function.png"
-  alt="Add function in the Planning Phase node"
-  style={{ width: 280, maxWidth: "100%", borderRadius: 10, margin: "8px auto", display: "block" }}
-/>
-
 4. In the pop up modal, open the **RAG Tool** tab.
-
-<img
-  src="/images/guides/scenarios/overview/RAG%20tool%20tab.png"
-  alt="RAG Tool tab in the pop up modal"
-  style={{ width: 280, maxWidth: "100%", borderRadius: 10, margin: "8px auto", display: "block" }}
-/>
-
-<Note>
-Throughout the Akapulu platform and docs, the terms **corpus** and **knowledge base** are used interchangeably.
-</Note>
-
 5. Select your desired knowledge base, then create the RAG function with:
    - **Name:** `Akapulu_RAG`
    - **Description:** `Access information on the Akapulu platform`
 6. In the `Greeting` node, click **+ Add function**.
 7. In the pop up modal, open the **Transition Tool** tab.
-
-<img
-  src="/images/guides/scenarios/overview/Transition%20tool.png"
-  alt="Transition Tool tab in the pop up modal"
-  style={{ width: 280, maxWidth: "100%", borderRadius: 10, margin: "8px auto", display: "block" }}
-/>
-
 8. Create a transition function with:
    - **Name:** `transition_to_planning_phase`
    - **Description:** `Once you have gathered enough information on what the user wants to build with Akapulu, use this tool to transition to the planning phase`
 9. Drag the probe on the right side of `transition_to_planning_phase` to the `Planning Phase` node to set the transition target.
 
-<img
-  src="/images/guides/scenarios/overview/Drag%20Probe.png"
-  alt="Drag the transition probe to the target node"
-  style={{ width: 280, maxWidth: "100%", borderRadius: 10, margin: "8px auto", display: "block" }}
-/>
-
-
-See gif below
-
-<img
-  src="/images/guides/scenarios/overview/Adding-Tools-To-Node-2x.gif"
-  alt="Adding tools to a scenario node"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
-
-*Shown at 1.5x speed.*
-
 ## Completed scenario example
 
 You have now built a simple scenario.
 
-<img
-  src="/images/guides/scenarios/overview/Scenario%20Overview.png"
-  alt="Scenario Overview"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
-
 This scenario starts in `Greeting`, where the assistant asks open-ended questions about what the user wants to build with Akapulu. Once project scope is clear, it calls `transition_to_planning_phase` and moves into `Planning Phase`, where `Akapulu_RAG` is available to pull platform information and help shape the user’s plan.
+
+If you want to view or edit this scenario as JSON, use the scenario editor toggle in the top-right corner to switch between visual mode and JSON mode.
+
+```json
+{
+  "initial_node": "Greeting",
+  "role_instruction": "You are a helpful Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
+  "nodes": {
+    "Greeting": {
+      "task_instruction": "Ask open-ended questions to understand what the user wants to build with Akapulu. Once project scope is clear, use the transition tool to move to planning.",
+      "functions": [
+        {
+          "name": "transition_to_planning_phase",
+          "description": "Once you have gathered enough information on what the user wants to build with Akapulu, use this tool to transition to the planning phase",
+          "type": "transition",
+          "transition_to": "Planning Phase"
+        }
+      ]
+    },
+    "Planning Phase": {
+      "task_instruction": "Help the user plan their project on the Akapulu platform. Use the knowledge base tool when you need platform information.",
+      "functions": [
+        {
+          "name": "Akapulu_RAG",
+          "description": "Access information on the Akapulu platform",
+          "type": "rag",
+          "knowledge_base_id": "<KNOWLEDGE_BASE_ID>"
+        }
+      ]
+    }
+  }
+}
+```
 
 ## Next scenario guides
 

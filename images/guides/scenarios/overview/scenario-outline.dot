@@ -22,10 +22,10 @@ digraph ScenarioOutline {
     arrowsize=0.8
   ];
 
-  role_message [
+  role_instruction [
     label=<
       <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="16"><B>Role message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="16"><B>Role instruction</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="13">You are an onboarding assistant for Akapulu.</FONT></TD></TR>
       </TABLE>
     >,
@@ -39,7 +39,7 @@ digraph ScenarioOutline {
     label=<
       <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
         <TR><TD ALIGN="LEFT"><FONT COLOR="#86efac" POINT-SIZE="16"><B>Greeting</B></FONT></TD></TR>
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#6ee7b7" POINT-SIZE="11"><B>Task message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#6ee7b7" POINT-SIZE="11"><B>Task instruction</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">Greet the user and ask open-ended questions</FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">about what they want to build with Akapulu.</FONT></TD></TR>
       </TABLE>
@@ -53,7 +53,7 @@ digraph ScenarioOutline {
     label=<
       <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
         <TR><TD ALIGN="LEFT"><FONT COLOR="#93c5fd" POINT-SIZE="16"><B>Planning Phase</B></FONT></TD></TR>
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#60a5fa" POINT-SIZE="11"><B>Task message</B></FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#60a5fa" POINT-SIZE="11"><B>Task instruction</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Help the user plan their project on the Akapulu platform.</FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Use Akapulu_RAG to gather platform context.</FONT></TD></TR>
       </TABLE>

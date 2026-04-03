@@ -11,7 +11,20 @@ We recommend polling every 0.5 seconds and showing a loading state until `call_i
 
 ## Response behavior
 
-- `latest_update_text` is a description of the current conversation state and updates as setup/runtime state changes.
-- `completion_percent` is a progress indicator for setup/readiness (0-100).
-- `call_is_ready` is the boolean gate for entering the live experience.
+- `conversation_session_id` is the conversation session being tracked.
+- `latest_update_text` is the latest human-readable setup status.
+- `completion_percent` is a progress indicator for setup/readiness from `0` to `100`.
+- `call_is_ready` becomes `true` when the bot and participant are ready.
+- when `call_is_ready` is `true`, `completion_percent` is returned as `100`
+
+Example response:
+
+```json
+{
+  "conversation_session_id": "7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d",
+  "call_is_ready": false,
+  "completion_percent": 64,
+  "latest_update_text": "bot joined daily room"
+}
+```
 

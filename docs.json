@@ -83,7 +83,29 @@
             "group": "Conversations",
             "pages": [
               "api-reference/conversations/connect",
-              "api-reference/conversations/updates"
+              "api-reference/conversations/updates",
+              "api-reference/conversations/detail",
+              "api-reference/conversations/recording"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Web SDK",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "web-sdk/overview"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "web-sdk/callbacks-and-events",
+              "web-sdk/server-sdk",
+              "web-sdk/react-sdk",
+              "web-sdk/react-ui"
             ]
           }
         ]
@@ -100,8 +122,8 @@
           {
             "group": "Basic",
             "pages": [
-              "examples/basic/simple-assistant",
-              "examples/basic/custom-rtvi-ui"
+              "examples/basic/next-react-ui-demo",
+              "examples/basic/next-react-custom-ui-demo"
             ]
           },
           {

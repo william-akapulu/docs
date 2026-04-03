@@ -6,10 +6,6 @@ description: "What knowledge bases are, how to create them, and how to attach th
 Knowledge bases let your scenario retrieve facts from your documents during a live conversation.
 Use them when your assistant should answer with domain-specific information instead of relying only on general model knowledge.
 
-<Note>
-Throughout the Akapulu platform and docs, the terms **corpus** and **knowledge base** are used interchangeably.
-</Note>
-
 ## Overview of knowledge bases
 
 A knowledge base contains:
@@ -40,18 +36,16 @@ After upload, Akapulu creates searchable vector chunks from the document so the 
 
 ### Attach via JSON
 
-Attach the knowledge base in your scenario by adding a function with `type: "rag"` and the target `corpus_id`:
+Attach the knowledge base in your scenario by adding a function with `type: "rag"` and the target `knowledge_base_id`:
 
 The function `name` and `description` are presented to the LLM as tool metadata, so use clear action-oriented wording.
 
 ```json
 {
-  "function": {
-    "name": "<knowledge_base_name>",
-    "description": "<description>",
-    "type": "rag",
-    "corpus_id": "<KNOWLEDGE_BASE_ID>"
-  }
+  "name": "<knowledge_base_name>",
+  "description": "<description>",
+  "type": "rag",
+  "knowledge_base_id": "<KNOWLEDGE_BASE_ID>"
 }
 ```
 
@@ -59,12 +53,10 @@ For example:
 
 ```json
 {
-  "function": {
-    "name": "lookup_insurance_policy",
-    "description": "Search the insurance policy knowledge base for coverage details and return relevant excerpts.",
-    "type": "rag",
-    "corpus_id": "9a7d5d72-4f31-4b9b-8b7a-f3091da2ab6d"
-  }
+  "name": "lookup_insurance_policy",
+  "description": "Search the insurance policy knowledge base for coverage details and return relevant excerpts.",
+  "type": "rag",
+  "knowledge_base_id": "9a7d5d72-4f31-4b9b-8b7a-f3091da2ab6d"
 }
 ```
 
@@ -79,10 +71,6 @@ Use the scenario builder when you want to attach a knowledge base without editin
 5. Enter a semantically meaningful function name and description.
 
 The function name and description are shown to the LLM as tool metadata, so they should clearly describe when the tool should be called.
-
-![Attach a knowledge base as a RAG tool (1.5x speed)](/images/guides/tools/knowledge-base/overview/RAG%20tool%20demo.gif)
-
-*Shown at 1.5x speed.*
 
 When this function is included in a node:
 

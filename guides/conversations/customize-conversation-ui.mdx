@@ -5,72 +5,104 @@ description: "Build and tailor your own conversation interface."
 
 ## Build your own conversation interface
 
-In this approach, you build a custom frontend on top of Akapulu using the Pipecat + Daily stack.
+The recommended way to customize the conversation experience is to use the Akapulu Web SDK.
 
-Your UI talks to the live conversation backend through [PipecatClient](https://docs.pipecat.ai/client/js/api-reference/client-constructor), [RTVI callbacks and events](https://docs.pipecat.ai/client/js/api-reference/callbacks), and [Daily transport](https://docs.pipecat.ai/client/js/transports/daily).
+The public Web SDK package family includes:
 
-Live audio and video are carried by [Daily](https://docs.daily.co/get-started), while Pipecat/RTVI drives the app-level conversation state your interface reacts to.
+- `@akapulu/react`
+- `@akapulu/react-ui`
+- `@akapulu/server`
 
-We recommend this approach when you need custom branding, custom layout, custom controls, or product-specific UX around the live conversation.
+You have two main frontend paths:
 
-For a full working implementation, start with the [Custom RTVI UI example](/examples/basic/custom-rtvi-ui).
+- `@akapulu/react-ui` for a prebuilt conversation UI that you can style and customize
+- `@akapulu/react` for a fully custom UI built from Akapulu hooks and primitives
 
-## Using Pipecat and Daily in your custom UI
+Both paths use your own local server routes for `connect` and `updates`, and those server routes call the Akapulu API with `@akapulu/server`.
+
+## Choose a path
+
+### 1) Prebuilt UI with customization
+
+Use this path when you want the fastest integration with room to customize styling, transcript rendering, tool-event rendering, and page behavior.
+
+Start with:
+
+- [Next React UI Demo](/examples/basic/next-react-ui-demo)
+
+That example includes:
+
+- `/` for the baseline prebuilt conversation flow
+- `/customized` for a styled and behavior-customized version of the same flow
+- local server routes under `app/api/default/akapulu/*` and `app/api/customized/akapulu/*`
+
+### 2) Fully custom UI
+
+Use this path when you want to build your own layout, transcript UI, controls, node indicators, and tool event surfaces from scratch.
+
+Start with:
+
+- [Next React Custom UI Demo](/examples/basic/next-react-custom-ui-demo)
+
+That example uses `@akapulu/react` without `@akapulu/react-ui`, and manually renders:
+
+- video tiles
+- loading and connection states
+- transcript rows
+- current node state
+- tool event toasts
+- mic, camera, and end-call controls
+
+## Quickstart with `AkapuluProvider`
+
+`AkapuluProvider` takes paths to your local API routes:
+
+- `connectPath`: your local connect endpoint
+- `updatesPath`: your local updates endpoint
+
+The SDK calls these local routes from the browser. Your server routes then call Akapulu APIs using `@akapulu/server`.
 
 ```tsx
-import { PipecatClient } from "@pipecat-ai/client-js";
-import { DailyTransport } from "@pipecat-ai/daily-transport";
-import { PipecatClientProvider, usePipecatClient } from "@pipecat-ai/client-react";
-import { DailyProvider, useDaily } from "@daily-co/daily-react";
-
-// 1) Create one client + one transport for this page.
-const transport = new DailyTransport();
-const client = new PipecatClient({ transport });
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
 
 export default function ConversationPage() {
   return (
-
-    // 2) Pipecat provider exposes usePipecatClient() to child components.
-    <PipecatClientProvider client={client}>
-
-      {/* 3) Daily provider uses the same transport so both layers share one call. */}
-      <DailyProvider callObject={transport.getCallObject()}>
-    
-        <CustomConversationUI />
-      </DailyProvider>
-    </PipecatClientProvider>
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <AkapuluConversation title="Akapulu demo" />
+    </AkapuluProvider>
   );
-}
-
-function CustomConversationUI() {
-
-  // 4) Access Pipecat client methods/events in your custom UI.
-  const client = usePipecatClient();
-  // 5) Access the Daily call object/state in the same component tree.
-  const daily = useDaily();
-  // Use `client` and `daily` in your own handlers/components from here.
-
 }
 ```
 
-## Conversation lifecycle review
+## Web SDK flow
 
-Your custom UI starts by calling the Akapulu [connect endpoint](/api-reference/conversations/connect), then using the returned `room_url` and `token` to join the Daily call with Pipecat.
+Your frontend talks to your own local server routes.
+
+Those local server routes call the Akapulu [connect endpoint](/api-reference/conversations/connect) and [updates endpoint](/api-reference/conversations/updates) with `@akapulu/server`.
 
 ```mermaid
 flowchart TD
-  USER[User Frontend]
-  AK[Akapulu]
+  USER[Browser UI]
+  APP[Your App Routes]
+  AK[Akapulu API]
   ROOM[Daily Room]
   BOT[Bot]
 
-  USER -->|1: POST /connect/| AK
-  AK -->|2: Create Daily room| ROOM
-  AK -->|3: Return room_url + token| USER
-
-  USER -->|4: User joins call| ROOM
-  AK -->|5: Start bot runtime| BOT
-  BOT -->|6: Bot joins call| ROOM
+  USER -->|1: POST local connect route| APP
+  APP -->|2: POST /conversations/connect| AK
+  AK -->|3: Return room_url + token| APP
+  APP -->|4: Return session credentials| USER
+  USER -->|5: Join call through Web SDK| ROOM
+  AK -->|6: Start bot runtime| BOT
+  BOT -->|7: Bot joins call| ROOM
 
   classDef user fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
   classDef backend fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:2px;
@@ -83,7 +115,6 @@ flowchart TD
   class BOT bot;
 ```
 
-
 ## Who is in the room
 
 Each conversation room has two core participants:
@@ -91,542 +122,698 @@ Each conversation room has two core participants:
 - **Local user participant:** the browser user who joins from your frontend (camera/mic input and local UI controls).
 - **Bot participant:** the Akapulu AI assistant that joins the same room as a remote participant
 
+## Local server routes
 
-The snippet below calls the Akapulu `/conversations/connect/` API:
+Your local `connect` route should:
 
-```ts
-function CustomConversationUI() {
-
-  async function startConversation() {
-    // Akapulu /connect endpoint
-    const response = await fetch("https://akapulu.com/api/conversations/connect/", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        scenario_id: "your-scenario-id",
-        avatar_id: "your-avatar-uuid",
-      }),
-    });
-
-    // Akapulu returns room_url, token, and conversation_session_id
-    const { room_url, token, conversation_session_id } = await response.json();
-  }
-}
-```
-
-On the Akapulu side, this request creates the Daily room and returns the `room_url` and `token` your frontend needs.
-
-<Note>It also returns `conversation_session_id`, which you can use for updates polling and session tracking.</Note>
-
-Then join the call from your frontend with the returned credentials:
+- call `akapulu.connectConversation(...)` with the Akapulu connect schema
+- include fields like `scenario_id`, `avatar_id`, optional `runtime_vars`, optional `stt_keywords`, and optional `record_conversation`
+- return the response fields the SDK needs
 
 ```ts
-function CustomConversationUI() {
-  const client = usePipecatClient();
-
-  async function startConversation() {
-    // room_url + token come from the /connect response.
-    await client.connect({
-      room_url,
-      token,
-    });
-  }
-}
-```
-
-This call is where the user joins the Daily room from your frontend.  
-Akapulu then continues by starting the bot runtime and having the bot join the same room.
-
-## Render the live video call UI
-
-After `client.connect(...)` succeeds, you can render the active call UI using the Daily layer from `useDaily()` and the [DailyVideo](https://docs.daily.co/reference/daily-react/daily-video) component.
-
-```tsx
-import { useDaily, useParticipantIds, DailyVideo } from "@daily-co/daily-react";
-
-function CustomConversationUI() {
-  const daily = useDaily();
-
-  // Get Bot participant id
-  const remoteParticipantIds = useParticipantIds({ filter: "remote" });
-  const botParticipantId = remoteParticipantIds[0];
-
-  // Get local participant Id
-  const localParticipantId = daily?.participants()?.local?.session_id;
-
-  return (
-    <div>
-      {/* Local participant video */}
-      <DailyVideo sessionId={localParticipantId} type="video" />
-
-      {/* Bot/remote participant video */}
-      <DailyVideo sessionId={botParticipantId} type="video" />
-    </div>
-  );
-}
-```
-
-<Note>
-On macOS, [Continuity Camera](https://support.apple.com/en-us/HT213244) can be selected automatically as camera or microphone input. If the iPhone is far away or in a pocket, this can lead to a drop in speech recognition quality. If this happens, you can disconnect Continuity Camera for the session, or disable it on iPhone (**Settings > General > AirPlay & Handoff > Continuity Camera**).
-</Note>
-
-## Built-in RTVI events
-
-Pipecat includes built-in RTVI events you can subscribe to in your UI for conversation behavior.  
-For the full list and payload details, see the [RTVI callbacks and events docs](https://docs.pipecat.ai/client/js/api-reference/callbacks).
-
-Common built-in examples:
-
-- `RTVIEvent.UserTranscript` for user transcript updates.
-- `RTVIEvent.BotTranscript` for assistant transcript updates.
-- `RTVIEvent.UserStartedSpeaking` when the user begins speaking.
-- `RTVIEvent.UserStoppedSpeaking` when the user stops speaking.
-- `RTVIEvent.BotStartedSpeaking` when bot speech starts.
-- `RTVIEvent.BotStoppedSpeaking` when bot speech ends.
-
-## Akapulu custom ServerMessages
-
-Akapulu also sends custom events through `RTVIEvent.ServerMessage` for product-specific UI state and tool activity.
-
-### Flow node changed
-
-- `message.type`: `"flow-node-changed"`
-- `message.node`: current node/stage id in the conversation flow.
-
-
-_Example payload:_
-
-```json
 {
-  "type": "flow-node-changed",
-  "node": "intro"
+  room_url,
+  token,
+  conversation_session_id,
 }
 ```
 
-### Bot speaking state
+Your local `updates` route should:
 
-- `message.type`: `"bot-speaking-state"`
-- `message.state`: bot speaking state (`speaking` or `idle`).
-
-_Example payload:_
-
-```json
-{
-  "type": "bot-speaking-state",
-  "state": "speaking"
-}
-```
-
-### RAG tool event
-
-- `message.type`: `"RAG"`
-- `message.function_name`: RAG tool name.
-- `message.body.query`: query sent to the knowledge base.
-
-_Example payload:_
-
-```json
-{
-  "type": "RAG",
-  "function_name": "search_docs",
-  "body": {
-    "query": "How do I reset a password?"
-  }
-}
-```
-
-### Vision tool event
-
-- `message.type`: `"vision"`
-- `message.function_name`: vision tool name.
-
-_Example payload:_
-
-```json
-{
-  "type": "vision",
-  "function_name": "analyze_camera_frame",
-  "body": {}
-}
-```
-
-### HTTP tool event
-
-- `message.type`: `"http"`
-- `message.function_name`: HTTP tool name.
-- `message.body`: HTTP tool request body payload
-
-<Note>
-Use care with sensitive values in HTTP endpoint templates. The HTTP tool event includes the full request body payload in frontend-visible RTVI messages, so avoid placing secrets in body fields. Keep secrets in headers and follow the [Templates and Variables](/guides/endpoints/templates-and-variables) guidance.
-</Note>
-
-_Example payload:_
-
-```json
-{
-  "type": "http",
-  "function_name": "create_lead",
-  "body": {
-    "name": "Jordan Lee",
-    "email": "jordan@example.com"
-  }
-}
-```
-
-## Subscribe to built-in and custom RTVI events
+- read `conversation_session_id` from the query param
+- call `akapulu.pollConversationUpdates(conversationSessionId)`
+- return the updates payload fields the SDK needs
 
 ```ts
-import { RTVIEvent } from "@pipecat-ai/client-js";
-import { usePipecatClient } from "@pipecat-ai/client-react";
-
-function CustomConversationUI() {
-  const client = usePipecatClient();
-
-  useEffect(() => {
-    // Built-in RTVI events
-    client.on(RTVIEvent.UserTranscript, (data) => {
-      // TODO: handle user transcript updates
-    });
-
-    client.on(RTVIEvent.BotTranscript, (data) => {
-      // TODO: handle bot transcript updates
-    });
-
-    client.on(RTVIEvent.UserStartedSpeaking, () => {
-      // TODO: handle user started speaking
-    });
-
-    // Akapulu custom events via ServerMessage
-    client.on(RTVIEvent.ServerMessage, (message) => {
-      switch (message?.type) {
-        case "flow-node-changed":
-          // TODO: update current stage UI from message.node
-          break;
-        case "bot-speaking-state":
-          // TODO: update speaking indicator from message.state
-          break;
-        case "RAG":
-          // TODO: show tool activity from message.function_name + message.body.query
-          break;
-        case "vision":
-          // TODO: show vision tool activity from message.function_name
-          break;
-        case "http":
-          // TODO: show HTTP tool activity from message.function_name + message.body
-          break;
-        default:
-          break;
-      }
-    });
-  }, [client]);
+{
+  conversation_session_id,
+  call_is_ready,
+  completion_percent,
+  latest_update_text,
 }
 ```
 
-## Build a loading display during startup
+The SDK always calls your `updatesPath` with `conversation_session_id` in the URL query string.
 
-The bot and room startup process can take 10-15 seconds, so we recommend your custom UI should include a loading state before entering the live call view.
+Install `@akapulu/server` in your backend and create these local routes:
 
-During this phase, we suggest you show users:
-
-- a status text that reflects current setup progress
-- a progress indicator (for example, a progress bar)
-- a clear transition into the live UI once readiness is reached
-
-The recommended source of truth for this state is the [conversation updates endpoint](/api-reference/conversations/updates), which returns readiness and progress fields you can map directly into your loading UX.
+- `POST /api/akapulu/connect`
+- `GET /api/akapulu/updates?conversation_session_id=...`
+- `GET /api/akapulu/conversation-details?conversation_session_id=...`
+- `GET /api/akapulu/view-recording?conversation_session_id=...`
 
 ```ts
-async function fetchConversationUpdates(conversationSessionId: string, apiKey: string) {
-  const response = await fetch(
-    `https://akapulu.com/api/conversations/${conversationSessionId}/updates/`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    },
-  );
+import { createAkapuluServerClient } from "@akapulu/server";
 
-  const { call_is_ready, completion_percent, latest_update_text } = await response.json();
+const akapulu = createAkapuluServerClient();
 
-  return {
-    // True when setup is complete and you should switch into the live call UI.
-    call_is_ready,
-    // Numeric progress value (from 0 to 100) you can map to a loading/progress bar.
-    completion_percent,
-    // Human-readable status text you can show in the loading state.
-    latest_update_text,
+// POST /api/akapulu/connect
+export async function connectRoute() {
+  return await akapulu.connectConversation({
+    scenario_id: "YOUR_SCENARIO_ID",
+    avatar_id: "YOUR_AVATAR_ID",
+    runtime_vars: {},
+    record_conversation: false,
+  });
+}
+
+// GET /api/akapulu/updates?conversation_session_id=...
+export async function updatesRoute(conversationSessionId: string) {
+  return await akapulu.pollConversationUpdates(conversationSessionId);
+}
+
+// GET /api/akapulu/conversation-details?conversation_session_id=...
+export async function conversationDetailsRoute(conversationSessionId: string) {
+  return await akapulu.getConversationDetail(conversationSessionId);
+}
+
+// GET /api/akapulu/view-recording?conversation_session_id=...
+export async function recordingRoute(conversationSessionId: string) {
+  return await akapulu.getConversationRecording(conversationSessionId);
+}
+```
+
+Then point `AkapuluProvider` to the local paths:
+
+- `connectPath: "/api/akapulu/connect"`
+- `updatesPath: "/api/akapulu/updates"`
+
+## Conversation detail retrieval
+
+`@akapulu/server` also exposes `getConversationDetail(conversationSessionId)` for fetching a completed or in-progress conversation detail payload from your backend.
+
+```ts
+{
+  id: string;
+  created_at: string;
+  created_at_text: string;
+  duration_text: string;
+  avatar: {
+    id: string;
+    href: string;
+    profile_image_url: string;
   };
+  scenario_id: string;
+  recording: {
+    has_recording: boolean;
+    status_text: string;
+    is_ready: boolean;
+  };
+  transcript_rows: Array<{
+    role: string;
+    content?: string;
+    node_id?: string;
+    tool_call_id?: string;
+    tool_calls?: unknown[];
+  }>;
 }
 ```
-![Loading progress in the custom UI demo](https://raw.githubusercontent.com/Akapulu/akapulu-examples/main/examples/fundamentals/custom-rtvi-ui/media/customUIDemo_2x.gif)
 
-*Shown at 2x speed.*
+See the API route docs too:
 
+- [Conversation Detail API](/api-reference/conversations/detail)
+- [Conversation Recording API](/api-reference/conversations/recording)
 
-## Recording strategy in a custom UI
+## Conversation recording retrieval
 
-After you trigger recording, there is a short initialization delay before capture actually begins. 
+`@akapulu/server` also exposes `getConversationRecording(conversationSessionId)` for fetching the recording response for a conversation from your backend.
 
-We recommend starting recording when loading progress reaches `completion_percent >= 50%`.
+```ts
+type ConversationRecordingResponse =
+  | {
+      kind: "redirect";
+      status: number;
+      location: string;
+    }
+  | {
+      kind: "json";
+      status: number;
+      payload: unknown;
+    }
+  | {
+      kind: "binary";
+      status: number;
+      body: ArrayBuffer;
+      contentType: string;
+      contentDisposition: string;
+    };
+```
 
-This timing is usually the best balance: early enough to capture the beginning of the live interaction, but late enough to avoid recording too much startup/idle time.
+## Passing custom payload to your local connect route
 
+If you want, `AkapuluProvider` can send a custom JSON payload to your local `connectPath` route via `config.connectBody`.
+
+- If `connectBody` is provided, the SDK sends it as the POST JSON body to your local connect route.
+- If `connectBody` is omitted, the SDK sends `POST /connectPath` with no body.
+
+Frontend example:
 
 ```tsx
-function CustomConversationUI() {
-  const daily = useDaily();
-  const [recordingStarted, setRecordingStarted] = useState(false);
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
 
-  useEffect(() => {
-
-    // Start recording once loading progress reaches 50%.
-    if (completionPercent >= 50 && !recordingStarted) {
-      daily?.startRecording({ type: "cloud" });
-      setRecordingStarted(true);
-    }
-  }, [completionPercent, recordingStarted, daily]);
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+        connectBody: {
+          tenant_id: "acme-health",
+          patient_id: "patient_001",
+          should_record: true,
+        },
+      }}
+    >
+      <AkapuluConversation title="Akapulu demo" />
+    </AkapuluProvider>
+  );
 }
 ```
 
-<Note>Completed recordings are available in your Akapulu conversations page at <a href="https://akapulu.com/conversations" target="_blank" rel="noopener noreferrer">akapulu.com/recordings</a>.</Note>
+Backend example:
 
-## Full outline snippet
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
 
-Here's a single snippet showing all the above in a single template file
+const akapulu = createAkapuluServerClient({
+  apiBaseUrl: process.env.AKAPULU_API_BASE_URL || "https://akapulu.com/api",
+});
+
+type LocalConnectBody = {
+  tenant_id?: string;
+  patient_id?: string;
+  should_record?: boolean;
+};
+
+export async function connectRoute(body: LocalConnectBody) {
+  return await akapulu.connectConversation({
+    scenario_id: "YOUR_SCENARIO_ID",
+    avatar_id: "YOUR_AVATAR_ID",
+    runtime_vars: {
+      patient_id: body.patient_id || "patient_001",
+      tenant_id: body.tenant_id || "default_tenant",
+    },
+    record_conversation: body.should_record === true,
+  });
+}
+```
+
+## Styling `AkapuluConversation`
+
+`@akapulu/react-ui` supports slot-level customization via:
+
+- `className` for the root
+- `classes` for slot class names
+- `styles` for slot inline style overrides
+
+### Slot key overrides
+
+Use slot keys when you want to target specific UI parts directly from React props.
+
+```tsx
+<AkapuluConversation
+  title="Akapulu demo"
+  classes={{
+    transcriptContainer: "myTranscriptContainer",
+    controlEnd: "myLeaveButton",
+  }}
+  styles={{
+    videoPane: { borderRadius: 20 },
+    connectedLayout: { gap: "1.5rem" },
+  }}
+/>
+```
+
+### Default class overrides
+
+Use built-in default classes when you want to apply theme-like global styles from CSS.
+
+```css
+.akapulu-transcript-container {
+  border: 1px solid #334155;
+  border-radius: 14px;
+}
+
+.akapulu-control-end {
+  background: rgba(185, 28, 28, 0.9);
+}
+```
+
+### `data-slot` overrides
+
+Use `data-slot` selectors when you want explicit, inspectable selectors in DevTools.
+
+```css
+[data-slot="transcript-header"] {
+  backdrop-filter: blur(2px);
+}
+
+[data-slot="pip"] {
+  width: 28%;
+  border-color: #60a5fa;
+}
+```
+
+### Slot map
+
+Each slot has both a default class and a `data-slot` marker so you can inspect and target it in DevTools without guessing.
+
+#### Layout
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `container` | Outer wrapper for the whole conversation UI | `akapulu-conversation` | `container` |
+| `title` | Top heading text | `akapulu-title` | `title` |
+| `connectedLayout` | Main connected-state grid wrapper | `akapulu-connected-layout` | `connected-layout` |
+| `startButton` | Idle or error state start-call button | `akapulu-start-button` | `start-button` |
+
+#### Loading
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `loadingContainer` | Wrapper for loading state UI | `akapulu-loading-container` | `loading-container` |
+| `loadingSpinner` | Loading spinner element | `akapulu-loading-spinner` | `loading-spinner` |
+| `loadingLabel` | Loading headline text | `akapulu-loading-label` | `loading-label` |
+| `loadingProgressTrack` | Progress bar background track | `akapulu-loading-progress-track` | `loading-progress-track` |
+| `loadingProgressFill` | Progress bar filled portion | `akapulu-loading-progress-fill` | `loading-progress-fill` |
+| `loadingStatusText` | Detailed status text under progress bar | `akapulu-loading-status-text` | `loading-status-text` |
+
+#### Error modal
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `errorModalBackdrop` | Full-screen modal overlay behind error card | `akapulu-error-modal-backdrop` | `error-modal-backdrop` |
+| `errorModalCard` | Error modal content card | `akapulu-error-modal-card` | `error-modal-card` |
+
+#### Tool events
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `toolToast` | Floating toast or card for tool activity | `akapulu-tool-toast` | `tool-toast` |
+
+#### Video and controls
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `videoPane` | Video column container | `akapulu-video-pane` | `video-pane` |
+| `videoSurface` | Primary remote or bot video surface | `akapulu-video-surface` | `video-surface` |
+| `botStateBadge` | Speaking, listening, or idle badge on video | `akapulu-bot-state-badge` | `bot-state-badge` |
+| `pip` | Local picture-in-picture preview tile | `akapulu-pip` | `pip` |
+| `waitingVideo` | Placeholder shown before video is available | `akapulu-waiting-video` | `waiting-video` |
+| `controlMic` | In-call mic button | `akapulu-control-mic` | `control-mic` |
+| `controlCam` | In-call camera button | `akapulu-control-cam` | `control-cam` |
+| `controlEnd` | In-call hang-up button | `akapulu-control-end` | `control-end` |
+
+#### Transcript
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `transcriptPane` | Transcript column container | `akapulu-transcript-pane` | `transcript-pane` |
+| `transcriptContainer` | Scrollable transcript box | `akapulu-transcript-container` | `transcript-container` |
+| `transcriptHeader` | Transcript header row | `akapulu-transcript-header` | `transcript-header` |
+| `nodeChip` | Current node chip in transcript header | `akapulu-node-chip` | `node-chip` |
+| `transcriptRowUser` | User transcript row or bubble | `akapulu-transcript-row-user` | `transcript-row-user` |
+| `transcriptRowBot` | Bot transcript row or bubble | `akapulu-transcript-row-bot` | `transcript-row-bot` |
+
+## Behavior customization on `AkapuluConversation`
+
+Beyond styles, `@akapulu/react-ui` lets you customize behavior and rendering for transcript rows and tool events directly on `AkapuluConversation`.
+
+Built-in handler props:
+
+- `transcriptFilter(entry)` to hide transcript rows
+- `renderTranscriptEntry(entry)` to render transcript rows with your own JSX
+- `onToolEvent(tool)` to run side effects when a tool event arrives
+- `renderToolEvent(tool)` to replace the default tool toast element
+- `toolEventTimeoutMs` to control how long the tool toast stays visible
+
+```ts
+transcriptFilter?: (entry: TranscriptEntry) => boolean;
+renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode;
+onToolEvent?: (tool: NormalizedToolEvent) => void;
+renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
+toolEventTimeoutMs?: number | null;
+```
+
+`toolEventTimeoutMs` behavior:
+
+- default: `4000`
+- pass a number to customize the auto-hide timeout
+- pass `null` to disable auto-hide
+
+`TranscriptEntry` shape:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Stable transcript row id |
+| `speaker` | `"user" \| "bot"` | Who produced this transcript chunk |
+| `text` | `string` | Transcript text |
+| `timestamp` | `string` | Event timestamp |
+| `isFinal` | `boolean` | Whether this transcript row is finalized |
+
+`NormalizedToolEvent` shape by tool type:
+
+#### `RAG` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"RAG"` | RAG tool event |
+| `functionName` | `string` | RAG function or tool name |
+| `summary` | `string` | `"RAG tool called"` |
+| `query` | `string \| undefined` | Query text |
+
+#### `vision` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"vision"` | Vision tool event |
+| `functionName` | `string` | Vision function or tool name |
+| `summary` | `string` | `"Vision tool called"` |
+
+#### `http` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"http"` | HTTP tool event |
+| `functionName` | `string` | HTTP function or tool name |
+| `summary` | `string` | `"HTTP endpoint called"` |
+| `argsJson` | `string \| undefined` | Pretty JSON string of `body` |
+| `body` | `Record<string, unknown>` | Outgoing HTTP request payload fields |
+
+```tsx
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+export function App() {
+  return (
+    <AkapuluProvider config={config}>
+      <AkapuluConversation
+        title="Akapulu demo"
+        transcriptFilter={(entry) => {
+          return entry.text.trim() !== "skip me";
+        }}
+        renderTranscriptEntry={(entry) => (
+          <div>
+            <strong>{entry.speaker === "user" ? "You" : "Bot"}:</strong> {entry.text}
+          </div>
+        )}
+        onToolEvent={(tool) => {
+          console.log("tool_event", tool.messageType, tool.functionName);
+        }}
+        renderToolEvent={(tool) => (
+          <div style={{ border: "1px solid #334155", borderRadius: 8, padding: 12 }}>
+            <strong>{tool.summary}</strong>
+            <div style={{ marginTop: 6, opacity: 0.85 }}>{tool.functionName}</div>
+          </div>
+        )}
+      />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Handling all conversation events while keeping prebuilt UI
+
+For full event handling, including node changes, bot speaking state, transcript updates, tool calls, and timeout events, add a small sibling listener component that uses `useAkapuluEvents`.
+
+Event schema by `event.type`:
+
+#### `status_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"status_changed"` | Discriminator |
+| `status` | `"idle" \| "connecting" \| "connected" \| "disconnecting" \| "ended" \| "error"` | Session lifecycle state |
+
+#### `bot_speaking_state_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"bot_speaking_state_changed"` | Discriminator |
+| `speakingState` | `"idle" \| "speaking" \| "listening"` | Bot speaking or listening state |
+
+#### `node_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"node_changed"` | Discriminator |
+| `node` | `{ key: string; label: string } \| null` | Current flow node |
+
+#### `tool_event`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"tool_event"` | Discriminator |
+| `tool` | `NormalizedToolEvent` | Normalized tool event payload |
+
+#### `transcript_updated`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"transcript_updated"` | Discriminator |
+| `transcript` | `TranscriptEntry` | Updated transcript row |
+
+#### `call_ready`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"call_ready"` | Call reached ready state |
+
+#### `timeout`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"timeout"` | Discriminator |
+| `reason` | `"duration_limit_reached" \| "participant_join_timeout"` | Timeout reason from backend |
+
+```tsx
+import { AkapuluProvider, useAkapuluEvents } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+function ConversationEventBridge() {
+  useAkapuluEvents((event) => {
+    if (event.type === "transcript_updated") {
+      return;
+    }
+    if (event.type === "bot_speaking_state_changed") {
+      return;
+    }
+    if (event.type === "node_changed") {
+      return;
+    }
+    if (event.type === "tool_event") {
+      return;
+    }
+    if (event.type === "timeout") {
+      return;
+    }
+  });
+
+  return null;
+}
+
+export function App() {
+  return (
+    <AkapuluProvider config={config}>
+      <ConversationEventBridge />
+      <AkapuluConversation title="Akapulu demo" />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Using `@akapulu/react` without `@akapulu/react-ui`
+
+The same connect and updates route pattern applies: `AkapuluProvider` points at your local `connectPath` and `updatesPath`, your server uses `@akapulu/server`, and the browser never holds the Akapulu API key. What changes is the UI: you build layout yourself and pull state from hooks instead of mounting `AkapuluConversation`.
+
+How it fits together:
+
+1. Wrap your tree in `AkapuluProvider`.
+2. Call `useAkapuluSession()` under that provider for session lifecycle and data like `status`, `start`, `end`, `transcripts`, `completionPercent`, `latestUpdateText`, `botSpeakingState`, `currentNode`, and `error`.
+3. The provider joins the Daily room for realtime media. Install `@daily-co/daily-react` and use its primitives to render video, like `DailyVideo`, `useDaily`, `useParticipantIds`, and `useVideoTrack`.
+4. Use `useAkapuluMediaControls()` for in-call mic and camera toggles.
+5. Render `<AkapuluBotAudio />` once in the tree so assistant audio plays.
+6. Optionally use `useAkapuluEvents(callback)` to react to the full event stream while still rendering your own UI.
 
 ```tsx
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  DailyProvider,
-  DailyVideo,
-  useDaily,
-  useParticipantIds,
-} from "@daily-co/daily-react";
-import {
-  PipecatClient,
-  PipecatClientProvider,
-  RTVIEvent,
-  usePipecatClient,
-} from "@pipecat-ai/client-react";
-import { DailyTransport } from "@pipecat-ai/daily-transport";
+  AkapuluBotAudio,
+  AkapuluProvider,
+  useAkapuluEvents,
+  useAkapuluMediaControls,
+  useAkapuluSession,
+} from "@akapulu/react";
+import { DailyVideo, useDaily, useParticipantIds, useVideoTrack } from "@daily-co/daily-react";
 
-type ConnectResponse = {
-  // Daily room URL created by Akapulu for this conversation.
-  room_url: string;
-  // Daily meeting token scoped for this participant/session.
-  token: string;
-  // Akapulu conversation ID used for polling /updates.
-  conversation_session_id: string;
-};
+function VideoTile(props: { sessionId: string; isLocal: boolean }) {
+  const videoTrack = useVideoTrack(props.sessionId);
 
-type UpdatesResponse = {
-  // True when startup is done and you can switch to live call UI.
-  call_is_ready: boolean;
-  // Startup progress from 0-100
-  completion_percent: number;
-  // Human-readable status text for loading UI.
-  latest_update_text: string;
-};
+  if (videoTrack.isOff) {
+    return null;
+  }
 
-// NOTE: we recommend moving this to a backend route to avoid exposing API Key on frontend
-async function connectConversation(apiKey: string): Promise<ConnectResponse> {
-  const response = await fetch("https://akapulu.com/api/conversations/connect/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      // Required fields:
-      scenario_id: "your-scenario-id",
-      avatar_id: "your-avatar-uuid",
+  return <DailyVideo sessionId={props.sessionId} type="video" />;
+}
 
-    }),
+function CustomCallUi() {
+  const {
+    status,
+    start,
+    end,
+    transcripts,
+    completionPercent,
+    latestUpdateText,
+  } = useAkapuluSession();
+  const { toggleMic, toggleCam, isMicMuted, isCamOff } = useAkapuluMediaControls();
+  const daily = useDaily();
+  const remoteParticipantIds = useParticipantIds({ filter: "remote" });
+  const localParticipant = daily?.participants().local;
+
+  useAkapuluEvents((event) => {
+    if (event.type === "status_changed") {
+      return;
+    }
+    if (event.type === "tool_event") {
+      return;
+    }
+    if (event.type === "transcript_updated") {
+      return;
+    }
+    if (event.type === "node_changed") {
+      return;
+    }
+    if (event.type === "bot_speaking_state_changed") {
+      return;
+    }
+    if (event.type === "timeout") {
+      return;
+    }
   });
 
-  // /connect returns room_url + token + conversation_session_id.
-  return response.json();
-}
+  switch (status) {
+    case "error":
+      return (
+        <>
+          <AkapuluBotAudio />
+        </>
+      );
 
-async function fetchConversationUpdates(
-  conversationSessionId: string,
-  apiKey: string,
-): Promise<UpdatesResponse> {
-  const response = await fetch(
-    `https://akapulu.com/api/conversations/${conversationSessionId}/updates/`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    },
-  );
+    case "idle":
+    case "ended":
+      return (
+        <>
+          <button type="button" onClick={() => void start()}>
+            Start call
+          </button>
+          <AkapuluBotAudio />
+        </>
+      );
 
-  // /updates returns readiness, progress, and current status text.
-  return response.json();
-}
+    case "connecting":
+      return (
+        <>
+          <p>Connecting...</p>
+          <progress value={completionPercent} max={100} />
+          <p>{latestUpdateText}</p>
+          <AkapuluBotAudio />
+        </>
+      );
 
+    case "connected":
+      return (
+        <>
+          {remoteParticipantIds[0] ? (
+            <VideoTile sessionId={remoteParticipantIds[0]} isLocal={false} />
+          ) : null}
 
-function CustomConversationUI({ apiKey }: { apiKey: string }) {
-  // Daily call object from DailyProvider.
-  const daily = useDaily();
-  // Pipecat client instance from PipecatClientProvider.
-  const client = usePipecatClient();
+          {localParticipant ? (
+            <VideoTile sessionId={localParticipant.session_id} isLocal />
+          ) : null}
 
-  // Core session and loading state.
-  const [conversationSessionId, setConversationSessionId] = useState("");
-  const [statusText, setStatusText] = useState("Starting conversation...");
-  const [completionPercent, setCompletionPercent] = useState(0);
-  const [callIsReady, setCallIsReady] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [recordingStarted, setRecordingStarted] = useState(false);
+          <button onClick={toggleMic}>
+            {isMicMuted ? "Unmute" : "Mute"}
+          </button>
+          <button onClick={toggleCam}>
+            {isCamOff ? "Camera on" : "Camera off"}
+          </button>
+          <button onClick={() => void end()}>
+            Leave
+          </button>
 
-  // Daily participant IDs for rendering the local and bot video tiles.
-  const localParticipantId = useParticipantIds({ filter: "local" })[0];
-  const botParticipantId = useParticipantIds({ filter: "remote" })[0];
+          {transcripts.map((entry) => {
+            return <div key={entry.id}>{entry.text}</div>;
+          })}
 
-  const startConversation = useCallback(async () => {
-    // Guard against duplicate connect attempts.
-    if (!client || isConnecting) return;
-    setIsConnecting(true);
-
-    // 1) Ask Akapulu to create/prepare the conversation + Daily room.
-    const { room_url, token, conversation_session_id } = await connectConversation(apiKey);
-    // 2) Save conversation ID so we can poll /updates.
-    setConversationSessionId(conversation_session_id);
-
-    // 3) Join the Daily room through Pipecat transport.
-    await client.connect({
-      endpoint: room_url,
-      token,
-    });
-  }, [client, apiKey, isConnecting]);
-
-  // Kick off the connect flow once the component mounts.
-  useEffect(() => {
-    startConversation();
-  }, [startConversation]);
-
-  // 4) Poll setup progress every 0.5s until call_is_ready is true.
-  useEffect(() => {
-    if (!conversationSessionId || callIsReady) return;
-
-    const interval = setInterval(async () => {
-      const updates = await fetchConversationUpdates(conversationSessionId, apiKey);
-      // Use readiness to decide when to switch from loading -> live UI.
-      setCallIsReady(updates.call_is_ready);
-      // Use progress for bars/percent indicators.
-      setCompletionPercent(updates.completion_percent);
-      // Use status text as human-friendly loading copy.
-      setStatusText(updates.latest_update_text);
-    }, 500);
-
-    // Always clean up interval on unmount/dependency change.
-    return () => clearInterval(interval);
-  }, [conversationSessionId, apiKey, callIsReady]);
-
-  // 5) Subscribe to built-in RTVI events for speaking/transcript UX.
-  useEffect(() => {
-    if (!client) return;
-
-    const offUserStartedSpeaking = client.on(RTVIEvent.UserStartedSpeaking, () => {
-      // TODO: mark local user as "speaking".
-    });
-    const offUserTranscript = client.on(RTVIEvent.UserTranscript, (event) => {
-      // TODO: append user text from event.data.text.
-    });
-    const offBotTranscript = client.on(RTVIEvent.BotTranscript, (event) => {
-      // TODO: append bot text from event.data.text.
-    });
-
-    // Remove listeners when client changes/unmounts.
-    return () => {
-      offUserStartedSpeaking?.();
-      offUserTranscript?.();
-      offBotTranscript?.();
-    };
-  }, [client]);
-
-  // 6) Subscribe to Akapulu custom ServerMessages for product-specific UX.
-  useEffect(() => {
-    if (!client) return;
-
-    const offServerMessage = client.on(RTVIEvent.ServerMessage, (event) => {
-      const message = event.data;
-
-      if (message.type === "flow-node-changed") {
-        // TODO: show current flow node from message.body.current_node_name.
-      } else if (message.type === "bot-speaking-state") {
-        // TODO: set bot speaking indicator from message.body.is_bot_speaking.
-      } else if (message.type === "RAG") {
-        // TODO: surface retrieval/tool activity in UI logs.
-      } else if (message.type === "vision") {
-        // TODO: surface vision/tool activity in UI logs.
-      } else if (message.type === "http") {
-        // TODO: surface HTTP tool activity in UI logs.
-      }
-    });
-
-    // Remove listener when client changes/unmounts.
-    return () => {
-      offServerMessage?.();
-    };
-  }, [client]);
-
-  // 7) Start recording once setup is underway (>= 50%).
-  useEffect(() => {
-    if (completionPercent >= 50 && !recordingStarted) {
-      // Daily cloud recording.
-      daily?.startRecording({ type: "cloud" });
-      setRecordingStarted(true);
-    }
-  }, [completionPercent, recordingStarted, daily]);
-
-  // Loading view shown while Akapulu is preparing the room/session.
-  if (!callIsReady) {
-    return (
-      <div>
-        <p>{statusText}</p>
-        <p>{completionPercent}%</p>
-      </div>
-    );
+          <AkapuluBotAudio />
+        </>
+      );
   }
-
-  // Live call view once the session is ready.
-  return (
-    <div>
-      {/* Local user tile */}
-      <DailyVideo sessionId={localParticipantId} type="video" />
-      {/* Bot tile */}
-      <DailyVideo sessionId={botParticipantId} type="video" />
-    </div>
-  );
 }
 
-export default function Page() {
-  // Create one transport instance for the page lifetime.
-  const transport = useMemo(() => new DailyTransport(), []);
-  // Keep one stable Pipecat client instance across renders.
-  const clientRef = useRef<PipecatClient | null>(null);
-  if (!clientRef.current) {
-    clientRef.current = new PipecatClient({ transport });
-  }
-
-  // Provider tree: Daily + Pipecat context for all child components.
+export function App() {
   return (
-    <DailyProvider>
-      <PipecatClientProvider client={clientRef.current}>
-        {/* Pass API key from secure config in real apps. */}
-        <CustomConversationUI />
-      </PipecatClientProvider>
-    </DailyProvider>
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <CustomCallUi />
+    </AkapuluProvider>
   );
 }
 ```
 
-<Note>For a custom engineered implementation, see our Enterprise plan at <a href="https://akapulu.com/pricing" target="_blank" rel="noopener noreferrer">akapulu.com/pricing</a>.</Note>
+## Main exports from `@akapulu/react`
 
+| Export | Role |
+| --- | --- |
+| `AkapuluProvider` | Config, session store, and Daily context for children |
+| `useAkapuluSession` | Session state plus `start` and `end` |
+| `useAkapuluMediaControls` | Mic and camera state plus toggles |
+| `AkapuluBotAudio` | Plays the bot audio track |
+| `useAkapuluEvents` | Subscribe to the `AkapuluEvent` stream |
+| `useAkapuluAutoEndOnRemoteLeave` | End the call when the remote participant drops |
+| `useAkapuluDailyCall` | Access the Daily call object for lower-level APIs |
+
+## Types and shared logic
+
+Event payloads and transcript rows are exposed through the public SDK types, including `AkapuluEvent`, `NormalizedToolEvent`, and `TranscriptEntry`. Import those when you type your handlers or custom components.
+
+## Common custom UI needs
+
+The Web SDK already exposes the state you need for common custom UI behavior:
+
+- loading state and setup progress
+- transcript rendering
+- current node display
+- tool event display
+- microphone and camera controls
+- redirecting to conversation detail or recording review routes after the call ends
+
+## When you need lower-level control
+
+If you truly need direct control over the underlying client stack, you can still build at a lower level.
+
+For most developers, the right starting point is the Akapulu Web SDK because it already abstracts the conversation lifecycle, polling, and event normalization behind the current public packages.
+
+## Daily room note
+
+The Akapulu [`connect` endpoint](/api-reference/conversations/connect) returns the Daily `room_url` and `token`.
+
+In practice, that means you can either use the Akapulu Web SDK, which is the recommended approach, or join the Daily room with another Daily-compatible client surface when that better fits your product requirements.
+
+Common options include:
+
+- [Daily Prebuilt](https://docs.daily.co/prebuilt) for a ready-made call UI
+- the Daily room URL directly in a browser
+- the [Pipecat JavaScript client](https://docs.pipecat.ai/client/introduction) with [Daily transport](https://docs.pipecat.ai/client/js/transports/daily)
+
+We do not recommend the Pipecat client path for most integrations because it gives you less control over what you can display in the UI. The Akapulu Web SDK exposes the session state, transcript data, node state, tool events, and media controls needed for a more customizable product experience.

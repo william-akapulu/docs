@@ -9,6 +9,8 @@ Use this endpoint to create a conversation session and receive:
 - `token`
 - `conversation_session_id`
 
+The connect endpoint returns immediately after creating the conversation session and Daily room credentials. Use the [updates endpoint](/api-reference/conversations/updates) to poll setup progress until the conversation is ready.
+
 Required headers:
 
 - `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
@@ -22,14 +24,14 @@ Required request fields:
 Optional request fields include:
 
 - `runtime_vars` for template/runtime values
-- `stt_keywords` are optional keywords used in the speech-to-text step of the pipeline to improve recognition of specific words in user speech (maximum 5)
-- `voice_only_mode` for audio-only calls
+- `stt_keywords` for speech recognition hints
+  - accepts either an array of strings or a comma-separated string
+  - maximum `5` keywords
 - `record_conversation` whether to record this conversation session (default `false`)
 - `wait_for_client_ready` controls when the session is marked ready to begin (default `true`)
-  - when `true`, Akapulu waits until your embedded client has fully connected before marking the call ready and starting the conversation flow
-  - when `false`, Akapulu skips that client-ready wait and proceeds once call participants are ready
-  - use `true` for embedded SDK/client integrations (recommended)
-  - use `false` for Daily prebuilt UI
+  - when `true`, Akapulu waits until your frontend client is fully connected before marking the call ready
+  - when `false`, Akapulu proceeds once the bot and participant are ready without waiting for explicit frontend-client readiness
+  - use `true` for Web SDK integrations unless you have a specific reason not to
 
 Example request body:
 
@@ -41,7 +43,6 @@ Example request body:
     "today": "2026-03-19"
   },
   "stt_keywords": ["Akapulu", "Dr. Nguyen", "A1C"],
-  "voice_only_mode": false,
   "record_conversation": true,
   "wait_for_client_ready": true
 }

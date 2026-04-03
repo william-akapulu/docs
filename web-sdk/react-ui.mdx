@@ -1,0 +1,212 @@
+---
+title: "React UI"
+description: "Prebuilt React conversation UI components for Akapulu."
+---
+
+## Overview
+
+`@akapulu/react-ui` is the higher-level React UI package in the Akapulu Web SDK.
+
+It is built on top of [`@akapulu/react`](/web-sdk/react-sdk) and provides a prebuilt conversation interface for React apps.
+
+## Installation
+
+```bash
+npm install @akapulu/react-ui
+```
+
+This package expects React `>=18 <19`.
+
+## Main export
+
+The main export is `AkapuluConversation`.
+
+```ts
+type AkapuluConversationProps = {
+  title?: string;
+  transcriptFilter?: (entry: TranscriptEntry) => boolean;
+  renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode;
+  onToolEvent?: (tool: NormalizedToolEvent) => void;
+  renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
+  toolEventTimeoutMs?: number | null;
+  className?: string;
+  classes?: Partial<AkapuluConversationClasses>;
+  styles?: Partial<AkapuluConversationStyles>;
+}
+```
+
+## Main responsibility
+
+`@akapulu/react-ui` is responsible for rendering a ready-made conversation UI with:
+
+- video layout
+- transcript UI
+- loading and error states
+- current node display
+- tool event surfaces
+- built-in call controls
+
+## Customization model
+
+`@akapulu/react-ui` supports three main customization layers:
+
+- behavior props like `transcriptFilter`, `renderTranscriptEntry`, `onToolEvent`, and `renderToolEvent`
+- slot class overrides through `classes`
+- slot style overrides through `styles`
+
+## Behavior props
+
+### `transcriptFilter`
+
+```ts
+transcriptFilter?: (entry: TranscriptEntry) => boolean
+```
+
+Used to remove transcript rows from the rendered transcript.
+
+### `renderTranscriptEntry`
+
+```ts
+renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode
+```
+
+Used to render transcript rows with custom JSX.
+
+### `onToolEvent`
+
+```ts
+onToolEvent?: (tool: NormalizedToolEvent) => void
+```
+
+Used to run side effects when tool events arrive.
+
+### `renderToolEvent`
+
+```ts
+renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode
+```
+
+Used to replace the default tool toast element.
+
+### `toolEventTimeoutMs`
+
+```ts
+toolEventTimeoutMs?: number | null
+```
+
+Default is `4000`.
+
+- pass a number to customize the auto-hide timeout
+- pass `null` to disable auto-hide
+
+## Style surfaces
+
+`AkapuluConversationClasses` includes slot keys like:
+
+- `container`
+- `title`
+- `startButton`
+- `toolToast`
+- `loadingContainer`
+- `loadingSpinner`
+- `loadingLabel`
+- `loadingProgressTrack`
+- `loadingProgressFill`
+- `loadingStatusText`
+- `errorModalBackdrop`
+- `errorModalCard`
+- `connectedLayout`
+- `videoPane`
+- `videoSurface`
+- `botStateBadge`
+- `pip`
+- `controlMic`
+- `controlCam`
+- `controlEnd`
+- `transcriptPane`
+- `transcriptContainer`
+- `transcriptHeader`
+- `nodeChip`
+- `waitingVideo`
+- `transcriptRowUser`
+- `transcriptRowBot`
+
+`AkapuluConversationStyles` exposes the same slot keys as inline style override surfaces.
+
+For the full slot map and examples, see [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
+
+## How it fits in your app
+
+In a typical React app:
+
+1. `AkapuluProvider` from [`@akapulu/react`](/web-sdk/react-sdk) points at your local routes.
+2. Your routes call Akapulu through [`@akapulu/server`](/web-sdk/server-sdk).
+3. `AkapuluConversation` renders the higher-level conversation UI on top of that session state.
+
+## When to use this package
+
+Use `@akapulu/react-ui` when you want:
+
+- the fastest React integration
+- a prebuilt conversation UI
+- styling and rendering customization without building every surface from scratch
+
+If you want complete control over layout and rendering, use [`@akapulu/react`](/web-sdk/react-sdk) directly.
+
+## Minimal example
+
+```tsx
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <AkapuluConversation
+        title="Akapulu demo"
+        transcriptFilter={(entry) => entry.text.trim() !== ""}
+        onToolEvent={(tool) => {
+          console.log(tool.messageType, tool.functionName);
+        }}
+      />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Example
+
+```tsx
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <AkapuluConversation title="Akapulu demo" />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Related docs
+
+- [React](/web-sdk/react-sdk)
+- [Server](/web-sdk/server-sdk)
+- [Callbacks and events](/web-sdk/callbacks-and-events)
+- [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
+- [Next React UI Demo](/examples/basic/next-react-ui-demo)

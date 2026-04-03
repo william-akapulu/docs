@@ -1,0 +1,244 @@
+---
+title: "Server"
+description: "Server-side client for calling Akapulu APIs from your backend."
+---
+
+## Overview
+
+`@akapulu/server` is the server-side package in the Akapulu Web SDK.
+
+Use it in your backend to call Akapulu APIs from your own server routes.
+
+This is the recommended way to keep your API key on the server while letting your frontend call simple local endpoints.
+
+## Installation
+
+```bash
+npm install @akapulu/server
+```
+
+## Client constructor
+
+The entry point is `createAkapuluServerClient(config?)`.
+
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
+
+const akapulu = createAkapuluServerClient();
+```
+
+`AkapuluServerClientConfig` includes:
+
+<ParamField path="apiBaseUrl" type="string">
+  Optional base URL override. Defaults to `https://akapulu.com/api`, or `AKAPULU_API_BASE_URL` if set.
+</ParamField>
+
+<ParamField path="fetchImpl" type="typeof fetch">
+  Optional fetch implementation override for custom runtimes.
+</ParamField>
+
+The client reads `AKAPULU_API_KEY` from the environment. If it is missing, client creation throws an error.
+
+## Main responsibility
+
+`@akapulu/server` sits between your application routes and the Akapulu API.
+
+It is responsible for:
+
+- creating the server client
+- calling the connect endpoint
+- polling conversation updates
+- fetching conversation detail data
+- fetching conversation recording responses
+- mapping your app-specific request body into Akapulu request fields like `scenario_id`, `avatar_id`, `runtime_vars`, and `record_conversation`
+
+## Main methods
+
+The main methods documented today are:
+
+- `createAkapuluServerClient()`
+- `connectConversation(...)`
+- `pollConversationUpdates(conversationSessionId)`
+- `getConversationDetail(conversationSessionId)`
+- `getConversationRecording(conversationSessionId)`
+
+## Method reference
+
+### `connectConversation(body)`
+
+```ts
+connectConversation(body: ConnectConversationRequest): Promise<ConnectConversationResponse>
+```
+
+`ConnectConversationRequest`:
+
+<ParamField path="scenario_id" type="string" required>
+  Scenario id to launch.
+</ParamField>
+
+<ParamField path="avatar_id" type="string" required>
+  Avatar id to use for the conversation.
+</ParamField>
+
+<ParamField path="runtime_vars" type="Record<string, string>">
+  Optional runtime variables passed into the scenario.
+</ParamField>
+
+<ParamField path="stt_keywords" type="string[]">
+  Optional speech-to-text keyword hints.
+</ParamField>
+
+<ParamField path="record_conversation" type="boolean">
+  Optional recording toggle.
+</ParamField>
+
+<ParamField path="wait_for_client_ready" type="boolean">
+  Optional override. The client defaults this to `true` before making the request.
+</ParamField>
+
+`ConnectConversationResponse`:
+
+- `room_url`
+- `token`
+- `conversation_session_id`
+
+### `pollConversationUpdates(conversationSessionId)`
+
+```ts
+pollConversationUpdates(conversationSessionId: string): Promise<ConversationUpdatesResponse>
+```
+
+`ConversationUpdatesResponse`:
+
+- `conversation_session_id`
+- `call_is_ready`
+- `completion_percent`
+- `latest_update_text`
+
+### `getConversationDetail(conversationSessionId)`
+
+```ts
+getConversationDetail(conversationSessionId: string): Promise<ConversationDetailResponse>
+```
+
+`ConversationDetailResponse` includes:
+
+- `id`
+- `created_at`
+- `created_at_text`
+- `duration_text`
+- `avatar`
+- `scenario_id`
+- `recording`
+- `transcript_rows`
+
+### `getConversationRecording(conversationSessionId)`
+
+```ts
+getConversationRecording(conversationSessionId: string): Promise<ConversationRecordingResponse>
+```
+
+`ConversationRecordingResponse` is a union of:
+
+- redirect response: `{ kind: "redirect", status, location }`
+- json response: `{ kind: "json", status, payload }`
+- binary response: `{ kind: "binary", status, body, contentType, contentDisposition }`
+
+## Main types
+
+The package also exports the main request and response types used by those methods, including:
+
+- `ConnectConversationRequest`
+- `ConnectConversationResponse`
+- `ConversationUpdatesResponse`
+- `ConversationDetailResponse`
+- `ConversationRecordingResponse`
+- `AkapuluServerClientConfig`
+- `AkapuluApiErrorResponse`
+
+The package also exports `AkapuluApiError`, which is thrown for non-success API responses from `connectConversation`, `pollConversationUpdates`, and `getConversationDetail`.
+
+## Typical route pattern
+
+Most apps create local routes like:
+
+- `POST /api/akapulu/connect`
+- `GET /api/akapulu/updates?conversation_session_id=...`
+- `GET /api/akapulu/conversation-details?conversation_session_id=...`
+- `GET /api/akapulu/view-recording?conversation_session_id=...`
+
+Those routes then call the Akapulu APIs with `@akapulu/server`.
+
+## How it fits with the rest of the SDK
+
+In a typical app:
+
+1. The browser calls your local backend routes.
+2. Your backend uses `@akapulu/server`.
+3. `@akapulu/server` calls Akapulu APIs.
+4. Your frontend then uses `@akapulu/react` or `@akapulu/react-ui` to join and render the conversation.
+
+## Returned data used by the frontend
+
+The most important data returned through your local routes includes:
+
+- `room_url`
+- `token`
+- `conversation_session_id`
+- `call_is_ready`
+- `completion_percent`
+- `latest_update_text`
+
+## Custom connect payloads
+
+One common pattern is to accept app-specific JSON in your local connect route, then map it into Akapulu request fields like `runtime_vars` and `record_conversation`.
+
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
+
+const akapulu = createAkapuluServerClient();
+
+type LocalConnectBody = {
+  tenant_id?: string;
+  patient_id?: string;
+  should_record?: boolean;
+};
+
+export async function connectRoute(body: LocalConnectBody) {
+  return await akapulu.connectConversation({
+    scenario_id: "YOUR_SCENARIO_ID",
+    avatar_id: "YOUR_AVATAR_ID",
+    runtime_vars: {
+      patient_id: body.patient_id || "patient_001",
+      tenant_id: body.tenant_id || "default_tenant",
+    },
+    record_conversation: body.should_record === true,
+  });
+}
+```
+
+## Example
+
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
+
+const akapulu = createAkapuluServerClient();
+
+export async function connectRoute() {
+  return await akapulu.connectConversation({
+    scenario_id: "YOUR_SCENARIO_ID",
+    avatar_id: "YOUR_AVATAR_ID",
+    runtime_vars: {},
+    record_conversation: false,
+  });
+}
+```
+
+## Related docs
+
+- [`@akapulu/react`](/web-sdk/react-sdk)
+- [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
+- [Connect API](/api-reference/conversations/connect)
+- [Updates API](/api-reference/conversations/updates)
+- [Conversation Detail API](/api-reference/conversations/detail)
+- [Conversation Recording API](/api-reference/conversations/recording)

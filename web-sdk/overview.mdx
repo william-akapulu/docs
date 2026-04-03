@@ -1,0 +1,73 @@
+---
+title: "Introduction"
+description: "Architecture and package structure for the Akapulu Web SDK."
+---
+
+## Introduction
+
+The Akapulu Web SDK is a package family for building browser and server integrations on top of Akapulu.
+
+It is split into these public packages:
+
+- `@akapulu/server`
+- `@akapulu/react`
+- `@akapulu/react-ui`
+
+## Package structure
+
+| Package | Purpose | Runtime |
+| --- | --- | --- |
+| `@akapulu/server` | Server-side client for calling Akapulu APIs | Server |
+| `@akapulu/react` | React provider, hooks, media controls, and event subscriptions | React app |
+| `@akapulu/react-ui` | Prebuilt React conversation UI on top of `@akapulu/react` | React app |
+
+## How the packages relate
+
+1. Your frontend calls your own local `connect` and `updates` routes.
+2. Your local server routes call Akapulu with `@akapulu/server`.
+3. Your React app uses `@akapulu/react` to manage session state and media.
+4. If you want prebuilt UI, `@akapulu/react-ui` renders on top of `@akapulu/react`.
+5. Shared event and transcript models are handled internally across the SDK packages.
+
+## Typical flow
+
+```text
+Browser UI
+  -> local connect and updates routes
+  -> @akapulu/server
+  -> Akapulu API
+  -> Daily room
+```
+
+In that setup:
+
+- `@akapulu/server` handles API calls and keeps your API key on the server
+- `@akapulu/react` handles session state, event subscriptions, and media controls
+- `@akapulu/react-ui` is optional and gives you a higher-level conversation UI
+
+## Explore the packages
+
+Choose the package that matches the layer you are working on:
+
+- [`@akapulu/server`](/web-sdk/server-sdk) for backend route integrations
+- [`@akapulu/react`](/web-sdk/react-sdk) for React providers, hooks, and media helpers
+- [`@akapulu/react-ui`](/web-sdk/react-ui) for prebuilt React conversation UI
+
+## Guides and examples
+
+Reference implementations and implementation guides:
+
+- [Next React UI Demo](/examples/basic/next-react-ui-demo)
+  Uses `@akapulu/react-ui` with two pages so you can compare the default prebuilt UI and a customized version side by side.
+- [Next React Custom UI Demo](/examples/basic/next-react-custom-ui-demo)
+  Uses `@akapulu/react` only and renders the conversation UI manually.
+- [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
+
+## Related APIs
+
+The Web SDK commonly works with these Akapulu endpoints:
+
+- [Connect API](/api-reference/conversations/connect)
+- [Updates API](/api-reference/conversations/updates)
+- [Conversation Detail API](/api-reference/conversations/detail)
+- [Conversation Recording API](/api-reference/conversations/recording)

@@ -1,0 +1,10 @@
+---
+title: "Get Conversation Recording"
+openapi: "openapi/akapulu.json GET /conversations/{conversation_session_id}/recording"
+---
+
+Use this endpoint to access a conversation recording for a specific session.
+
+When the recording is ready, this endpoint responds with an HTTP redirect to a signed recording download URL. If you are calling it programmatically, make sure your client follows redirects.
+
+If the recording was not started, is unavailable, or is still processing, the endpoint returns an error response instead.

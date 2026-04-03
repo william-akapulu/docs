@@ -131,15 +131,9 @@ The bot (LLM) can choose to transition to different nodes through tool calls.
 
 Akapulu provides an easy-to-understand drag-and-drop UI for building and connecting nodes.
 
-<img
-  src="/images/guides/getting-started/How-akapulu-works/node-diagram/2-nodes.png"
-  alt="Node builder view showing connected nodes and tools"
-  style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
-/>
-
 ## Using Akapulu
 
-1. Create a scenario for your desired use case, including both a global role prompt and node-level stage instructions.
+1. Create a scenario for your desired use case, including a global `role_instruction` and node-level `task_instruction` prompts.
 
 > *example id:* `scenario_1234`
 

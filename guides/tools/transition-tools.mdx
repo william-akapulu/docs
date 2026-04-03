@@ -13,12 +13,10 @@ Use a function with `type: "transition"` and set `transition_to` to the destinat
 
 ```json
 {
-  "function": {
-    "name": "<transition_tool_name>",
-    "description": "<description>",
-    "type": "transition",
-    "transition_to": "<TARGET_NODE_NAME>"
-  }
+  "name": "<transition_tool_name>",
+  "description": "<description>",
+  "type": "transition",
+  "transition_to": "<TARGET_NODE_NAME>"
 }
 ```
 
@@ -26,12 +24,10 @@ For example:
 
 ```json
 {
-  "function": {
-    "name": "continue_to_verification",
-    "description": "Use this tool after the prospect confirms their details to move to the appointment booking node",
-    "type": "transition",
-    "transition_to": "appointment_booking"
-  }
+  "name": "continue_to_verification",
+  "description": "Use this tool after the prospect confirms their details to move to the appointment booking node",
+  "type": "transition",
+  "transition_to": "appointment_booking"
 }
 ```
 
@@ -40,12 +36,8 @@ For example:
 1. Open your scenario and go to the target node.
 2. Click **Add function**.
 3. Select the `Transition Tool` tab in the pop up modal
-3. Create a transition function with a clear name and description.
-4. Drag the probe on the right side of the function to the node you wish to transition to
-
-![Add a transition function in the scenario UI (1.5x speed)](/images/guides/tools/transition/add%20transition%20func.gif)
-
-*Shown at 1.5x speed.*
+4. Create a transition function with a clear name and description.
+5. Drag the probe on the right side of the function to the node you wish to transition to.
 
 ## Make any tool a transition tool
 
@@ -55,18 +47,12 @@ To do this in JSON, set `transition_to` on that tool function object.
 
 ```json
 {
-  "function": {
-    "name": "lookup_policy_and_continue",
-    "description": "Search policy details, then move to verification.",
-    "type": "rag",
-    "corpus_id": "<KNOWLEDGE_BASE_ID>",
-    "transition_to": "verification"
-  }
+  "name": "lookup_policy_and_continue",
+  "description": "Search policy details, then move to verification.",
+  "type": "rag",
+  "knowledge_base_id": "<KNOWLEDGE_BASE_ID>",
+  "transition_to": "verification"
 }
 ```
 
 In the UI, drag the function to the node you want to transition to after that tool is called.
-
-![Drag a tool to set transition target in the scenario UI (1.5x speed)](/images/guides/tools/transition/drag_endpoint_to_new_node.gif)
-
-*Shown at 1.5x speed.*

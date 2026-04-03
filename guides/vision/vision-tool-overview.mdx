@@ -7,10 +7,6 @@ The vision tool captures a snapshot from the user's camera feed and adds that vi
 
 Use it when your assistant needs access to the user's live video stream.
 
-<Note>
-The vision tool does not work in `voice_only_mode`. Do not use the vision tool in scenarios you plan to run in voice-only mode.
-</Note>
-
 ## Create a vision tool
 
 ### Attach via JSON
@@ -21,11 +17,9 @@ The function name and description are shown to the LLM as tool metadata, so they
 
 ```json
 {
-  "function": {
-    "name": "<vision_tool_name>",
-    "description": "<description>",
-    "type": "vision"
-  }
+  "name": "<vision_tool_name>",
+  "description": "<description>",
+  "type": "vision"
 }
 ```
 
@@ -33,11 +27,9 @@ For example:
 
 ```json
 {
-  "function": {
-    "name": "extract_insurance_card_details",
-    "description": "Read the current camera frame and extract insurance card details such as payer name, member ID, and group number.",
-    "type": "vision"
-  }
+  "name": "extract_insurance_card_details",
+  "description": "Read the current camera frame and extract insurance card details such as payer name, member ID, and group number.",
+  "type": "vision"
 }
 ```
 
@@ -47,7 +39,3 @@ For example:
 2. Click **Add function**.
 3. In the modal, select the **Vision Tool** tab.
 4. Enter a semantically meaningful function name and description.
-
-![Attach a vision tool in the scenario UI (1.5x speed)](/images/guides/tools/vision/attach_vision_tool.gif)
-
-*Shown at 1.5x speed.*

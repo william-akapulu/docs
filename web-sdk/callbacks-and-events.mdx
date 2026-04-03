@@ -1,0 +1,201 @@
+---
+title: "Callbacks and events"
+description: "Reference for the Akapulu React event stream and event payloads."
+---
+
+## Overview
+
+The Akapulu React SDK exposes a normalized conversation event stream through `useAkapuluEvents(...)`.
+
+This hook lets you react to conversation lifecycle changes, transcript updates, tool events, node changes, bot speaking state, and timeout events.
+
+## Event handling
+
+Use `useAkapuluEvents(listener)` anywhere under `AkapuluProvider`.
+
+```tsx
+import { useAkapuluEvents } from "@akapulu/react";
+
+function EventLogger() {
+  useAkapuluEvents((event) => {
+    if (event.type === "tool_event") {
+      console.log(event.tool.functionName);
+      return;
+    }
+
+    if (event.type === "transcript_updated") {
+      console.log(event.transcript.text);
+    }
+  });
+
+  return null;
+}
+```
+
+## Hook signature
+
+```ts
+useAkapuluEvents(listener: (event: AkapuluEvent) => void): void
+```
+
+<ParamField path="listener" type="(event: AkapuluEvent) => void" required>
+  Listener invoked whenever the Akapulu session store emits a normalized event.
+</ParamField>
+
+## Main unions
+
+### `SessionStatus`
+
+```ts
+type SessionStatus =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "disconnecting"
+  | "ended"
+  | "error";
+```
+
+### `BotSpeakingState`
+
+```ts
+type BotSpeakingState = "idle" | "speaking" | "listening";
+```
+
+### `ToolMessageType`
+
+```ts
+type ToolMessageType = "RAG" | "vision" | "http";
+```
+
+### `TimeoutReason`
+
+```ts
+type TimeoutReason = "duration_limit_reached" | "participant_join_timeout";
+```
+
+## Event types
+
+### `status_changed`
+
+<ParamField path="type" type='"status_changed"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="status" type='"idle" | "connecting" | "connected" | "disconnecting" | "ended" | "error"'>
+  Current high-level session lifecycle state.
+</ParamField>
+
+### `bot_speaking_state_changed`
+
+<ParamField path="type" type='"bot_speaking_state_changed"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="speakingState" type='"idle" | "speaking" | "listening"'>
+  Current speaking or listening state for the bot participant.
+</ParamField>
+
+### `node_changed`
+
+<ParamField path="type" type='"node_changed"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="node" type="{ key: string; label: string } | null">
+  Current scenario node, or `null` if no node is active.
+</ParamField>
+
+### `tool_event`
+
+<ParamField path="type" type='"tool_event"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="tool" type="NormalizedToolEvent">
+  Normalized tool event payload.
+
+  <Expandable title="NormalizedToolEvent" defaultOpen={true}>
+    <ParamField path="messageType" type='"RAG" | "vision" | "http"'>
+      Tool message type.
+    </ParamField>
+
+    <ParamField path="functionName" type="string">
+      Tool or function name.
+    </ParamField>
+
+    <ParamField path="summary" type="string">
+      Human-readable summary for the tool event.
+    </ParamField>
+
+    <ParamField path="query" type="string | undefined">
+      Query string for RAG events when present.
+    </ParamField>
+
+    <ParamField path="argsJson" type="string | undefined">
+      Pretty JSON representation of HTTP tool arguments when present.
+    </ParamField>
+
+    <ParamField path="body" type="Record<string, unknown>">
+      Raw body arguments for the tool event.
+    </ParamField>
+
+    <ParamField path="rawMessage" type="unknown">
+      Underlying raw message before normalization.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### `transcript_updated`
+
+<ParamField path="type" type='"transcript_updated"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="transcript" type="TranscriptEntry">
+  Transcript row payload.
+
+  <Expandable title="TranscriptEntry" defaultOpen={true}>
+    <ParamField path="id" type="string">
+      Stable transcript row identifier.
+    </ParamField>
+
+    <ParamField path="text" type="string">
+      Transcript text.
+    </ParamField>
+
+    <ParamField path="speaker" type='"user" | "bot"'>
+      Speaker that produced the transcript row.
+    </ParamField>
+
+    <ParamField path="timestamp" type="string">
+      Timestamp for the transcript row.
+    </ParamField>
+
+    <ParamField path="isFinal" type="boolean">
+      Whether the transcript row is finalized.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### `call_ready`
+
+<ParamField path="type" type='"call_ready"'>
+  Event discriminator indicating the call reached ready state.
+</ParamField>
+
+### `timeout`
+
+<ParamField path="type" type='"timeout"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="reason" type='"duration_limit_reached" | "participant_join_timeout"'>
+  Timeout reason reported by the backend.
+</ParamField>
+
+## Related docs
+
+- [React](/web-sdk/react-sdk)
+- [React UI](/web-sdk/react-ui)
+- [Customize Conversation UI](/guides/conversations/customize-conversation-ui)

@@ -1,0 +1,239 @@
+---
+title: "React"
+description: "React provider, hooks, and media helpers for Akapulu conversations."
+---
+
+## Overview
+
+`@akapulu/react` is the lower-level React package in the Akapulu Web SDK.
+
+It gives you the provider, hooks, and media helpers you need to build your own React conversation UI.
+
+## Installation
+
+```bash
+npm install @akapulu/react
+```
+
+This package expects React `>=18 <19`.
+
+It depends on Pipecat's React client and Daily's React package under the hood to manage the realtime media session.
+
+## Quickstart
+
+`AkapuluProvider` takes paths to your local API routes:
+
+- `connectPath`
+- `updatesPath`
+
+The browser calls those local routes. Your server routes then call Akapulu APIs through [`@akapulu/server`](/web-sdk/server-sdk).
+
+```tsx
+import { AkapuluProvider, useAkapuluSession } from "@akapulu/react";
+
+function ConversationState() {
+  const { status, start, end, transcripts, currentNode } = useAkapuluSession();
+
+  return (
+    <div>
+      <div>Status: {status}</div>
+      <div>Current node: {currentNode?.label ?? "none"}</div>
+      <button onClick={() => void start()}>Start</button>
+      <button onClick={() => void end()}>End</button>
+      <div>{transcripts.length} transcript rows</div>
+    </div>
+  );
+}
+
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <ConversationState />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Main exports
+
+The public exports currently include:
+
+- `AkapuluProvider`
+- `useAkapuluSession`
+- `useAkapuluEvents`
+- `useAkapuluPipecatClient`
+- `useAkapuluDailyCall`
+- `useAkapuluMediaControls`
+- `useAkapuluAutoEndOnRemoteLeave`
+- `AkapuluBotAudio`
+- `AkapuluConfig`
+- `AkapuluEvent`
+
+## Provider
+
+`AkapuluProvider` wraps your app and creates the conversation session store.
+
+```ts
+type AkapuluProviderProps = {
+  config: AkapuluConfig;
+  children: ReactNode;
+}
+```
+
+`AkapuluConfig` includes:
+
+<ParamField path="endpoints.connectPath" type="string" required>
+  Local connect endpoint called by the browser.
+</ParamField>
+
+<ParamField path="endpoints.updatesPath" type="string" required>
+  Local updates endpoint called by the browser.
+</ParamField>
+
+<ParamField path="connectBody" type="Record<string, unknown>">
+  Optional JSON payload forwarded to your local connect route.
+</ParamField>
+
+<ParamField path="updatesPollIntervalMs" type="number">
+  Optional polling interval override for the local updates route.
+</ParamField>
+
+<ParamField path="transport" type="AkapuluTransport">
+  Optional custom transport implementation.
+</ParamField>
+
+## Hooks
+
+### `useAkapuluSession()`
+
+Returns the session state plus `start()` and `end()` helpers.
+
+```ts
+const {
+  status,
+  callIsReady,
+  completionPercent,
+  latestUpdateText,
+  conversationSessionId,
+  transcripts,
+  botSpeakingState,
+  currentNode,
+  error,
+  start,
+  end,
+} = useAkapuluSession();
+```
+
+Session state fields include:
+
+- `status`
+- `callIsReady`
+- `completionPercent`
+- `latestUpdateText`
+- `conversationSessionId`
+- `transcripts`
+- `botSpeakingState`
+- `currentNode`
+- `error`
+
+### `useAkapuluEvents(listener)`
+
+Subscribes to the normalized `AkapuluEvent` stream.
+
+See [Callbacks and events](/web-sdk/callbacks-and-events).
+
+### `useAkapuluMediaControls()`
+
+Returns media control helpers for the underlying Daily call.
+
+```ts
+type AkapuluMediaControls = {
+  isMicMuted: boolean;
+  isCamOff: boolean;
+  canControlMedia: boolean;
+  setMicMuted: (muted: boolean) => void;
+  setCamOff: (off: boolean) => void;
+  toggleMic: () => void;
+  toggleCam: () => void;
+}
+```
+
+### `useAkapuluPipecatClient()`
+
+Returns the underlying Pipecat client when you need lower-level client access.
+
+### `useAkapuluDailyCall()`
+
+Returns the underlying Daily call object wrapper when you need lower-level Daily control.
+
+### `useAkapuluAutoEndOnRemoteLeave()`
+
+Ends the conversation when a remote participant leaves the Daily room.
+
+## Main unions and types
+
+### `SessionStatus`
+
+```ts
+type SessionStatus =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "disconnecting"
+  | "ended"
+  | "error";
+```
+
+### `BotSpeakingState`
+
+```ts
+type BotSpeakingState = "idle" | "speaking" | "listening";
+```
+
+### `AkapuluEvent`
+
+The main event union includes:
+
+- `status_changed`
+- `bot_speaking_state_changed`
+- `node_changed`
+- `tool_event`
+- `transcript_updated`
+- `call_ready`
+- `timeout`
+
+See [Callbacks and events](/web-sdk/callbacks-and-events) for the full breakdown.
+
+## When to use this package
+
+Use `@akapulu/react` when you want to:
+
+- build your own layout
+- render your own transcript UI
+- control how tool events appear
+- own your call controls and post-call flow
+
+If you want a prebuilt conversation UI instead, use [React UI](/web-sdk/react-ui).
+
+## Related implementation guides
+
+- [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
+- [Next React UI Demo](/examples/basic/next-react-ui-demo)
+- [Next React Custom UI Demo](/examples/basic/next-react-custom-ui-demo)
+
+## Related packages
+
+- [React UI](/web-sdk/react-ui)
+- [Server](/web-sdk/server-sdk)
+
+## Related APIs
+
+- [Connect API](/api-reference/conversations/connect)
+- [Updates API](/api-reference/conversations/updates)
