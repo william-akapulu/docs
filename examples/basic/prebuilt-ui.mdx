@@ -1,5 +1,5 @@
 ---
-title: "Next React UI Demo"
+title: "Pre-built UI"
 description: "A Next.js example using Akapulu's prebuilt conversation UI."
 ---
 
@@ -9,21 +9,23 @@ Use this example when you want to ship quickly with Akapulu's prebuilt UI compon
 
 - using `@akapulu/react-ui` for the conversation interface
 - using `@akapulu/server` in local Next.js API routes
+- a hub at `/` listing **Default** and **Styled** variants
 - a baseline prebuilt UI at `/default`
-- a customized prebuilt UI at `/customized`
+- a styled prebuilt UI at `/styled`
 - conversation detail and recording review after a call ends
 
 ## Routes in this example
 
+- `/` lists the two variants with links to each flow
 - `/default` uses the baseline `AkapuluConversation` flow
-- `/customized` uses the same prebuilt UI with styling and behavior overrides
+- `/styled` uses the same prebuilt UI with styling and behavior overrides
 
 Both routes use local API handlers that call Akapulu from the server:
 
 - `app/api/default/akapulu/connect/route.ts`
 - `app/api/default/akapulu/updates/route.ts`
-- `app/api/customized/akapulu/connect/route.ts`
-- `app/api/customized/akapulu/updates/route.ts`
+- `app/api/styled/akapulu/connect/route.ts`
+- `app/api/styled/akapulu/updates/route.ts`
 - `app/api/conversation-details/route.ts`
 - `app/api/view-recording/route.ts`
 
@@ -34,8 +36,8 @@ Both routes use local API handlers that call Akapulu from the server:
 3. Set `AKAPULU_API_KEY`.
 4. Update `SCENARIO_ID` in the connect route you want to test.
 5. Run `npm run dev`.
-6. Open `http://localhost:3000/default` or `http://localhost:3000/customized`.
+6. Open `http://localhost:3000`, then choose `/default` or `/styled`.
 
 ## View on GitHub
 
-- [next-react-ui-demo](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/next-react-ui-demo)
+- [prebuilt-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/prebuilt-ui)
