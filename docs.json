@@ -11,14 +11,6 @@
     {
       "source": "/",
       "destination": "/quickstart"
-    },
-    {
-      "source": "/examples/basic/next-react-ui-demo",
-      "destination": "/examples/basic/prebuilt-ui"
-    },
-    {
-      "source": "/examples/basic/next-react-custom-ui-demo",
-      "destination": "/examples/basic/custom-ui"
     }
   ],
   "colors": {
