@@ -23,12 +23,11 @@ Your endpoint URL must point to a running HTTP server route that can accept requ
 
 - Use a valid `https://` URL for production.
 - The route must be publicly reachable from the internet.
-- Localhost URLs like `http://localhost:3000/...` are not reachable by Akapulu unless you expose them through a tunnel.
 
 ## Create an endpoint
 
 1. Go to [akapulu.com/endpoints](https://akapulu.com/endpoints) and click **Create Endpoint**.
-2. In **Setup**, enter:
+2. In the **Setup** tab, enter:
    - endpoint `name`
    - destination `url`
    - HTTP `method`
@@ -36,7 +35,7 @@ Your endpoint URL must point to a running HTTP server route that can accept requ
      - `name`: `Book Appointment`
      - `url`: `https://api.yourcompany.com/v1/book-appointment`
      - `method`: `POST`
-3. In **Headers**, add a JSON object for request headers.
+3. In the **Headers** tab, add a JSON object for request headers.
    - example:
 ```json
 {
@@ -104,17 +103,16 @@ Example shape inside `nodes` json:
 Use this when you want the model to decide when to call the endpoint during a node:
 
 - open your scenario and go to the target node
-- add a function under **Functions**
-- Make sure you're on the `HTTP Endpoints` tab in the pop up modal
+- Click **Add Function**
+- Select the `HTTP Endpoints` tab in the pop up modal
 - select your endpoint by name
 - set a clear function name and description, which becomes the tool metadata shown to the LLM when it decides whether to call the tool
 
 This attaches an HTTP endpoint as a **function tool** the LLM can call within that node.
 
-## Endpoint behavior in conversation flow
-
-- **HTTP function tools (`type: "http"`)** are invoked by the model during node execution.
-- Endpoints are scoped per user and can be reused across multiple scenarios.
+<Note>
+Endpoints can be reused across multiple scenarios.
+</Note>
 
 ## Next step
 

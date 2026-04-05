@@ -24,61 +24,7 @@ A scenario lets you design the flow as a set of stages. At each stage, you can d
 
 As the conversation evolves, the assistant transitions between stages when appropriate.
 
-For example:
-
-- **Interview Training Avatar:** intro and rapport -> general background questions -> technical questions -> next steps
-
-*Example guidance for the LLM*
-```mermaid
-flowchart TD
-  RP[You are a supportive interview coach]
-  A[Intro and rapport] --> B[General background questions]
-  B --> C[Technical questions]
-  C <-- needs review --> D[Review]
-  C -- meets expectations --> E[Next steps]
-
-  classDef startNode fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:2px;
-  classDef endNode fill:#dc2626,color:#ffffff,stroke:#991b1b,stroke-width:2px;
-  classDef stageNode fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
-  classDef rolePrompt fill:#e9d5ff,color:#4c1d95,stroke:#7c3aed,stroke-width:2px,stroke-dasharray: 5 3;
-
-  class RP rolePrompt;
-  class A startNode;
-  class D endNode;
-  class B,C,E stageNode;
-
-  linkStyle default stroke:#64748b,stroke-width:2px;
-```
-
-- **Patient Intake Screening:** intro -> data intake -> appointment booking -> Q&A -> end
-
-*Example guidance for the LLM*
-```mermaid
-flowchart TD
-  RP[You are a friendly medical screener]
-  A[Welcome the patient and ask for consent]
-  A -- consent given --> B[Collect basic details and symptoms]
-  A -- no consent --> Z[End the screening]
-  B -- details collected --> C[Schedule the appointment]
-  B <--> V[Look at the symptom on camera]
-  C -- booking submitted --> D[Answer patient questions]
-  D -- patient ready to finish --> E[Close the conversation]
-  D <--> R[Check clinic information]
-
-  classDef startNode fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:2px;
-  classDef endNode fill:#dc2626,color:#ffffff,stroke:#991b1b,stroke-width:2px;
-  classDef stageNode fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
-  classDef toolNode fill:#7c3aed,color:#ffffff,stroke:#6b7280,stroke-width:3.5px,stroke-dasharray: 6 3;
-  classDef rolePrompt fill:#e9d5ff,color:#4c1d95,stroke:#7c3aed,stroke-width:2px,stroke-dasharray: 5 3;
-
-  class RP rolePrompt;
-  class A startNode;
-  class Z,E endNode;
-  class B,C,D stageNode;
-  class V,R toolNode;
-
-  linkStyle default stroke:#64748b,stroke-width:2px;
-```
+For walkthrough-style examples with diagrams (interview coach and patient intake flows), see [How Akapulu works](/guides/getting-started/how-akapulu-works#scenarios-and-conversation-stages).
 
 ## Nodes
 
@@ -141,23 +87,33 @@ Use your Akapulu RAG tool to get information on how Akapulu works
 
 ## Add tools and transitions
 
-### Add a RAG tool and a transition function
-
 You can add tools directly to each node.
 
+### Create the RAG tool
+
 1. Create a **[Knowledge Base](/guides/knowledge-bases/overview)**.
-2. Open the node you want to update.
-3. Click **+ Add function** at the bottom of the node.
-4. In the pop up modal, open the **RAG Tool** tab.
-5. Select your desired knowledge base, then create the RAG function with:
+2. Back in the scenario editor, click **+ Add function** at the bottom of the **Planning Phase** node.
+3. In the pop up modal, open the **RAG Tool** tab.
+4. Select your knowledge base, then create the RAG function with:
    - **Name:** `Akapulu_RAG`
    - **Description:** `Access information on the Akapulu platform`
-6. In the `Greeting` node, click **+ Add function**.
-7. In the pop up modal, open the **Transition Tool** tab.
-8. Create a transition function with:
+
+**What you accomplished:** You wired your knowledge base into the **Planning Phase** node as a callable RAG function named `Akapulu_RAG`.
+
+**What this means for the bot:** While the conversation is in **Planning Phase**, the model can invoke that function to pull retrieval-augmented context from your knowledge base. Its replies in that stage can lean on grounded snippets instead of guessing, which matches the node’s task instruction to use the Akapulu RAG tool when explaining the platform overview.
+
+### Create the transition tool
+
+1. In the scenario editor, click **+ Add function** at the bottom of the **Greeting** node.
+2. In the pop up modal, open the **Transition Tool** tab.
+3. Create a transition function with:
    - **Name:** `transition_to_planning_phase`
    - **Description:** `Once you have gathered enough information on what the user wants to build with Akapulu, use this tool to transition to the planning phase`
-9. Drag the probe on the right side of `transition_to_planning_phase` to the `Planning Phase` node to set the transition target.
+4. Drag the probe on the right side of `transition_to_planning_phase` to the **Planning Phase** node to set the transition target.
+
+**What you accomplished:** You gave the **Greeting** node an explicit transition tool that moves the flow into **Planning Phase** when the model chooses to call it.
+
+**What this means for the bot:** During **Greeting**, the assistant follows the greeting task instruction and only has the transition tool (not RAG yet). When it decides enough context has been collected, it can call `transition_to_planning_phase`, and Akapulu switches the active node: **Planning Phase** task instructions are added to the llm context, and `Akapulu_RAG` becomes available so behavior shifts from discovery to informed planning overview.
 
 ## Completed scenario example
 
@@ -197,6 +153,14 @@ If you want to view or edit this scenario as JSON, use the scenario editor toggl
   }
 }
 ```
+
+---
+
+The scenario editor has **view** mode and **edit** mode for each scenario.
+
+Starting from **New** opens **edit** mode by default, so you can add nodes, edit instructions, and configure tools immediately.
+
+Opening a scenario from the scenarios table opens **view** mode first. In view mode you can review the flow, but you cannot change the graph or tool wiring. Click **Edit** in the lower-left corner to switch to **edit** mode and make those changes.
 
 ## Next scenario guides
 

@@ -41,7 +41,7 @@ To set any node as the start node (other than the first one created), click the 
 
 ## Global role instruction
 
-Scenarios use one global `role_instruction` at the top level
+Scenarios use one global `role_instruction` at the top level.
 
 Use `role_instruction` for long-lived identity, tone, boundaries, and behavior that should apply across the full conversation.
 
@@ -58,6 +58,10 @@ Use `role_instruction` for long-lived identity, tone, boundaries, and behavior t
   }
 }
 ```
+
+**UI**
+
+In the scenario editor, click the **hamburger** icon on the left to open the left-hand nav menu. That panel includes a text area where you edit the global **role instruction**.
 
 ## Task instruction
 
@@ -89,9 +93,35 @@ Recommended pattern:
 
 **UI**
 
-The node name is the large header input at the top of the node card.
+The task instruction is the text input on the node labeled **Task Instruction**.
 
-The task instruction is the text input on the node labeled **Task Input**.
+### Runtime variables in instructions
+
+You can embed **`{{runtime.*}}`** placeholders in the global **`role_instruction`** and in any node’s **`task_instruction`**. Akapulu substitutes them from the **`runtime_vars`** your server sends on [connect](/api-reference/conversations/connect), so the model sees session-specific text without you duplicating scenarios per customer.
+
+<Note>
+`secret` and `llm` template variables are **not** supported in `role_instruction` or `task_instruction`. Use **`{{runtime.*}}`** for per-session variables; keep sensitive variables in endpoint headers with `{{secret.*}}`, and use **`{{llm.*}}`** only in HTTP endpoint templates. See [Templates and Variables](/guides/endpoints/templates-and-variables).
+</Note>
+
+**Example**
+
+```json
+{
+  "role_instruction": "You are a support agent for {{runtime.company_name}}. The caller’s account id is {{runtime.user_id}}.",
+  "nodes": {
+    "Ticket triage": {
+      "task_instruction": "Greet {{runtime.display_name}} and ask which product line they need help with before looking anything up.",
+      ...
+    }
+  }
+}
+```
+
+Your connect request should include matching keys in `runtime_vars`, for example `company_name`, `user_id`, and `display_name`.
+
+<Note>
+**Web SDK:** If using the [Akapulu Web SDK](/web-sdk/overview), in your connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** with a **`runtime_vars`** object whose keys match your **`{{runtime.*}}`** placeholders. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a complete server-side example.
+</Note>
 
 ## Functions
 
@@ -113,6 +143,11 @@ Type-specific requirements:
 - `http` requires `endpoint_id`
 - `rag` requires `knowledge_base_id`
 - `vision` has no additional required ID field
+
+Function description guidance:
+
+- this is the instruction shown to the model for when and why to call the tool
+- be explicit about the trigger, expected use, and what the tool does
 
 **JSON**
 
@@ -171,20 +206,9 @@ In the modal:
 
 - enter a function `name`
 - enter a function `description`
-- set any type-specific fields such as `endpoint_id`, or `knowledge_base_id`
+- select type-specific targets from the dropdowns (saved HTTP endpoint for `http`, knowledge base for `rag`)
 
 To set `transition_to` in the UI for any function, drag the probe on the right side of the function to the desired node.
-
-Function name requirements:
-
-- it must be unique within the node
-- it can only use letters, numbers, underscores, and hyphens
-- it should be short and action-oriented so the model can understand when to call it
-
-Function description guidance:
-
-- this is the instruction shown to the model for when and why to call the tool
-- be explicit about the trigger, expected use, and what the tool does
 
 ## Respond immediately
 

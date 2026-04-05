@@ -25,21 +25,11 @@ It is split into these public packages:
 
 1. Your frontend calls your own local `connect` and `updates` routes.
 2. Your local server routes call Akapulu with `@akapulu/server`.
-3. Your React app uses `@akapulu/react` to manage session state and media.
+3. Your React frontend uses `@akapulu/react` to manage session state and media.
 4. If you want prebuilt UI, `@akapulu/react-ui` renders on top of `@akapulu/react`.
 5. Shared event and transcript models are handled internally across the SDK packages.
 
-## Typical flow
-
-```text
-Browser UI
-  -> local connect and updates routes
-  -> @akapulu/server
-  -> Akapulu API
-  -> Daily room
-```
-
-In that setup:
+In this setup:
 
 - `@akapulu/server` handles API calls and keeps your API key on the server
 - `@akapulu/react` handles session state, event subscriptions, and media controls
@@ -62,12 +52,3 @@ Reference implementations and implementation guides:
 - [Custom UI](/examples/basic/custom-ui)
   Uses `@akapulu/react` only and renders the conversation UI manually.
 - [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
-
-## Related APIs
-
-The Web SDK commonly works with these Akapulu endpoints:
-
-- [Connect API](/api-reference/conversations/connect)
-- [Updates API](/api-reference/conversations/updates)
-- [Conversation Detail API](/api-reference/conversations/detail)
-- [Conversation Recording API](/api-reference/conversations/recording)

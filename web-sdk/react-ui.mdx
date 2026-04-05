@@ -15,8 +15,6 @@ It is built on top of [`@akapulu/react`](/web-sdk/react-sdk) and provides a preb
 npm install @akapulu/react-ui
 ```
 
-This package expects React `>=18 <19`.
-
 ## Main export
 
 The main export is `AkapuluConversation`.
@@ -46,95 +44,6 @@ type AkapuluConversationProps = {
 - tool event surfaces
 - built-in call controls
 
-## Customization model
-
-`@akapulu/react-ui` supports three main customization layers:
-
-- behavior props like `transcriptFilter`, `renderTranscriptEntry`, `onToolEvent`, and `renderToolEvent`
-- slot class overrides through `classes`
-- slot style overrides through `styles`
-
-## Behavior props
-
-### `transcriptFilter`
-
-```ts
-transcriptFilter?: (entry: TranscriptEntry) => boolean
-```
-
-Used to remove transcript rows from the rendered transcript.
-
-### `renderTranscriptEntry`
-
-```ts
-renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode
-```
-
-Used to render transcript rows with custom JSX.
-
-### `onToolEvent`
-
-```ts
-onToolEvent?: (tool: NormalizedToolEvent) => void
-```
-
-Used to run side effects when tool events arrive.
-
-### `renderToolEvent`
-
-```ts
-renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode
-```
-
-Used to replace the default tool toast element.
-
-### `toolEventTimeoutMs`
-
-```ts
-toolEventTimeoutMs?: number | null
-```
-
-Default is `4000`.
-
-- pass a number to customize the auto-hide timeout
-- pass `null` to disable auto-hide
-
-## Style surfaces
-
-`AkapuluConversationClasses` includes slot keys like:
-
-- `container`
-- `title`
-- `startButton`
-- `toolToast`
-- `loadingContainer`
-- `loadingSpinner`
-- `loadingLabel`
-- `loadingProgressTrack`
-- `loadingProgressFill`
-- `loadingStatusText`
-- `errorModalBackdrop`
-- `errorModalCard`
-- `connectedLayout`
-- `videoPane`
-- `videoSurface`
-- `botStateBadge`
-- `pip`
-- `controlMic`
-- `controlCam`
-- `controlEnd`
-- `transcriptPane`
-- `transcriptContainer`
-- `transcriptHeader`
-- `nodeChip`
-- `waitingVideo`
-- `transcriptRowUser`
-- `transcriptRowBot`
-
-`AkapuluConversationStyles` exposes the same slot keys as inline style override surfaces.
-
-For the full slot map and examples, see [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
-
 ## How it fits in your app
 
 In a typical React app:
@@ -142,6 +51,8 @@ In a typical React app:
 1. `AkapuluProvider` from [`@akapulu/react`](/web-sdk/react-sdk) points at your local routes.
 2. Your routes call Akapulu through [`@akapulu/server`](/web-sdk/server-sdk).
 3. `AkapuluConversation` renders the higher-level conversation UI on top of that session state.
+
+See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for end-to-end setup (local connect/updates routes, `connectBody`, custom UI without this package, and post-call APIs).
 
 ## When to use this package
 
@@ -181,7 +92,189 @@ export function App() {
 }
 ```
 
-## Example
+## Styling `AkapuluConversation`
+
+`@akapulu/react-ui` supports slot-level customization via:
+
+- `className` for the root
+- `classes` for slot class names
+- `styles` for slot inline style overrides
+
+### Example 1: Slot key overrides (`classes` + `styles`)
+
+Use slot keys when you want to target specific UI parts directly from React props.
+
+```tsx
+<AkapuluConversation
+  title="Akapulu demo"
+  classes={{
+    transcriptContainer: "myTranscriptContainer",
+    controlEnd: "myLeaveButton",
+  }}
+  styles={{
+    videoPane: { borderRadius: 20 },
+    connectedLayout: { gap: "1.5rem" },
+  }}
+/>
+```
+
+### Example 2: Default class overrides (global CSS)
+
+Use built-in default classes when you want to apply theme-like global styles from CSS.
+
+```css
+.akapulu-transcript-container {
+  border: 1px solid #334155;
+  border-radius: 14px;
+}
+
+.akapulu-control-end {
+  background: rgba(185, 28, 28, 0.9);
+}
+```
+
+### Example 3: `data-slot` overrides (stable CSS selectors)
+
+Use `data-slot` selectors when you want explicit, inspectable selectors in DevTools.
+
+```css
+[data-slot="transcript-header"] {
+  backdrop-filter: blur(2px);
+}
+
+[data-slot="pip"] {
+  width: 28%;
+  border-color: #60a5fa;
+}
+```
+
+### Slot map
+
+Each slot has both a default class and a `data-slot` marker so users can inspect and target it in DevTools without guessing.
+
+#### Layout
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `container` | Outer wrapper for the whole conversation UI | `akapulu-conversation` | `container` |
+| `title` | Top heading text | `akapulu-title` | `title` |
+| `connectedLayout` | Main connected-state grid wrapper | `akapulu-connected-layout` | `connected-layout` |
+| `startButton` | Idle/error state start-call button | `akapulu-start-button` | `start-button` |
+
+#### Loading
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `loadingContainer` | Wrapper for loading state UI | `akapulu-loading-container` | `loading-container` |
+| `loadingSpinner` | Loading spinner element | `akapulu-loading-spinner` | `loading-spinner` |
+| `loadingLabel` | Loading headline text (e.g. Connecting...) | `akapulu-loading-label` | `loading-label` |
+| `loadingProgressTrack` | Progress bar background track | `akapulu-loading-progress-track` | `loading-progress-track` |
+| `loadingProgressFill` | Progress bar filled portion | `akapulu-loading-progress-fill` | `loading-progress-fill` |
+| `loadingStatusText` | Detailed status text under progress bar | `akapulu-loading-status-text` | `loading-status-text` |
+
+#### Error modal
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `errorModalBackdrop` | Full-screen modal overlay behind error card | `akapulu-error-modal-backdrop` | `error-modal-backdrop` |
+| `errorModalCard` | Error modal content card | `akapulu-error-modal-card` | `error-modal-card` |
+
+#### Tool events
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `toolToast` | Floating toast/card for tool activity | `akapulu-tool-toast` | `tool-toast` |
+
+#### Video + controls
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `videoPane` | Video column container | `akapulu-video-pane` | `video-pane` |
+| `videoSurface` | Primary remote/bot video surface | `akapulu-video-surface` | `video-surface` |
+| `botStateBadge` | Speaking/listening/idle badge on video | `akapulu-bot-state-badge` | `bot-state-badge` |
+| `pip` | Local picture-in-picture preview tile | `akapulu-pip` | `pip` |
+| `waitingVideo` | Placeholder shown before video is available | `akapulu-waiting-video` | `waiting-video` |
+| `controlMic` | In-call mic button (video mode) | `akapulu-control-mic` | `control-mic` |
+| `controlCam` | In-call camera button (video mode) | `akapulu-control-cam` | `control-cam` |
+| `controlEnd` | In-call hang-up button (video mode) | `akapulu-control-end` | `control-end` |
+
+#### Transcript
+
+| Slot key | What it targets | Default class | `data-slot` value |
+| --- | --- | --- | --- |
+| `transcriptPane` | Transcript column container | `akapulu-transcript-pane` | `transcript-pane` |
+| `transcriptContainer` | Scrollable transcript box | `akapulu-transcript-container` | `transcript-container` |
+| `transcriptHeader` | Transcript header row | `akapulu-transcript-header` | `transcript-header` |
+| `nodeChip` | Current node chip in transcript header | `akapulu-node-chip` | `node-chip` |
+| `transcriptRowUser` | User transcript row/bubble | `akapulu-transcript-row-user` | `transcript-row-user` |
+| `transcriptRowBot` | Bot transcript row/bubble | `akapulu-transcript-row-bot` | `transcript-row-bot` |
+
+## Behavior customization (handlers + custom elements)
+
+Beyond styles, `@akapulu/react-ui` lets you customize behavior and rendering for transcript and tool events directly on `AkapuluConversation`.
+
+### Built-in handler props on `AkapuluConversation`
+
+- `transcriptFilter(entry)` to hide transcript rows
+- `renderTranscriptEntry(entry)` to render transcript rows with your own JSX
+- `onToolEvent(tool)` to run side effects when a tool event arrives
+- `renderToolEvent(tool)` to replace the default tool toast element
+- `toolEventTimeoutMs` to control how long the tool toast stays visible
+
+Callback signatures:
+
+```ts
+transcriptFilter?: (entry: TranscriptEntry) => boolean;
+renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode;
+onToolEvent?: (tool: NormalizedToolEvent) => void;
+renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
+toolEventTimeoutMs?: number | null;
+```
+
+`toolEventTimeoutMs` behavior:
+
+- default: `4000`
+- pass a number to customize the auto-hide timeout
+- pass `null` to disable auto-hide
+
+`TranscriptEntry` shape (`entry`):
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Stable transcript row id |
+| `speaker` | `"user" \| "bot"` | Who produced this transcript chunk |
+| `text` | `string` | Transcript text |
+| `timestamp` | `string` | Event timestamp |
+| `isFinal` | `boolean` | Whether this transcript row is finalized |
+
+`NormalizedToolEvent` shape (`tool`) by tool type:
+
+#### `RAG` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"RAG"` | RAG tool event |
+| `functionName` | `string` | RAG function/tool name |
+| `summary` | `string` | `"RAG tool called"` |
+| `query` | `string \| undefined` | Query text |
+
+#### `vision` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"vision"` | Vision tool event |
+| `functionName` | `string` | Vision function/tool name |
+| `summary` | `string` | `"Vision tool called"` |
+
+#### `http` tool event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `messageType` | `"http"` | HTTP tool event |
+| `functionName` | `string` | HTTP function/tool name |
+| `summary` | `string` | `"HTTP endpoint called"` |
+| `argsJson` | `string \| undefined` | Pretty JSON string of `body` |
+| `body` | `Record<string, unknown>` | Outgoing HTTP request payload fields |
 
 ```tsx
 import { AkapuluProvider } from "@akapulu/react";
@@ -197,11 +290,164 @@ export function App() {
         },
       }}
     >
+      <AkapuluConversation
+        title="Akapulu demo"
+        transcriptFilter={(entry) => {
+          // Example: skip rows you do not want in the transcript list
+          return entry.text.trim() !== "skip me";
+        }}
+        renderTranscriptEntry={(entry) => (
+          <div>
+            <strong>{entry.speaker === "user" ? "You" : "Bot"}:</strong> {entry.text}
+          </div>
+        )}
+        onToolEvent={(tool) => {
+          // Example: analytics side effect
+          console.log("tool_event", tool.messageType, tool.functionName);
+        }}
+        renderToolEvent={(tool) => (
+          <div style={{ border: "1px solid #334155", borderRadius: 8, padding: 12 }}>
+            <strong>{tool.summary}</strong>
+            <div style={{ marginTop: 6, opacity: 0.85 }}>{tool.functionName}</div>
+          </div>
+        )}
+      />
+    </AkapuluProvider>
+  );
+}
+```
+
+## Handling all conversation events while keeping prebuilt UI
+
+For full event handling (node changes, bot speaking state, transcript updates, tool calls, and timeout), add a small sibling listener component that uses `useAkapuluEvents` from `@akapulu/react`.
+
+```tsx
+import { AkapuluProvider, useAkapuluEvents } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+function ConversationEventListener() {
+  useAkapuluEvents((event) => {
+    // … handle `event` (discriminated by `event.type`; see schema below)
+  });
+  return null;
+}
+
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <AkapuluConversation title="Akapulu demo" />
+      <ConversationEventListener />
+    </AkapuluProvider>
+  );
+}
+```
+
+Event schema by `event.type`:
+
+#### `status_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"status_changed"` | Discriminator |
+| `status` | `"idle" \| "connecting" \| "connected" \| "disconnecting" \| "ended" \| "error"` | Session lifecycle state |
+
+#### `bot_speaking_state_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"bot_speaking_state_changed"` | Discriminator |
+| `speakingState` | `"idle" \| "speaking" \| "listening"` | Bot speaking/listening state |
+
+#### `node_changed`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"node_changed"` | Discriminator |
+| `node` | `{ key: string; label: string } \| null` | Current flow node |
+
+#### `tool_event`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"tool_event"` | Discriminator |
+| `tool` | `NormalizedToolEvent` | Normalized tool event payload |
+
+#### `transcript_updated`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"transcript_updated"` | Discriminator |
+| `transcript` | `TranscriptEntry` | Updated transcript row |
+
+#### `call_ready`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"call_ready"` | Call reached ready state |
+
+#### `timeout`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"timeout"` | Discriminator |
+| `reason` | `"duration_limit_reached" \| "participant_join_timeout"` | Timeout reason from backend |
+
+```tsx
+import { AkapuluProvider, useAkapuluEvents } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+function ConversationEventBridge() {
+  useAkapuluEvents((event) => {
+    if (event.type === "transcript_updated") {
+      // event.transcript
+      return;
+    }
+    if (event.type === "bot_speaking_state_changed") {
+      // event.speakingState: "idle" | "speaking" | "listening"
+      return;
+    }
+    if (event.type === "node_changed") {
+      // event.node
+      return;
+    }
+    if (event.type === "tool_event") {
+      // event.tool
+      return;
+    }
+    if (event.type === "timeout") {
+      // event.reason
+      return;
+    }
+  });
+
+  return null;
+}
+
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+      }}
+    >
+      <ConversationEventBridge />
       <AkapuluConversation title="Akapulu demo" />
     </AkapuluProvider>
   );
 }
 ```
+
+See [Callbacks and events](/web-sdk/callbacks-and-events) for more context on the event stream.
 
 ## Related docs
 

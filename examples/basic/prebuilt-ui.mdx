@@ -3,41 +3,38 @@ title: "Pre-built UI"
 description: "A Next.js example using Akapulu's prebuilt conversation UI."
 ---
 
-Use this example when you want to ship quickly with Akapulu's prebuilt UI components.
+Use this example when you want to use or style Akapulu's prebuilt conversation UI with a post-call review screen.
 
 ## What this example shows
 
-- using `@akapulu/react-ui` for the conversation interface
-- using `@akapulu/server` in local Next.js API routes
-- a hub at `/` listing **Default** and **Styled** variants
-- a baseline prebuilt UI at `/default`
-- a styled prebuilt UI at `/styled`
-- conversation detail and recording review after a call ends
+- **`AkapuluProvider`** from [`@akapulu/react`](/web-sdk/react-sdk) and **`AkapuluConversation`** from [`@akapulu/react-ui`](/web-sdk/react-ui).
+- Local route handlers use [`@akapulu/server`](/web-sdk/server-sdk) to call Akapulu (API key stays on the server).
+- Two pages — **`/default`** and **`/styled`** — for a **minimal reference** vs a **styled / extended** setup.
 
-## Routes in this example
+## `/default`
 
-- `/` lists the two variants with links to each flow
-- `/default` uses the baseline `AkapuluConversation` flow
-- `/styled` uses the same prebuilt UI with styling and behavior overrides
+- Default **`AkapuluProvider`** with **`AkapuluConversation`** — no custom **`styles`** or render props.
+- Provider endpoints: **`/api/default/akapulu/connect`** and **`/api/default/akapulu/updates`**.
+- Minimal reference: fastest path to a working call with default prebuilt chrome.
 
-Both routes use local API handlers that call Akapulu from the server:
+## `/styled`
 
-- `app/api/default/akapulu/connect/route.ts`
-- `app/api/default/akapulu/updates/route.ts`
-- `app/api/styled/akapulu/connect/route.ts`
-- `app/api/styled/akapulu/updates/route.ts`
-- `app/api/conversation-details/route.ts`
-- `app/api/view-recording/route.ts`
+**`AkapuluProvider`** + **`AkapuluConversation`**, with extra props for customization:
 
-## Quickstart
+- **`styles`** — slot-level theming (dark layout in the example).
+- **`renderTranscriptEntry`** / **`renderToolEvent`** — custom transcript rows and tool UI (see **`app/styled/customization.tsx`**).
+- **`connectBody`** — sample JSON the browser sends to your local connect route.
 
-1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env.local`.
-3. Set `AKAPULU_API_KEY`.
-4. Update `SCENARIO_ID` in the connect route you want to test.
-5. Run `npm run dev`.
-6. Open `http://localhost:3000`, then choose `/default` or `/styled`.
+Also in this route:
+
+- **`useAkapuluEvents`** — logs the full event stream to the console (dev aid).
+- **`/api/styled/akapulu/*`** — same connect/update pattern as **`/default`**, but its own URLs.
+
+**After the call ends** (styled flow only):
+
+- Opens a **post-call review** UI in the example app.
+- Conversation data comes from **`getConversationDetail`** (metadata + transcript rows) and **`getConversationRecording`** (redirect / JSON / binary).
 
 ## View on GitHub
 
-- [prebuilt-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/prebuilt-ui)
+[prebuilt-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/prebuilt-ui)

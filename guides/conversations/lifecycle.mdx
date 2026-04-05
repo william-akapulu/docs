@@ -85,9 +85,19 @@ Your application experience is the interaction between these two participants in
    - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`.
    - Once ready, transition your UI from loading state to live in-call state.
 
+<Note>
+The [Akapulu Web SDK](/web-sdk/overview) orchestrates:
+
+- Calling **`POST /api/conversations/connect/`**
+- Polling **`GET /api/conversations/{conversation_session_id}/updates/`** until `call_is_ready`
+- Joining the Daily room with `room_url` and `token` from the connect response
+
+So you can focus on your custom scenario logic and your in-call UI experience.
+</Note>
+
 ### Pre-join timeout behavior
 
-If no user participant joins the Daily room shortly after connect(45 seconds), Akapulu automatically ends the session to avoid leaving an abandoned bot process running.
+If no user participant joins the Daily room shortly after connect (45 seconds), Akapulu automatically ends the session to avoid leaving an abandoned bot process running.
 
 ## Understand Usage and Concurrency Limits
 
@@ -120,3 +130,12 @@ For each session, you can:
 
 - open the transcript view, which shows a sanitized transcript that excludes full tool call messages
 - click **Download Recording** to download and review the recording
+
+### API access
+
+For programmatic access to conversation details and recordings:
+
+- **[Conversation detail](/api-reference/conversations/detail)** — session metadata and transcript rows.
+- **[Conversation recording](/api-reference/conversations/recording)** — signed URL for downloading the session recording.
+
+The [Custom UI](/examples/basic/custom-ui) example implements `conversation-details` and `view-recording` handlers that call these endpoints with the [Server SDK](/web-sdk/server-sdk) (`@akapulu/server`).

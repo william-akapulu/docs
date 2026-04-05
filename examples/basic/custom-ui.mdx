@@ -7,33 +7,20 @@ Use this example when you want full control over the conversation experience whi
 
 ## What this example shows
 
-- using `@akapulu/react` without `@akapulu/react-ui`
-- building a fully custom call surface with your own layout
-- rendering video, transcript, node state, tool events, and media controls manually
-- using `@akapulu/server` in local Next.js API routes
-- redirecting to a conversation details page after the call ends
+- **`AkapuluProvider`** and headless hooks from [`@akapulu/react`](/web-sdk/react-sdk)
+- **`useAkapuluSession`** for lifecycle and store state; **`useAkapuluMediaControls`** for mic/cam; **`useAkapuluEvents`** for tools and other events; **`AkapuluBotAudio`** for assistant audio.
+- **`@daily-co/daily-react`** (**`DailyVideo`**, **`useDaily`**, **`useParticipantIds`**, **`useVideoTrack`**) for remote/local video under the same provider.
+- **[`@akapulu/server`](/web-sdk/server-sdk)** in route handlers so the API key never ships to the browser.
 
-## Routes in this example
+**Connect / updates in this app**
 
-- `/` renders the full custom UI
-- `/view-conversation-details/[conversationId]` shows post-call detail review
+- **`POST /api/akapulu/connect`** and **`GET /api/akapulu/updates?conversation_session_id=...`** 
 
-Local API handlers:
+**After the call ends**
 
-- `app/api/akapulu/connect/route.ts`
-- `app/api/akapulu/updates/route.ts`
-- `app/api/conversation-details/route.ts`
-- `app/api/view-recording/route.ts`
-
-## Quickstart
-
-1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env.local`.
-3. Set `AKAPULU_API_KEY`.
-4. Update `SCENARIO_ID` in `app/api/akapulu/connect/route.ts`.
-5. Run `npm run dev`.
-6. Open `http://localhost:3000`.
+- Opens a **post-call review** screen in the example app.
+- Conversation data comes from **`getConversationDetail`** and **`getConversationRecording`** on **[`@akapulu/server`](/web-sdk/server-sdk)** (metadata + transcript rows; recording as redirect / JSON / binary).
 
 ## View on GitHub
 
-- [custom-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui)
+[custom-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui)

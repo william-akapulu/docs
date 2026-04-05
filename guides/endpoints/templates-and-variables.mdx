@@ -35,7 +35,7 @@ Use this for sensitive values such as API keys, tokens, and tenant secrets.
 `secret` variables must be created in [akapulu.com/secrets](https://akapulu.com/secrets).
 
 <Note>
-Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request body fields, `role_instruction`, or `task_instruction`. Keep secrets out of request bodies because tool-call payloads may be exposed to your frontend experience.
+Secret variables are allowed only in endpoint headers. Secret variables are not allowed in request body fields, `role_instruction`, or `task_instruction`. `role_instruction`, `task_instruction`, and HTTP endpoint request bodies may be visible to users, so they should not contain sensitive information.
 </Note>
 
 Examples:
@@ -64,6 +64,10 @@ Use this for per-session values that your app passes at connect time (for exampl
 
 `runtime` variables must be passed to the [connect endpoint](/api-reference/conversations/connect) as `runtime_vars`.
 
+<Note>
+**Web SDK:** If using the [Akapulu Web SDK](/web-sdk/overview), from your backend connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** and pass **`runtime_vars`** with the same keys you use in **`{{runtime.*}}`** templates. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a full connect-route example.
+</Note>
+
 Examples:
 
 ```json
@@ -77,6 +81,26 @@ Examples:
   }
 }
 ```
+
+### In `role_instruction` and `task_instruction`
+
+You can use the same `{{runtime.*}}` placeholders in the scenario’s global **`role_instruction`** and each node’s **`task_instruction`**. They are expanded from **`runtime_vars` at connect time**, so the model sees the resolved text for that session (unlike `{{llm.*}}`, which only resolves when a function tool runs).
+
+Example (fragment; your scenario also needs the usual `nodes` / routing fields):
+
+```json
+{
+  "role_instruction": "You are an onboarding specialist for {{runtime.company_name}}. The user’s account id is {{runtime.user_id}}; keep the flow relevant to their workspace.",
+  "nodes": [
+    {
+      "name": "verify_identity",
+      "task_instruction": "Confirm you are helping {{runtime.preferred_name}} (patient record {{runtime.patient_id}}) before discussing results. If they correct their name, follow their lead."
+    }
+  ]
+}
+```
+
+Your app must pass matching keys (`company_name`, `user_id`, `preferred_name`, `patient_id`, etc.) in `runtime_vars` on [connect](/api-reference/conversations/connect).
 
 ## LLM variables
 
@@ -104,15 +128,39 @@ Examples:
 
 ## Function tools
 
-`{{llm.*}}` variables are supported for HTTP endpoints configured as function tools because the model fills them at tool-call time.
+`{{llm.*}}` placeholders work in **HTTP endpoint** templates (for example headers and body) when that endpoint is attached as a **function tool**: the model supplies values only when it **invokes** the tool, and those values are merged into the outgoing request.
 
-### Function tools (LLM-available)
-
-The LLM can call these tools and fill `{{llm.*}}` variables.
+**`{{llm.*}}` is not supported in `role_instruction` or `task_instruction`.** Those strings are fixed prompt text for the node (with only the other variable types applied, such as `runtime.*`). The model does not “call” them like a tool, so there is no tool-call step where it could fill LLM parameters.
 
 ## Mixed example
 
-You can combine all variable types in one endpoint:
+Below, a booking flow uses **runtime** substitutions in `role_instruction` and `task_instruction`, plus one HTTP endpoint (attached as a function tool) that mixes **secret**, **runtime**, and **llm** template variables.
+
+| Source | Variables in this example |
+| --- | --- |
+| **[Connect](/api-reference/conversations/connect) `runtime_vars`** (your server supplies each session) | `session_id`, `user_id`, `company_name`, `preferred_name`, `patient_id` |
+| **[Secrets](https://akapulu.com/secrets)** (create once per project; referenced as `{{secret.*}}`) | `crm_api_key` |
+| **Model at tool-call time** (`{{llm.*}}` in the endpoint body only) | `date`, `time` |
+
+### Scenario: `role_instruction` and `task_instruction`
+
+Fragment showing runtime templates in prompts (your full scenario also needs routing, tools, and so on):
+
+```json
+{
+  "role_instruction": "You are a scheduling assistant for {{runtime.company_name}}. The signed-in account is {{runtime.user_id}}.",
+  "nodes": [
+    {
+      "name": "booking",
+      "task_instruction": "Help {{runtime.preferred_name}} book a visit. Their patient id suffix is {{runtime.patient_id}}. When you have a concrete date and time from the user, call the book_appointment tool."
+    }
+  ]
+}
+```
+
+Omitted here: `functions`, edges, and other required scenario fields—in your real JSON, attach the HTTP function tool that uses the endpoint template below.
+
+### HTTP endpoint template (function tool)
 
 ```json
 {
@@ -128,7 +176,29 @@ You can combine all variable types in one endpoint:
 }
 ```
 
-Example actual request (after variable resolution):
+### Connect payload (where runtime values come from)
+
+Your backend passes the same keys used in `{{runtime.*}}` above:
+
+```json
+{
+  "scenario_id": "YOUR_SCENARIO_ID",
+  "avatar_id": "YOUR_AVATAR_ID",
+  "runtime_vars": {
+    "session_id": "sess_9f2a1c",
+    "user_id": "usr_001",
+    "company_name": "Acme Health",
+    "preferred_name": "Jordan",
+    "patient_id": "2938573456"
+  }
+}
+```
+
+After connect, instructions show the substituted text, and the endpoint template is ready except for `{{llm.*}}`, which resolve when the model invokes the tool.
+
+### Example HTTP request (after secret + runtime substitution and a tool call)
+
+`Authorization` and `patient_id` / session header came from secrets + runtime. `appointment_date` and `appointment_time` are whatever the model supplied for `date` and `time` on that call.
 
 ```json
 {

@@ -36,7 +36,7 @@ For example:
 1. Open your scenario and go to the target node.
 2. Click **Add function**.
 3. Select the `Transition Tool` tab in the pop up modal
-4. Create a transition function with a clear name and description.
+4. Enter a **name** and **description** the model will use to decide when to call this tool. Use a short, unique **name** (often `snake_case`, e.g. `continue_to_booking`) with no spaces—same idea as in JSON. The **description** should say **when** to invoke the tool (what the user said or what must be true first), not just what the tool does—for example: “After the user confirms their email, move to booking,” so the assistant does not jump nodes too early.
 5. Drag the probe on the right side of the function to the node you wish to transition to.
 
 ## Make any tool a transition tool

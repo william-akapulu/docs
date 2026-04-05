@@ -19,23 +19,13 @@ npm install @akapulu/server
 
 ## Client constructor
 
-The entry point is `createAkapuluServerClient(config?)`.
+The entry point is `createAkapuluServerClient()`.
 
 ```ts
 import { createAkapuluServerClient } from "@akapulu/server";
 
 const akapulu = createAkapuluServerClient();
 ```
-
-`AkapuluServerClientConfig` includes:
-
-<ParamField path="apiBaseUrl" type="string">
-  Optional base URL override. Defaults to `https://akapulu.com/api`, or `AKAPULU_API_BASE_URL` if set.
-</ParamField>
-
-<ParamField path="fetchImpl" type="typeof fetch">
-  Optional fetch implementation override for custom runtimes.
-</ParamField>
 
 The client reads `AKAPULU_API_KEY` from the environment. If it is missing, client creation throws an error.
 
@@ -51,16 +41,6 @@ It is responsible for:
 - fetching conversation detail data
 - fetching conversation recording responses
 - mapping your app-specific request body into Akapulu request fields like `scenario_id`, `avatar_id`, `runtime_vars`, and `record_conversation`
-
-## Main methods
-
-The main methods documented today are:
-
-- `createAkapuluServerClient()`
-- `connectConversation(...)`
-- `pollConversationUpdates(conversationSessionId)`
-- `getConversationDetail(conversationSessionId)`
-- `getConversationRecording(conversationSessionId)`
 
 ## Method reference
 
@@ -153,7 +133,6 @@ The package also exports the main request and response types used by those metho
 - `ConversationUpdatesResponse`
 - `ConversationDetailResponse`
 - `ConversationRecordingResponse`
-- `AkapuluServerClientConfig`
 - `AkapuluApiErrorResponse`
 
 The package also exports `AkapuluApiError`, which is thrown for non-success API responses from `connectConversation`, `pollConversationUpdates`, and `getConversationDetail`.
@@ -178,32 +157,86 @@ In a typical app:
 3. `@akapulu/server` calls Akapulu APIs.
 4. Your frontend then uses `@akapulu/react` or `@akapulu/react-ui` to join and render the conversation.
 
-## Returned data used by the frontend
+## What your local routes return
 
-The most important data returned through your local routes includes:
+**`AkapuluProvider`** (from [`@akapulu/react`](/web-sdk/react-sdk)) reads **`config.endpoints.connectPath`** and **`config.endpoints.updatesPath`**, sends a **POST** request to the connect URL, then sends **GET** requests to the updates URL while the session is joining. 
 
-- `room_url`
-- `token`
-- `conversation_session_id`
-- `call_is_ready`
-- `completion_percent`
-- `latest_update_text`
+Those handlers must respond with **snake_case** JSON in the same shape Akapulu returns. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui). The usual pattern is to **`return` the resolved promise** from **`@akapulu/server`** so the response types stay aligned.
+
+### Connect route → `connectConversation`
+
+Your **`POST`** connect handler should return a body typed as **`ConnectConversationResponse`**:
+
+- `room_url` — Daily room URL for media
+- `token` — join token for that room
+- `conversation_session_id` — id used for updates polling
+
+```ts
+return await akapulu.connectConversation({ ... }); // satisfies ConnectConversationResponse
+```
+
+### Updates route → `pollConversationUpdates`
+
+Your **`GET`** updates handler should return a body typed as **`ConversationUpdatesResponse`**:
+
+- `conversation_session_id` — same session the client is polling
+- `call_is_ready` — when `true`, the client can treat the call as ready
+- `completion_percent` — `0`–`100` progress from the scenario
+- `latest_update_text` — short status string for UI
+
+```ts
+return await akapulu.pollConversationUpdates(conversationSessionId); // satisfies ConversationUpdatesResponse
+```
+
+Both response shapes are exported from **`@akapulu/server`**. The **`AkapuluProvider`** contract for those URLs is summarized under **Connect and updates response shape** in [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
 
 ## Custom connect payloads
 
 One common pattern is to accept app-specific JSON in your local connect route, then map it into Akapulu request fields like `runtime_vars` and `record_conversation`.
 
-```ts
+```tsx
+/* ===================== Client ===================== */
+
+"use client";
+
+import { AkapuluProvider } from "@akapulu/react";
+import { AkapuluConversation } from "@akapulu/react-ui";
+
+// `connectBody` is sent as the POST JSON body to `connectPath` when starting a session.
+export function App() {
+  return (
+    <AkapuluProvider
+      config={{
+        endpoints: {
+          connectPath: "/api/akapulu/connect",
+          updatesPath: "/api/akapulu/updates",
+        },
+        connectBody: {
+          tenant_id: "acme-health",
+          patient_id: "patient_001",
+          should_record: true,
+        },
+      }}
+    >
+      <AkapuluConversation title="Akapulu demo" />
+    </AkapuluProvider>
+  );
+}
+
+/* ===================== Server ===================== */
+
 import { createAkapuluServerClient } from "@akapulu/server";
 
 const akapulu = createAkapuluServerClient();
 
+// Matches the JSON sent by client (e.g. `AkapuluProvider` `config.connectBody`) so the route can parse it safely.
 type LocalConnectBody = {
   tenant_id?: string;
   patient_id?: string;
   should_record?: boolean;
 };
 
+// Use the incoming request body to build the Akapulu connect call; return that result as-is so the browser gets `room_url`, `token`, and `conversation_session_id`.
 export async function connectRoute(body: LocalConnectBody) {
   return await akapulu.connectConversation({
     scenario_id: "YOUR_SCENARIO_ID",
@@ -213,23 +246,6 @@ export async function connectRoute(body: LocalConnectBody) {
       tenant_id: body.tenant_id || "default_tenant",
     },
     record_conversation: body.should_record === true,
-  });
-}
-```
-
-## Example
-
-```ts
-import { createAkapuluServerClient } from "@akapulu/server";
-
-const akapulu = createAkapuluServerClient();
-
-export async function connectRoute() {
-  return await akapulu.connectConversation({
-    scenario_id: "YOUR_SCENARIO_ID",
-    avatar_id: "YOUR_AVATAR_ID",
-    runtime_vars: {},
-    record_conversation: false,
   });
 }
 ```

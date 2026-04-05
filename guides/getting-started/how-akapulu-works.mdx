@@ -41,7 +41,7 @@ Each stage in that pipeline has a specific role, described below.
 
 ## Controlling bot behavior
 
-The content of the bot's response is determined in the LLM section of the pipeline. This is where you control behavior through both global role prompts (for the avatar's overall persona, tone, and guardrails) and node-level instructions (for what to do in each stage), plus the tools the bot can call.
+The content of the bot's response is determined in the LLM section of the pipeline. This is where you control behavior through both global role prompts (for the avatar's overall persona, tone, and guardrails) and node-level instructions (for what to do in each stage), plus the tools and knowledge that the llm has access to.
 
 In Akapulu, you apply that behavior by launching each conversation with a [scenario](/guides/scenarios/overview). The scenario provides the global role context, node-specific instructions, tool access, and flow that the LLM uses during the conversation.
 
@@ -61,7 +61,9 @@ As the conversation evolves, the assistant can move from stage to stage when app
 
 For example:
 
-- **Interview Training Avatar:** intro and rapport -> general background questions -> technical questions -> next steps
+- **Interview Training Avatar** — An AI interview coach that runs a candidate through the phases of a realistic hiring conversation (rapport, background, technical depth, wrap-up). You would build this to give people a safe, repeatable way to practice answers and pacing before real interviews—without needing a human interviewer for every session, while still enforcing a clear structure and branch points (for example, extra review when answers miss the bar).
+
+  *Stage flow:* intro and rapport → general background questions → technical questions → next steps
 
  *Example guidance for the LLM*
 ```mermaid
@@ -85,7 +87,9 @@ flowchart TD
   linkStyle default stroke:#64748b,stroke-width:2px;
 ```
 
-- **Patient Intake Screening:** intro -> data intake -> appointment booking -> Q&A -> end
+- **Patient Intake Screening** — A front-door assistant that guides a patient through consent, structured data collection, booking, and follow-up questions, optionally using vision or knowledge-base tools along the way. You would build this to offload routine intake from staff, keep the conversation consistent with policy, and let patients self-serve scheduling and common Q&A while still escalating or ending cleanly when appropriate.
+
+  *Stage flow:* intro → data intake → appointment booking → Q&A → end
 
 *Example guidance for the LLM*
 ```mermaid

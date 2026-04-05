@@ -5,7 +5,9 @@ description: "Overview of Akapulu API authentication and base usage."
 
 The Akapulu API is the programmatic interface for building with Akapulu.
 
-Today, the public reference starts with Conversations endpoints. Over time, this API will also include additional resources such as Avatars, Scenarios, and more.
+<Note>
+For building a browser based UI, we recommend using the the [Akapulu Web SDK](/web-sdk/overview) instead of interfacing with this API directly: its client and server libraries implement the connect and updates flow, session state, realtime media wiring, and conversation detail and recording retrieval, so you can focus on your custom scenarios and application logic.
+</Note>
 
 ## Authentication
 
@@ -44,4 +46,4 @@ curl -X POST "https://akapulu.com/api/conversations/connect/" \
 
 ## Getting Started
 
-Start with the Conversations section to create a conversation session and connect your client.
+Use **Starting a conversation** for connecting and live status polling, then **Transcripts and recordings** conversation analysis.

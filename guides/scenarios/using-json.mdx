@@ -87,7 +87,7 @@ Example:
 - `name`: unique function name in the node
 - `description`: instruction shown to the LLM that explains what the endpoint does and when to call it
 - `type`: must be `http`
-- `endpoint_id`: ID of a saved HTTP endpoint in your account
+- `endpoint_id`: ID of a saved HTTP [endpoint](/guides/endpoints/create-endpoint) in your account
 
 Example:
 
@@ -105,7 +105,7 @@ Example:
 - `name`: unique function name in the node
 - `description`: instruction shown to the LLM that explains what knowledge this tool retrieves and when to use it
 - `type`: must be `rag`
-- `knowledge_base_id`: knowledge base ID to query
+- `knowledge_base_id`: ID of a saved [knowledge base](/guides/knowledge-bases/overview) in your account
 
 Example:
 
@@ -151,7 +151,7 @@ Example:
 
 - `task_instruction` max length: `4000` characters
 - `role_instruction` max length: `4000` characters
-- `task_instruction` and `role_instruction` cannot use `secret` or `llm` template variables
+- `task_instruction` and `role_instruction` cannot use `secret` or `llm` [template variables](/guides/endpoints/templates-and-variables)
 
 ### Function rules
 

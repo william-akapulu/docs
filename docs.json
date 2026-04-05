@@ -80,10 +80,15 @@
             ]
           },
           {
-            "group": "Conversations",
+            "group": "Starting a conversation",
             "pages": [
               "api-reference/conversations/connect",
-              "api-reference/conversations/updates",
+              "api-reference/conversations/updates"
+            ]
+          },
+          {
+            "group": "Transcripts and recordings",
+            "pages": [
               "api-reference/conversations/detail",
               "api-reference/conversations/recording"
             ]

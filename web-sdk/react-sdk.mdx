@@ -15,10 +15,6 @@ It gives you the provider, hooks, and media helpers you need to build your own R
 npm install @akapulu/react
 ```
 
-This package expects React `>=18 <19`.
-
-It depends on Pipecat's React client and Daily's React package under the hood to manage the realtime media session.
-
 ## Quickstart
 
 `AkapuluProvider` takes paths to your local API routes:
@@ -68,10 +64,8 @@ The public exports currently include:
 - `AkapuluProvider`
 - `useAkapuluSession`
 - `useAkapuluEvents`
-- `useAkapuluPipecatClient`
 - `useAkapuluDailyCall`
 - `useAkapuluMediaControls`
-- `useAkapuluAutoEndOnRemoteLeave`
 - `AkapuluBotAudio`
 - `AkapuluConfig`
 - `AkapuluEvent`
@@ -109,39 +103,56 @@ type AkapuluProviderProps = {
   Optional custom transport implementation.
 </ParamField>
 
+**Ending a call:** When **your user** ends the call in your app, call `end()` from `useAkapuluSession()`. That leaves the Daily room from the browser and runs the SDK teardown so the session is no longer live. If the **assistant** disconnects from Daily first, `AkapuluProvider` calls `end()` for you so `status` does not stay `connected` with no assistant in the room.
+
 ## Hooks
 
 ### `useAkapuluSession()`
 
-Returns the session state plus `start()` and `end()` helpers.
+Call `useAkapuluSession()` anywhere under `AkapuluProvider`. It exposes everything in the session store plus `start` / `end`:
 
-```ts
+```tsx
 const {
   status,
-  callIsReady,
-  completionPercent,
-  latestUpdateText,
-  conversationSessionId,
-  transcripts,
-  botSpeakingState,
-  currentNode,
-  error,
   start,
   end,
+  error,
+  callIsReady,
+  conversationSessionId,
+  completionPercent,
+  latestUpdateText,
+  currentNode,
+  transcripts,
+  botSpeakingState,
 } = useAkapuluSession();
 ```
 
-Session state fields include:
+**Lifecycle & connection**
 
-- `status`
-- `callIsReady`
-- `completionPercent`
-- `latestUpdateText`
-- `conversationSessionId`
-- `transcripts`
-- `botSpeakingState`
-- `currentNode`
-- `error`
+- `status` — where the client is in the join/leave flow: `"idle"` → `"connecting"` → `"connected"` → `"disconnecting"` / `"ended"`, or `"error"` if something failed.
+- `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state.
+- `error` — when `status` is `"error"`, structured details (`code` optional, `message` required) for your error UI or logging.
+
+**Call readiness & updates** (from your **updates** route)
+
+- `callIsReady` — whether the backend considers the call ready (often used while `status === "connecting"` so you are not stuck on a spinner forever).
+- `completionPercent` — numeric progress through the scenario (0–100).
+- `latestUpdateText` — short human-readable status line for loading/progress copy.
+
+**Scenario / flow**
+
+- `currentNode` — the active scenario node (`{ key, label }`) or `null` if none.
+
+**Transcript & bot**
+
+- `transcripts` — ordered list of rows (`id`, `text`, `speaker`, `timestamp`, `isFinal`) for your own transcript UI.
+- `botSpeakingState` — `"idle"`, `"speaking"`, or `"listening"` for indicators or turn-taking UI.
+
+**Correlation**
+
+- `conversationSessionId` — Akapulu conversation session id from connect (used when polling updates; also useful if your app logs or links out to dashboard/API records).
+
+See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for how this fits into a full custom layout with Daily and media helpers.
 
 ### `useAkapuluEvents(listener)`
 
@@ -165,17 +176,11 @@ type AkapuluMediaControls = {
 }
 ```
 
-### `useAkapuluPipecatClient()`
-
-Returns the underlying Pipecat client when you need lower-level client access.
-
 ### `useAkapuluDailyCall()`
 
-Returns the underlying Daily call object wrapper when you need lower-level Daily control.
+Returns the active [**Daily call object**](https://docs.daily.co/guides/products/call-object) for the current session—the same [`DailyCall`](https://docs.daily.co/reference/daily-js/daily-call-client) instance `AkapuluProvider` wires into Daily’s [`DailyProvider`](https://docs.daily.co/reference/daily-react/daily-provider). Before the client exists, this hook returns `null`.
 
-### `useAkapuluAutoEndOnRemoteLeave()`
-
-Ends the conversation when a remote participant leaves the Daily room.
+For most React UI you should use [`@daily-co/daily-react`](https://docs.daily.co/reference/daily-react) under `AkapuluProvider`; [`useDaily()`](https://docs.daily.co/reference/daily-react/use-daily) reads that call object from context and is the usual way to drive video tiles, participants, and tracks. Use `useAkapuluDailyCall()` when you want the call object reference directly (for example code aligned with [Daily call-object methods](https://docs.daily.co/reference/daily-js/daily-call-client) without importing `useDaily`).
 
 ## Main unions and types
 
