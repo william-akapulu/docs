@@ -26,11 +26,17 @@ During a conversation, your scenario can call a RAG tool function that queries t
 5. set: 
    - document `name`
    - optional document `description`
-6. Upload a file 
+6. Upload a file
 
-Save and wait for processing to complete.
+<Note>
+When you upload a document, it will show up in your knowledge base right away with a `Pending` status. 
 
-After upload, Akapulu creates searchable vector chunks from the document so the knowledge base can be used in RAG calls.
+That means Akapulu is still processing it in the background by splitting it into searchable chunks and preparing it for retrieval. 
+
+This usually takes about 15–20 seconds. 
+
+Once it's ready the status will change to `Completed` (refresh the page to see the updated status).
+</Note>
 
 ## Attach a knowledge base to a scenario
 
