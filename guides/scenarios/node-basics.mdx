@@ -212,10 +212,10 @@ To set `transition_to` in the UI for any function, drag the probe on the right s
 
 ## Require function call
 
-`require_function_call` makes the assistant **call a function** on the next model turn in this node instead of answering with plain text. Use it when a stage must always invoke exactly one tool-for example a hand-off that must run a single transition or HTTP action before normal dialogue.
+`require_function_call` makes the assistant **call at least one function** on the next model turn in this node instead of answering with only plain text.
 
 <Note>
-**Constraint:** When `require_function_call` is `true`, the node must define **exactly one** function in `functions`.
+**Constraint:** When `require_function_call` is `true`, the node must define **at least one** function in `functions`.
 </Note>
 
 **JSON**
@@ -242,7 +242,7 @@ To set `transition_to` in the UI for any function, drag the probe on the right s
 
 **UI**
 
-Open **Advanced Settings** on the node, then set **Force Function Call** to yes. While this is on, each function on the node shows a **Call required** indicator;
+Open **Advanced Settings** on the node, then set **Force Function Call** to yes. While this is on, the function section on the node shows a **Call required** indicator.
 
 ## Respond immediately
 

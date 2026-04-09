@@ -40,7 +40,7 @@ Each node can include:
 - `functions` (optional): tools available in this node
 - `respond_immediately` (optional boolean): whether the assistant responds immediately after entering the node. Defaults to `true`
 - `end_after_bot_response` (optional boolean): whether the conversation should end after the bot finishes its response in that node
-- `require_function_call` (optional boolean): when `true`, the assistant must call the function specified for this node. Must be used with **exactly one** entry in `functions`. Defaults to omitted / off
+- `require_function_call` (optional boolean): when `true`, the assistant must call **at least one** function from this node's `functions` list. Defaults to omitted / off
 
 
 ## Function shape
@@ -166,7 +166,7 @@ Example:
 - if `transition_to` is set, it must target an existing node
 - `http` functions must define `endpoint_id`
 - `rag` functions must define `knowledge_base_id`
-- if `require_function_call` is `true`, the node must have **exactly one** function in `functions` (not zero, not more than one)
+- if `require_function_call` is `true`, the node must have **at least one** function in `functions`
 
 ### HTTP template rules
 
