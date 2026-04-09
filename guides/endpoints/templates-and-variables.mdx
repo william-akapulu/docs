@@ -198,7 +198,7 @@ After connect, instructions show the substituted text, and the endpoint template
 
 ### Example HTTP request (after secret + runtime substitution and a tool call)
 
-`Authorization` and `patient_id` / session header came from secrets + runtime. `appointment_date` and `appointment_time` are whatever the model supplied for `date` and `time` on that call.
+Akapulu issues this as an **HTTP POST** to your endpoint URL. `Authorization` and `patient_id` / session header came from secrets + runtime. `appointment_date` and `appointment_time` are whatever the model supplied for `date` and `time` on that call.
 
 ```json
 {
