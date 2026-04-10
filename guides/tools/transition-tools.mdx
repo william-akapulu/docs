@@ -60,3 +60,11 @@ To do this in JSON, set `transition_to` on that tool function object.
 ```
 
 In the UI, drag the function to the node you want to transition to after that tool is called.
+
+## Dynamic HTTP transitions
+
+HTTP endpoints can also use dynamic transition logic instead of a fixed `transition_to` target.
+
+With dynamic HTTP transitions, the tool defines `allowed_next_nodes`, and Akapulu reads `next_node` from the endpoint's JSON response to decide which node to enter next.
+
+To learn how dynamic HTTP routing works, including the `next_node` response contract and error behavior, see [Endpoints](/guides/endpoints/create-endpoint).

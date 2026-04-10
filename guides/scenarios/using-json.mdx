@@ -135,43 +135,85 @@ Example:
 }
 ```
 
-`transition_to` is optional for non-transition tools. If set, it must point to an existing node name.
+`transition_to` is optional for non-transition tools. If set, the flow will transition to the specified node on tool completion
+
+For HTTP functions, there are two transition patterns:
+
+- Use `transition_to` when the endpoint should always move to the same next node after a successful response.
+- Use `allowed_next_nodes` to have Akapulu choose the next node dynamically from the function response. (See [Endpoints](/guides/endpoints/create-endpoint))
 
 ## Validation rules
 
 ### Core structure
 
+- `nodes_json` is required and must be a JSON object
 - `nodes_json` max size is `20000` characters
+- top-level keys are limited to `initial_node`, `role_instruction`, and `nodes`
 - `nodes` must be a non-empty object
 - `initial_node` is required and must match an existing node name
-- every node must include a non-empty `task_instruction`
-- `respond_immediately`, if provided, must be a boolean
-- `end_after_bot_response`, if provided, must be a boolean
-- `require_function_call`, if provided, must be a boolean
+- `initial_node` must reference a node object
 
 ### Instruction rules
 
+- `role_instruction`, if provided, must be a non-empty string
 - `task_instruction` max length: `4000` characters
 - `role_instruction` max length: `4000` characters
 - `task_instruction` and `role_instruction` cannot use `secret` or `llm` [template variables](/guides/endpoints/templates-and-variables)
 
+### Node rules
+
+- each node must be a JSON object
+- node keys are limited to `task_instruction`, `functions`, `respond_immediately`, `end_after_bot_response`, and `require_function_call`
+- every node must include a non-empty `task_instruction`
+- `respond_immediately`, if provided, must be a boolean
+- `end_after_bot_response`, if provided, must be a boolean
+- `require_function_call`, if provided, must be a boolean
+- if `require_function_call` is `true`, `functions` must be a list with at least one function
+- if `functions` is provided, it must be a list
+
 ### Function rules
 
 - `functions` must be a list of direct function objects
+- each function must be a JSON object
+- function keys are limited to `name`, `description`, `type`, `transition_to`, `allowed_next_nodes`, `endpoint_id`, `knowledge_base_id`, and `parameters`
 - `function.name` is required, must be unique per node, and only allows letters, numbers, `_`, `-`
 - `function.name` cannot include leading or trailing whitespace
 - `function.description` is required
 - `function.type` must be one of `transition`, `http`, `rag`, `vision` and defaults to `transition` if omitted
+
+#### Transition rules
+
 - `transition` functions must define `transition_to`
+- `transition_to` must be a string
+- `transition_to` must not include leading or trailing whitespace
 - if `transition_to` is set, it must target an existing node
+
+#### HTTP function rules
+
 - `http` functions must define `endpoint_id`
+- `allowed_next_nodes` is only valid for `http` functions
+- `http` functions cannot set both `transition_to` and `allowed_next_nodes`
+- if `allowed_next_nodes` is set, it must be a non-empty JSON array
+- each `allowed_next_nodes` entry must be a non-empty string
+- `allowed_next_nodes` entries must not include leading or trailing whitespace
+- `allowed_next_nodes` entries must be unique
+- each `allowed_next_nodes` entry must reference an existing node
+- referenced HTTP endpoints must exist in your account
+
+#### RAG function rules
+
 - `rag` functions must define `knowledge_base_id`
-- if `require_function_call` is `true`, the node must have **at least one** function in `functions`
+- referenced knowledge bases must exist in your account
 
 ### HTTP template rules
 
-- endpoint `headers` and `body` must be JSON objects with string values
+- endpoint `headers` and `body` must be JSON objects
+- endpoint header values must be strings
+- endpoint body values must be strings
 - secret variables are not allowed in endpoint body templates, so put secrets in headers
+- template variables must use valid `runtime`, `secret`, or `llm` syntax
+- `llm` variables must include descriptions
+- the same `llm` variable name cannot use conflicting descriptions within one function
 
 ## Example scenarios
 

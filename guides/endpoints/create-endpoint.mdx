@@ -32,6 +32,30 @@ Your endpoint URL must point to a running HTTP server route that can accept POST
 For authentication, create a [secret](https://akapulu.com/secrets) and pass it in your request **Headers** using `{{secret.*}}`.
 </Note>
 
+## HTTP transition behavior
+
+HTTP endpoint tools support two transition patterns:
+
+- **Simple transition**: set `transition_to` on the HTTP function. If the endpoint returns a successful **2xx** response, the flow transitions to that node.
+- **Dynamic transition**: set `allowed_next_nodes` on the HTTP function. After a successful **2xx** response, Akapulu reads the returned JSON field `next_node` and transitions to that node.
+
+For dynamic transitions:
+
+- the endpoint response must be a JSON object
+- it must include `next_node`
+- `next_node` must be a string
+- `next_node` must match one of the nodes listed in `allowed_next_nodes`
+- every entry in `allowed_next_nodes` must be a valid node name in the scenario
+
+If an HTTP endpoint is unreachable or returns a non-2xx response such as `400` or `500`, the flow does **not** transition to any node.
+
+If dynamic transition is configured and the response is missing `next_node`, returns a non-string `next_node`, or returns a `next_node` that is not in `allowed_next_nodes`, the tool call is treated as an error and the flow does **not** transition.
+
+<Note>
+Tool call results are included in conversation transcripts. For failed HTTP tools, Akapulu stores a sanitized error message rather than the raw upstream error text.
+</Note>
+
+
 ## Create an endpoint
 
 1. Go to [akapulu.com/endpoints](https://akapulu.com/endpoints) and click **Create Endpoint**.
@@ -92,33 +116,112 @@ Example shape inside `nodes` json:
 }
 ```
 
-- **HTTP function tool** (model-invoked):
-```json
+**Simple transition** example:
+
+```jsonc
 {
-  "name": "<function_name>",
-  "description": "Describe when the assistant should call this endpoint.",
+  "name": "book_demo",
+  "description": "Create a demo booking and move to the confirmation node.",
   "type": "http",
-  "endpoint_id": "<YOUR_ENDPOINT_ID>"
+  "endpoint_id": "<YOUR_ENDPOINT_ID>",
+  "transition_to": "Booking Confirmation"
+  // On a successful 2xx response, the flow transitions to "Booking Confirmation".
 }
 ```
 
+**Dynamic transition** example:
+
+```jsonc
+{
+
+  "initial_node": "Route Request",
+
+  "nodes": {
+
+    // Starting node
+    "Route Request": {
+
+      "task_instruction": "Figure out what kind of help the user needs, then call the routing endpoint.",
+      "functions": [
+        {
+          "name": "route_demo_request",
+          "description": "Choose which node should handle the request next.",
+          "type": "http",
+          "endpoint_id": "<YOUR_ENDPOINT_ID>",
+      
+          // Akapulu will only transition to one of these connected node names.
+          "allowed_next_nodes": ["Pricing Help", "Technical Help", "General Overview"]
+        
+          // The endpoint must return JSON with "next_node" set to
+          // "Pricing Help", "Technical Help", or "General Overview".
+          // If "next_node" is missing, not a string, or not in allowed_next_nodes,
+          // the tool call is treated as an error and the flow does not transition.
+        }
+      ]
+    },
+
+    // One allowed dynamic destination.
+    "Pricing Help": {
+      "task_instruction": "Answer questions about plans, pricing, and billing."
+    },
+
+    // Another allowed dynamic destination.
+    "Technical Help": {
+      "task_instruction": "Answer questions about integrations, APIs, and implementation details."
+    },
+
+    // Another allowed dynamic destination.
+    "General Overview": {
+      "task_instruction": "Give a broad overview of the product and help the user decide what to explore next."
+    }
+  }
+}
+```
+
+Example response handler:
+```python
+# Example: https://my-endpoint.com
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.post("/route-demo-request")
+def route_demo_request():
+    return {
+        "status": "success",
+        "message": "Send this user to pricing.",
+        "next_node": "Pricing Help", # Akapulu will read next_node to transition
+    }
+```
+When creating HTTP Endpoint:
+
+- set the endpoint `url` to the deployed route for your handler`https://my-endpoint.com/route-demo-request`
+- Akapulu will call your endpoint and return the result to the conversation flow
+- JSON response will be added to llm context and will transition to the "Pricing Help" node
 ### Attach via UI
 
 #### HTTP function tool (LLM-invoked)
 
 Use this when you want the model to decide when to call the endpoint during a node:
 
-- open your scenario and go to the target node
-- Click **Add Function**
-- Select the `HTTP Endpoints` tab in the pop up modal
-- select your endpoint by name
-- set a clear function name and description, which becomes the tool metadata shown to the LLM when it decides whether to call the tool
+1. Open your scenario and go to the node where you want to add the tool.
+2. Click **Add Function**.
+3. Select the **HTTP Endpoints** tab in the modal.
+4. Choose your endpoint by name.
+5. Enter a clear function name and description. This is the tool metadata shown to the model when it decides whether to call the endpoint.
+6. Use the transition toggle at the bottom of the modal to choose **Simple** or **Dynamic** transition behavior.
+7. Configure the transition path for the endpoint:
+   - For **Simple**, drag the function probe to the single next node you want to enter after a successful tool result.
+   - For **Dynamic**, drag the function probe to each node you want to allow. Each connected node is added to `allowed_next_nodes`.
+     <Note> 
+     For dynamic routing, the endpoint must return JSON with `next_node` set to one of the node names in `allowed_next_nodes`.
+     </Note>
+
 
 This attaches an HTTP endpoint as a **function tool** the LLM can call within that node.
 
-<Note>
 Endpoints can be reused across multiple scenarios.
-</Note>
 
 ## Next step
 
