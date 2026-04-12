@@ -14,7 +14,10 @@ Use this example when you want full control over the conversation experience whi
 
 **Connect / updates in this app**
 
-- **`POST /api/akapulu/connect`** and **`GET /api/akapulu/updates?conversation_session_id=...`** 
+- The example passes local `connectPath` and `updatesPath` routes into **`AkapuluProvider`**.
+- **`@akapulu/react`** handles the `POST` to connect and the updates polling internally.
+- While the UI is in its `connecting` state, the React SDK polls the updates route to determine call readiness and keeps `useAkapuluSession()` in sync with the latest `completionPercent` and `latestUpdateText`. 
+- Once the backend reports that the call is ready, the session moves to `connected` and the conversation runs in the same Daily room.
 
 **After the call ends**
 
