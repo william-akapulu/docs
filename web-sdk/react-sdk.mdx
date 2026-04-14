@@ -99,7 +99,7 @@ type AkapuluProviderProps = {
   Optional polling interval override for the local updates route.
 </ParamField>
 
-While `status === "connecting"`, the React SDK waits up to **60 seconds** for the backend to report that the call is ready.
+While `status === "connecting"`, the React SDK waits up to **100 seconds** for the backend to report that the call is ready.
 
 If the updates route never reports `call_is_ready: true` within that window, the session transitions to:
 
