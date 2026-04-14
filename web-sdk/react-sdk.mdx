@@ -204,6 +204,8 @@ type SessionStatus =
   | "error";
 ```
 
+When the session enters `status: "error"`, the SDK disconnects from the active Daily call and clears the active session state before surfacing the error to your UI.
+
 ### `BotSpeakingState`
 
 ```ts
