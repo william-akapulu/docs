@@ -8,22 +8,26 @@ Use this example when you want full control over the conversation experience whi
 ## What this example shows
 
 - **`AkapuluProvider`** and headless hooks from [`@akapulu/react`](/web-sdk/react-sdk)
-- **`useAkapuluSession`** for lifecycle and store state; **`useAkapuluMediaControls`** for mic/cam; **`useAkapuluEvents`** for tools and other events; **`AkapuluBotAudio`** for assistant audio.
-- **`@daily-co/daily-react`** (**`DailyVideo`**, **`useDaily`**, **`useParticipantIds`**, **`useVideoTrack`**) for remote/local video under the same provider.
-- **[`@akapulu/server`](/web-sdk/server-sdk)** in route handlers so the API key never ships to the browser.
+- **`useAkapuluSession`** for lifecycle and store state
+- **`useAkapuluMediaControls`** for mic/cam controls
+- **`useAkapuluEvents`** for tools and other conversation events
+- **`AkapuluBotAudio`** for assistant audio playback
+- **`@daily-co/daily-react`** (**`DailyVideo`**, **`useDaily`**, **`useParticipantIds`**, **`useVideoTrack`**) for remote/local video under the same provider
+- **[`@akapulu/server`](/web-sdk/server-sdk)** in route handlers so the API key never ships to the browser
 
-**Connect / updates in this app**
+## Connect and updates
 
 - The example passes local `connectPath` and `updatesPath` routes into **`AkapuluProvider`**.
 - **`@akapulu/react`** handles the `POST` to connect and the updates polling internally.
-- While the UI is in its `connecting` state, the React SDK polls the updates route to determine call readiness and keeps `useAkapuluSession()` in sync with the latest `completionPercent` and `latestUpdateText`. 
+- While the UI is in its `connecting` state, the React SDK polls the updates route to determine call readiness.
+- `useAkapuluSession()` stays in sync with the latest `completionPercent` and `latestUpdateText`.
 - Once the backend reports that the call is ready, the session moves to `connected` and the conversation runs in the same Daily room.
 
-**After the call ends**
+## After the call ends
 
 - Opens a **post-call review** screen in the example app.
 - Conversation data comes from **`getConversationDetail`** and **`getConversationRecording`** on **[`@akapulu/server`](/web-sdk/server-sdk)** (metadata + transcript rows; recording as redirect / JSON / binary).
 
 ## View on GitHub
 
-[custom-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui)
+- [custom-ui](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui)
