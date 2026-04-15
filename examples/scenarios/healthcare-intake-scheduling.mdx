@@ -1,31 +1,114 @@
 ---
 title: "Healthcare Intake & Scheduling"
-description: "A full intake scenario with endpoints, scheduling, RAG Q&A, and Web SDK integration."
+description: "This example scenario shows how to run a full patient screening conversation that collects intake details, schedules an appointment, answers clinic questions, and then closes the session cleanly."
 ---
 
-Use this example when you want a realistic multi-node scenario that collects patient intake data, books an appointment, answers clinic questions with a knowledge base, and ends the conversation cleanly.
+This example scenario shows how to run a full patient screening conversation that collects intake details, schedules an appointment, answers clinic questions, and then closes the session cleanly.
 
 ## What this example shows
 
-- Scenario creation and node configuration (`intro`, `data_intake`, `appointment_booking`, `qa`, `end`)
-- Endpoint usage for booking HTTP calls
-- RAG integration for clinic-specific Q&A
-- Runtime variables for `patient_id` and `today`
+- Scenario creation and node configuration
+- Endpoint usage for HTTP calls
+- Knowledge base integration for RAG-driven answers
+- Runtime variables for `patient_id`, `today`
 - Connecting the scenario to the Web SDK examples
 
 ## Node flow
 
-We recommend opening the node flow image in a new tab for easier viewing and zooming.
+The scenario is structured around the following node sequence:
 
-<img className="block dark:hidden" src="/images/examples/scenarios/healthcare-intake-scheduling/healthcare-intake-nodes-light.svg" alt="Healthcare intake scenario node flow (light)" />
-<img className="hidden dark:block" src="/images/examples/scenarios/healthcare-intake-scheduling/healthcare-intake-nodes-dark.svg" alt="Healthcare intake scenario node flow (dark)" />
+- `intro`
+  - Greet the patient warmly and introduce yourself as a medical screening assistant.
+  - Uses `transition` tools.
+- `data_intake`
+  - Collect the patient's basic information.
+  - Uses `transition`, `vision` tools.
+- `appointment_booking`
+  - Help the patient schedule an appointment.
+  - Uses `http` tools.
+- `qa`
+  - Answer the patient's questions about the screening process, our clinic, or anything else they want to know.
+  - Uses `transition`, `rag` tools.
+- `end`
+  - Thank the patient for completing the screening.
+  - Ends the conversation after the assistant responds.
+
+```mermaid
+flowchart TD
+  node_0["intro"]
+  node_1["data_intake"]
+  node_2["appointment_booking"]
+  node_3["qa"]
+  node_4["end"]
+  node_0 --> node_1
+  node_1 --> node_2
+  node_2 --> node_3
+  node_3 --> node_4
+```
+
+## Secrets
+
+Create these secrets in the [Akapulu secrets tab](https://akapulu.com/secrets):
+
+- **Create secret**
+  - Name: `webhook_token`
+  - Example value: `webhook_secret_123`
+
+## Endpoints
+
+### Patient Intake Book Appointment
+
+Use your hosted endpoint URL below.
+
+- **Setup tab**
+  - Name: `Patient Intake Book Appointment`
+  - URL: `https://<YOUR_HOSTED_ENDPOINT_DOMAIN>/book-appointment`
+  - Method: `POST`
+
+- **Headers/Body tab**
+  - `headers`:
+
+    ```json
+    {
+      "Content-Type": "application/json",
+      "X-Patient-ID": "{{runtime.patient_id}}",
+      "Authorization": "Bearer {{secret.webhook_token}}"
+    }
+    ```
+
+  - `body`:
+
+    ```json
+    {
+      "date": "{{llm.date:Appointment date in YYYY-MM-DD}}",
+      "time": "{{llm.time:Appointment time in HH:MM 24-hour}}",
+      "appointment_type": "{{llm.appointment_type:Type like follow_up or new_consult}}",
+      "patient_id": "{{runtime.patient_id}}",
+      "source": "patient_intake_screening"
+    }
+    ```
+
+## Knowledge bases
+
+### Healthcare Intake Demo Knowledge Base
+
+- **Knowledge base details**
+  - Name: `Healthcare Intake Demo Knowledge Base`
+  - Description: `Reference information for the Healthcare Intake & Scheduling demo scenario, including clinic policies, appointment details, and patient-facing FAQ content.`
+
+- **Document details**
+  - Name: `Clinic Details`
+  - Description: `Clinic operations, hours, policies, and scheduling information used by the demo assistant for patient Q&A.`
+
+- **Upload this file**
+  - [`Clinic-Details.md`](https://github.com/Akapulu/akapulu-examples/blob/main/example-scenarios/healthcare-intake-scheduling/Clinic-Details.md)
 
 ## Node JSON to paste
 
 Replace these placeholders:
 
 - `<YOUR_BOOK_APPOINTMENT_ENDPOINT_ID>`
-- `<YOUR_KNOWLEDGE_BASE_ID>`
+- `<YOUR_ABOUT_OUR_CLINIC_KNOWLEDGE_BASE_ID>`
 
 ```json
 {
@@ -81,7 +164,7 @@ Replace these placeholders:
         {
           "name": "about_our_clinic",
           "type": "rag",
-          "knowledge_base_id": "<YOUR_KNOWLEDGE_BASE_ID>",
+          "knowledge_base_id": "<YOUR_ABOUT_OUR_CLINIC_KNOWLEDGE_BASE_ID>",
           "description": "a RAG tool with information about our clinic"
         }
       ],
@@ -96,12 +179,36 @@ Replace these placeholders:
 }
 ```
 
-## Conversation demo
+## Use in UI
 
-This is what a conversation using this scenario should look like:
+This repository also includes demo applications built with the Web SDK under:
 
-<video controls width="960" src="https://akapulu-public-assets.s3.amazonaws.com/Conversation-Demo-Normal-Speed.mov"></video>
+```text
+fundamentals/
+  prebuilt-ui/
+  custom-ui/
+```
+
+Related docs pages:
+
+- [Prebuilt UI](https://docs.akapulu.com/examples/basic/prebuilt-ui)
+- [Custom UI](https://docs.akapulu.com/examples/basic/custom-ui)
+- [Avatar Catalog](https://docs.akapulu.com/guides/avatars/avatar-catalog)
+
+In your connect route, pass `scenario_id`, `avatar_id`, and runtime variables required by this scenario (`patient_id`, `today`), for example:
+
+```ts
+return await akapulu.connectConversation({
+  scenario_id: "<your-scenario-id>",
+  avatar_id: "<your-avatar-id>",
+  runtime_vars: {
+    patient_id: "patient_001",
+    today: new Date().toISOString().slice(0, 10),
+  };
+  record_conversation: true,
+});
+```
 
 ## View on GitHub
 
-- [Healthcare Intake & Scheduling example](https://github.com/Akapulu/akapulu-examples/tree/main/example-scenarios/healthcare-intake-scheduling)
+- [example-scenarios/healthcare-intake-scheduling](https://github.com/Akapulu/akapulu-examples/tree/main/example-scenarios/healthcare-intake-scheduling)
