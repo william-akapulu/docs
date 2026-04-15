@@ -100,7 +100,7 @@ The task instruction is the text input on the node labeled **Task Instruction**.
 You can embed **`{{runtime.*}}`** placeholders in the global **`role_instruction`** and in any node’s **`task_instruction`**. Akapulu substitutes them from the **`runtime_vars`** your server sends on [connect](/api-reference/conversations/connect), so the model sees session-specific text without you duplicating scenarios per customer.
 
 <Note>
-`secret` and `llm` template variables are **not** supported in `role_instruction` or `task_instruction`. Use **`{{runtime.*}}`** for per-session variables; keep sensitive variables in endpoint headers with `{{secret.*}}`, and use **`{{llm.*}}`** only in HTTP endpoint templates. See [Templates and Variables](/guides/endpoints/templates-and-variables).
+`secret` and `llm` template variables are **not** supported in `role_instruction` or `task_instruction`. Use **`{{runtime.*}}`** for per-session variables; keep sensitive variables in endpoint headers with `{{secret.*}}`, and use **`{{llm.*}}`** only in HTTP endpoint templates. See [Templates and Variables](/guides/endpoints/templates-and-variables). 
 </Note>
 
 **Example**
