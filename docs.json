@@ -134,7 +134,8 @@
           {
             "group": "Example Scenarios",
             "pages": [
-              "examples/scenarios/healthcare-intake-scheduling"
+              "examples/scenarios/healthcare-intake-scheduling",
+              "examples/scenarios/sales-roleplay-training"
             ]
           }
         ]
