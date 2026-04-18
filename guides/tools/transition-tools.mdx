@@ -43,6 +43,26 @@ For example:
 
 For nodes that [require a function call](/guides/scenarios/node-basics#require-function-call), we recommend that the required tool **transitions the flow to another node**. If the user remains on the **same** node, every LLM turn will still invoke the required tool. That may be appropriate for tools you mean to reuse every turn (such as a RAG tool before every bot response), but may not be appropriate for other tools.
 
+## Require reason
+
+Set `require_reason: true` on a transition function to make the LLM pass a `reason` argument whenever it calls the tool. The reason shows up in the tool-call payload in the conversation transcript, so you can see *why* the model chose to transition.
+
+```json
+{
+  "name": "continue_to_verification",
+  "description": "Use this tool after the prospect confirms their details to move to the appointment booking node",
+  "type": "transition",
+  "transition_to": "appointment_booking",
+  "require_reason": true
+}
+```
+
+We recommend enabling `require_reason` during development to make transition behavior easier to diagnose. Because the model must generate an additional `reason` field on each call, it introduces a small latency cost, so whether to keep it enabled in production is a trade-off you should make based on your application's latency requirements.
+
+<Note>
+`require_reason` is only valid on `type: "transition"` functions.
+</Note>
+
 ## Make any tool a transition tool
 
 Any tool can also be configured to transition after it is called, including HTTP endpoints, RAG tools, and vision tools.

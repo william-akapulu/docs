@@ -71,6 +71,7 @@ Allowed function `type` values:
 - `description`: instruction shown to the LLM that explains when to call this function
 - `type`: must be `transition`
 - `transition_to`: target node name to move to
+- `require_reason` (optional boolean): when `true`, the LLM must pass a `reason` argument when calling the tool. The reason appears in the tool-call payload in the transcript. Useful for debugging transitions, adds a small amount of latency. See [Transition Tools](/guides/tools/transition-tools#require-reason)
 
 Example:
 
@@ -175,7 +176,7 @@ For HTTP functions, there are two transition patterns:
 
 - `functions` must be a list of direct function objects
 - each function must be a JSON object
-- function keys are limited to `name`, `description`, `type`, `transition_to`, `allowed_next_nodes`, `endpoint_id`, `knowledge_base_id`, and `parameters`
+- function keys are limited to `name`, `description`, `type`, `transition_to`, `allowed_next_nodes`, `endpoint_id`, `knowledge_base_id`, `parameters`, and `require_reason`
 - `function.name` is required, must be unique per node, and only allows letters, numbers, `_`, `-`
 - `function.name` cannot include leading or trailing whitespace
 - `function.description` is required
@@ -187,6 +188,8 @@ For HTTP functions, there are two transition patterns:
 - `transition_to` must be a string
 - `transition_to` must not include leading or trailing whitespace
 - if `transition_to` is set, it must target an existing node
+- `require_reason`, if provided, must be a boolean
+- `require_reason` is only valid for `transition` functions
 
 #### HTTP function rules
 
