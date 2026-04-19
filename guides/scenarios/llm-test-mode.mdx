@@ -1,0 +1,54 @@
+---
+title: "Testing Mode"
+description: "Run your scenario as an LLM-only, text-based simulation in the visual scenario editor."
+---
+
+**Testing Mode** runs your scenario as a **text-only** chat inside the scenario editor. It uses the same nodes and configuration present in the editor so you can validate flow logic before starting a real conversation.
+
+It does **not** use microphone, camera, avatar video, or text-to-speech. 
+
+Testing sessions do **not** consume your voice or video **conversation minutes** (Testing Mode uses a separate monthly allowance instead).
+
+## Open Testing Mode
+
+1. Open a scenario in the editor (create or edit from **Scenarios**).
+2. Open the **Scenario Menu** (side panel).
+3. Select the **Testing Mode** tab (next to **Settings**).
+
+## Runtime variables
+
+Testing Mode includes a **runtime variables** editor (JSON object). Values here will be passed in as **`runtime_vars`** when you start a test conversation. 
+
+These variables substitute into `{{runtime.*}}` placeholders in your role instruction, task instructions, and compatible endpoint templates. 
+
+For **role vs task instructions** and how they use `{{runtime.*}}`, see [Role and task instructions](/guides/scenarios/role-and-task-instructions).
+
+For using **`{{runtime.*}}`**, **`{{secret.*}}`**, and **`{{llm.*}}`** syntax in HTTP headers and bodies, see [Templates and variables](/guides/endpoints/templates-and-variables).
+
+## Start a test session
+
+1. Open a scenario in `edit` mode
+2. Select `Visual` in the `Visual/JSON` Toggle in the top right.
+3. Open the left side nav, select the **Testing Mode** tab, and enter **runtime variables** if needed.
+4. Click **Start Conversation**.
+5. You will enter a **text-based chat** with the LLM, being instructed by your scenario. Each user turn, assistant reply, and tool call/response will appear in the chat transcript as the scenario runs.
+
+You can iterate on the scenario and test how the bot will behave before you save and run a full avatar-based conversation.
+
+## Monthly testing sessions
+
+Each successful **Testing Session** counts against a **monthly quota** for LLM-only testing.
+
+The limit depends on your [**billing plan**](https://akapulu.com/pricing).
+
+<Note>
+Vision tools do not work in LLM only Testing Mode
+</Note>
+
+
+## See also
+
+- [Scenarios overview](/guides/scenarios/overview) — how nodes, tools, and context fit together  
+- [Role and task instructions](/guides/scenarios/role-and-task-instructions) — `role_instruction` vs `task_instruction` and how context is built  
+- [Node basics](/guides/scenarios/node-basics) — structure of nodes and tools  
+- [Templates and variables](/guides/endpoints/templates-and-variables) — `runtime`, `secret`, and `llm` placeholders  

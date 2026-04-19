@@ -40,17 +40,36 @@ The model can move between nodes using transition tools.
 
 Akapulu provides a drag-and-drop UI for building and connecting nodes.
 
+## Choosing the LLM model
 
-## Role instruction, task instruction, and context management
+You can control which underlying LLM generates the bot’s responses for that scenario. In the node editor, open the **Scenario Menu** on the left, go to **Settings**, and choose **LLM model**.
 
-Akapulu builds LLM context as the conversation progresses:
+Akapulu supports the following OpenAI models. For official specifications and pricing, see [OpenAI’s model documentation](https://platform.openai.com/docs/models).
 
-1. It starts with the scenario's global **`role_instruction`**.
-2. It appends the current node's **`task_instruction`**.
-3. It appends each **user** and **assistant** turn.
-4. On node transition, it appends the new node's **`task_instruction`**.
+| Model | Available on Free tier |
+| --- | --- |
+| GPT-4.1 nano | Yes |
+| GPT-4.1 mini | Yes |
+| GPT-4o mini | Yes |
+| GPT-5.4 nano | Yes |
+| GPT-5.4 mini | Yes |
+| GPT-4.1 | No\* |
+| GPT-4o | No\* |
+| GPT-5.4 | No\* |
 
-We recommend defining your overall assistant persona in **`role_instruction`**, then using each node's **`task_instruction`** for node-specific behavior.
+\* Requires a paid subscription.
+
+## Testing the scenario
+
+Use the **Testing Mode** tab in the Scenario Menu to run an **LLM-only, text-based simulation** of the scenario in the editor.
+
+Test sessions **do not count toward** your plan’s voice or video **minute allowance**. 
+
+For setup, limits, and behavior, see [Testing Mode](/guides/scenarios/llm-test-mode).
+
+## Role and task instructions
+
+Akapulu combines a global **role instruction** with each node’s **task instruction** to decide what the model should do at every stage. For how that context is assembled and how to write both fields, see [Role and task instructions](/guides/scenarios/role-and-task-instructions).
 
 ## Create scenario walkthrough
 
@@ -59,11 +78,13 @@ We recommend defining your overall assistant persona in **`role_instruction`**, 
 1. Go to the [Scenarios page](https://akapulu.com/scenarios).
 2. Click **New**.
 3. Enter the scenario name.
-4. Open the hamburger icon in the left-side nav, then edit the global **role instruction** in the text area.
+4. Open the **Scenario Menu** from the **left** side of the editor (hamburger icon) so the side panel opens. Stay on the **Settings** tab.
+5. Edit the global **role instruction** in the text area.
    - Example: `You are an onboarding assistant for Akapulu. Keep responses concise because they will be converted to audio.`
-5. Click **Add Node** to create your first node.
-6. Enter a node name (for example, `Greeting`).
-7. Add a node **task instruction**.
+6. In the same **Settings** tab, open the **LLM model** dropdown and pick the desired llm model (we recommend leaving it as GPT-4.1 Mini)
+7. Click **Add Node** to create your first node.
+8. Enter a node name (for example, `Greeting`).
+9. Add a node **task instruction**.
    - Example: `Greet the user, ask what they want to build, and keep your response concise.`
 
 <Note>
@@ -164,5 +185,7 @@ Opening a scenario from the scenarios table opens **view** mode first. In view m
 
 ## Next scenario guides
 
+- [Role and task instructions](/guides/scenarios/role-and-task-instructions)
+- [Testing Mode](/guides/scenarios/llm-test-mode)
 - [Using JSON](/guides/scenarios/using-json)
 - [Node basics](/guides/scenarios/node-basics)

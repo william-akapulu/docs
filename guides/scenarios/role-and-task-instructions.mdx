@@ -1,0 +1,122 @@
+---
+title: "Role and task instructions"
+description: "Use the global role instruction and per-node task instructions to shape persona, stage behavior, and what the model sees in each conversation."
+---
+
+Every scenario has two layers of natural-language guidance for the assistant:
+
+- **`role_instruction`** (one per scenario): stable persona, tone, and rules that should hold for the whole conversation.
+- **`task_instruction`** (one per node): what the assistant should focus on in that **stage** of the flow, including how to use the tools attached to that node.
+
+Together they define how the model behaves as users move between nodes.
+
+## Where you edit them
+
+### Visual editor
+
+- **Role instruction:** Open the **Scenario Menu** on the left → **Settings** tab → edit **Role instruction** in the text area.
+- **Task instruction:** Click a node on the canvas → edit **Task instruction** in that node’s side panel.
+
+### JSON mode
+
+Set the following keys in the scenario JSON object
+
+- **`role_instruction`** at the **top level** of the scenario object.
+- **`task_instruction`** inside each node
+
+For required fields, examples, and tool shapes, see [Using JSON](/guides/scenarios/using-json).
+
+## How Akapulu builds context
+
+As the conversation runs, Akapulu builds LLM context in this order:
+
+1. The scenario’s global **`role_instruction`**.
+2. The current node’s **`task_instruction`**.
+3. Each **user** and **assistant** turn, in order.
+4. After a transition, the new node’s **`task_instruction`** (previous stage instructions remain in the transcript history).
+
+**Practical split:** Put durable persona and guardrails in **`role_instruction`**. Put stage-specific goals, discovery questions, and “what to do next” guidance in each node’s **`task_instruction`**.
+
+## Variables in instructions
+
+You can embed **`{{runtime.*}}`** placeholders in **`role_instruction`** and in each **`task_instruction`**. 
+
+At connect time, Akapulu substitutes them from the **`runtime_vars`** object in your request, or from the **Testing Mode** runtime JSON when you run a simulation in the editor.
+
+
+### Example
+
+**Scenario excerpt**
+
+```json
+{
+  "initial_node": "Welcome",
+  "role_instruction": "You are a support coach for {{runtime.company_name}}. The customer’s name is {{runtime.display_name}}. Keep answers short; responses may be read aloud.",
+  "nodes": {
+    "Welcome": {
+      "task_instruction": "Greet {{runtime.display_name}} by name. Their account id is {{runtime.account_id}}. Ask what they want help with today."
+    }
+  }
+}
+```
+
+Runtime variables referenced in this excerpt `{{runtime.**}}`
+
+- **`company_name`**
+- **`display_name`**
+- **`account_id`**
+
+#### Passing `runtime_vars` into connectConversation
+
+See [Customize conversation UI](/guides/conversations/customize-conversation-ui).
+
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
+
+const akapulu = createAkapuluServerClient();
+
+return await akapulu.connectConversation({
+  scenario_id: "YOUR_SCENARIO_ID",
+  avatar_id: "YOUR_AVATAR_ID",
+
+  // runtime vars from scenario
+  runtime_vars: {
+    company_name: "Northwind Labs",
+    display_name: "Sam Rivera",
+    account_id: "acct_99102",
+  },
+});
+```
+
+**Actual instructions given to LLM at runtime** (`role_instruction` and each node’s `task_instruction` fully expanded):
+
+```json
+{
+  "initial_node": "Welcome",
+  "role_instruction": "You are a support coach for Northwind Labs. The customer’s name is Sam Rivera. Keep answers short; responses may be read aloud.",
+  "nodes": {
+    "Welcome": {
+      "task_instruction": "Greet Sam Rivera by name. Their account id is acct_99102. Ask what they want help with today."
+    }
+  }
+}
+```
+
+If any `{{runtime.*}}` name used in those strings is **missing** from **`runtime_vars`**, Akapulu **returns an error** and the session does not start.
+
+<Note>
+**HTTP tool** endpoint **headers** and **body** string values use the same **`{{runtime.*}}`** syntax; they are substituted at connect from **`runtime_vars`** similar to `role_instruction` and `task_instruction`. 
+
+HTTP templates may also use **`{{llm.*}}`** (filled when the model invokes the tool) and **`{{secret.*}}`**. **`{{secret.*}}` is only allowed in HTTP headers**, not in the request body.
+
+See [Templates and variables](/guides/endpoints/templates-and-variables) for full rules and examples.
+</Note>
+
+## See also
+
+- [Scenarios overview](/guides/scenarios/overview) — scenarios, nodes, and tools at a high level  
+- [Connect conversation](/api-reference/conversations/connect) — `runtime_vars` in the connect payload  
+- [Templates and variables](/guides/endpoints/templates-and-variables) — `{{runtime.*}}`, `{{secret.*}}`, and `{{llm.*}}` rules  
+- [Using JSON](/guides/scenarios/using-json) — scenario JSON schema and editing in JSON mode  
+- [Node basics](/guides/scenarios/node-basics) — node structure, tools, and transitions  
+- [Testing Mode](/guides/scenarios/llm-test-mode) — text-only simulation and `runtime_vars` in the editor  
