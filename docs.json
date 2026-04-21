@@ -11,6 +11,14 @@
     {
       "source": "/",
       "destination": "/quickstart"
+    },
+    {
+      "source": "/blog/welcome-to-the-akapulu-blog",
+      "destination": "/blog/what-is-akapulu/what-is-akapulu"
+    },
+    {
+      "source": "/blog/what-is-akapulu",
+      "destination": "/blog/what-is-akapulu/what-is-akapulu"
     }
   ],
   "colors": {
@@ -138,6 +146,23 @@
             "pages": [
               "examples/scenarios/healthcare-intake-scheduling",
               "examples/scenarios/sales-roleplay-training"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Blog",
+        "groups": [
+          {
+            "group": "Blog",
+            "pages": [
+              "blog/index"
+            ]
+          },
+          {
+            "group": "Posts",
+            "pages": [
+              "blog/what-is-akapulu/what-is-akapulu"
             ]
           }
         ]

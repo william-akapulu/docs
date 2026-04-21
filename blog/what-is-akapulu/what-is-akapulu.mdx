@@ -1,0 +1,164 @@
+---
+title: "What Is Akapulu?"
+description: "A quick tour of scenarios, tools, testing, avatars, and live conversations—with links into the docs."
+mode: default
+"og:image": "/blog/what-is-akapulu/image.png"
+"twitter:image": "/blog/what-is-akapulu/image.png"
+---
+
+<img
+  src="/blog/what-is-akapulu/image.png"
+  alt="What Is Akapulu?"
+  style={{ width: "100%", height: "auto", borderRadius: 12, marginBottom: "1.5rem", display: "block" }}
+/>
+
+Here's what we'll cover.
+
+## What Is Akapulu?
+
+A managed platform for real-time conversational AI avatars in your app.
+
+Build the conversation visually, then launch a live video agent with one API call.
+
+**Think of it like n8n for AI avatar conversations.**
+
+<video
+  width="100%"
+  src="/conversation-demo.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+  style={{ borderRadius: 12, marginTop: "1.25rem" }}
+/>
+
+[Quickstart →](/quickstart)
+
+## How Do You Tell the Avatar What to Do?
+
+Under the hood, the avatar is powered by an LLM. A **scenario** is the framework you use to instruct it.
+
+You start with one **persona** for the whole call—tone, role, and guardrails that apply everywhere. 
+
+Then you split the instructions into **stages** (we call them nodes): these are like short chapters (i.e. “intro,” “collect details,” or “wrap up.”)
+
+In each stage you give a focused task—“what to do right now”—and only the **tools** that stage needs, so the model isn’t overwhelmed by the full script at once.
+
+The conversation will dynamically **branch** from one stage to another as the call unfolds.
+
+<a href="/guides/scenarios/overview">
+  <img
+    src="/images/guides/getting-started/How-akapulu-works/node-diagram/intro-data-intake.svg"
+    alt="Example scenario nodes"
+    style={{ width: "100%", height: "auto", borderRadius: 12, display: "block" }}
+  />
+</a>
+
+[Scenarios overview →](/guides/scenarios/overview)
+
+## What's Inside Each Stage?
+
+The **Role instruction** is the persona for the whole conversation (set once per scenario), used across stages.
+
+Inside each stage:
+
+**Task instruction:** what to do here.
+
+**Functions:** the tools the avatar can use here.
+
+This helps the avatar keep focus on whatever stage it's on, without juggling the whole scenario at once.
+
+```javascript
+{
+  "role_instruction": "You are a helpful assistant...",
+  "nodes": {
+    "intro": {
+      "task_instruction": "Greet the user and...",
+      "functions": [ /* tools for this stage */ ]
+    }
+  }
+}
+```
+
+[Node basics →](/guides/scenarios/node-basics)
+
+## What Tools Can the Avatar Use?
+
+Each stage can have its own set of tools. There are four types:
+
+**Transition:** moves to another stage.
+
+**HTTP:** calls an endpoint in your backend.
+
+**RAG:** pulls from a knowledge base.
+
+**Vision:** sees through the user's camera.
+
+Tools are scoped per stage. The avatar only has access to what the current stage needs.
+
+| Type | |
+| --- | --- |
+| `transition` | Move to another stage |
+| `http` | Call your backend |
+| `rag` | Knowledge base lookup |
+| `vision` | Camera input |
+
+[Node basics →](/guides/scenarios/node-basics)
+
+## How Do You Test a Scenario?
+
+**Testing Mode** simulates your scenario with text-only chat. No avatar, no speech, just the LLM.
+
+Iterate on your flow quickly without burning your avatar call minutes.
+
+**Useful for making sure the conversation flows right before going live.**
+
+[Testing Mode guide →](/guides/scenarios/llm-test-mode)
+
+## How Do Avatars Work?
+
+Akapulu provides publicly available, professional avatars to bring your scenarios to life.
+
+**Pair any avatar with any scenario.** Pick from our public catalog to talk to your users, and guide the underlying LLM with whatever scenario you've built.
+
+You can also create a custom avatar that looks like you by recording a short two-minute video. It pairs with any scenario, just like our catalog avatars.
+
+<a href="/guides/avatars/avatar-catalog">
+  <img
+    src="/images/guides/avatars/use-public-avatar/catalog-avatar-demo.png"
+    alt="Avatar catalog"
+    style={{ width: "100%", height: "auto", borderRadius: 12, display: "block" }}
+  />
+</a>
+
+[Avatar catalog →](/guides/avatars/avatar-catalog)
+
+## How Does a Live Conversation Work?
+
+Pass a scenario ID, avatar ID, and any runtime variables into our **Web SDK**. A live session opens in your frontend, and you're connected to the avatar.
+
+```ts
+import { createAkapuluServerClient } from "@akapulu/server";
+
+const akapulu = createAkapuluServerClient();
+
+// Easy to use web sdk for starting conversations
+await akapulu.connectConversation({
+  scenario_id: "YOUR_SCENARIO_ID",
+  avatar_id: "YOUR_AVATAR_ID",
+
+  // Custom runtime variables and configuration
+  runtime_vars: {
+    customer_name: "Jordan",
+    account_id: "acct_01HZY...",
+  },
+});
+```
+When the call ends, we save a **full transcript**—what was said, which tools ran, and how the flow moved between stages.
+
+As well as (optionally) the conversation recording
+
+Use that record in your own product however you like (CRM, summaries, coaching, analytics, and so on).
+
+[Conversation lifecycle →](/guides/conversations/lifecycle)

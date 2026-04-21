@@ -88,13 +88,8 @@ You can view the training progress from the [Avatars Table](https://akapulu.com/
 
 <img src="/images/guides/avatars/create-your-own-avatar/Avatars%20Table.png" alt="Avatars table showing training progress" style={{ borderRadius: 12 }} />
 
-You can click that avatar row to open the avatar detail page, where you can edit the avatar handle and description. Each handle must be unique within your account.
+You can click that avatar row to open the avatar detail page, where you can edit the avatar name and description. Each name must be unique within your account.
 
-<Note>
-Handle and description format:
-- **Handle:** lowercase letters, numbers, and underscores only; maximum 120 characters; unique within your account.
-- **Description:** free text up to 2000 characters.
-</Note>
 
 <img src="/images/guides/avatars/create-your-own-avatar/Avatar%20Detail.png" alt="Avatar detail page showing training progress" style={{ borderRadius: 12 }} />
 
@@ -102,7 +97,7 @@ Handle and description format:
 
 You must wait until an avatar finishes training before it can be used in a conversation.
 
-When starting a conversation, pass the avatar **UUID** (not the handle) to the [`connect`](/api-reference/conversations/connect) endpoint as `avatar_id` (`272ecb56-cb..` in the example above).
+When starting a conversation, pass the avatar **UUID** to the [`connect`](/api-reference/conversations/connect) endpoint as `avatar_id` (`272ecb56-cb..` in the example above).
 
 <Note>
 When calling the [`connect`](/api-reference/conversations/connect) endpoint, `avatar_id` must reference either a public catalog avatar or a private avatar owned by your Akapulu account. Private avatar IDs are account-scoped and cannot be used by other accounts.
