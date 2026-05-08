@@ -566,17 +566,17 @@ const {
 } = useAkapuluSession();
 ```
 
-3. The provider joins the **Daily** room for realtime media. Install `@daily-co/daily-react` (and peer `@daily-co/daily-js`) and use its primitives to draw video—for example `DailyVideo`, `useDaily`, `useParticipantIds`, and `useVideoTrack`.
+3. The provider joins the **Daily** room for realtime media. Install `@daily-co/daily-react` (and peer `@daily-co/daily-js`) and use its primitives to draw video—for example `DailyVideo`, `useDaily`, and `useVideoTrack`. For assistant video selection, use `useAkapuluParticipantRoles` from `@akapulu/react`.
 
 ```tsx
-import { DailyVideo, useDaily, useParticipantIds, useVideoTrack } from "@daily-co/daily-react";
+import { useAkapuluParticipantRoles } from "@akapulu/react";
+import { DailyVideo, useDaily, useVideoTrack } from "@daily-co/daily-react";
 
 function BotVideoTile() {
-  const daily = useDaily();
-  const [sessionId] = useParticipantIds({ filter: "remote" });
-  const track = useVideoTrack(sessionId);
-  if (track.isOff) return null;
-  return <DailyVideo sessionId={sessionId} type="video" />;
+  const { akapuluBotParticipantId } = useAkapuluParticipantRoles();
+  const track = useVideoTrack(akapuluBotParticipantId);
+  if (!akapuluBotParticipantId || track.isOff) return null;
+  return <DailyVideo sessionId={akapuluBotParticipantId} type="video" />;
 }
 
 function SelfVideoTile() {
@@ -620,8 +620,15 @@ useAkapuluEvents((event) => {
 ```tsx
 "use client";
 
-import { AkapuluBotAudio, AkapuluProvider, useAkapuluEvents, useAkapuluMediaControls, useAkapuluSession } from "@akapulu/react";
-import { DailyVideo, useDaily, useParticipantIds, useVideoTrack } from "@daily-co/daily-react";
+import {
+  AkapuluBotAudio,
+  AkapuluProvider,
+  useAkapuluEvents,
+  useAkapuluMediaControls,
+  useAkapuluParticipantRoles,
+  useAkapuluSession,
+} from "@akapulu/react";
+import { DailyVideo, useDaily, useVideoTrack } from "@daily-co/daily-react";
 
 // Single participant video tile; Daily hooks are available because `AkapuluProvider` wraps Daily context.
 function VideoTile(props: { sessionId: string; isLocal: boolean }) {
@@ -633,7 +640,7 @@ function VideoTile(props: { sessionId: string; isLocal: boolean }) {
     return null;
   }
 
-  // `sessionId` must be this participant’s Daily `session_id` (from `useParticipantIds` or `participants().local`).
+  // `sessionId` must be this participant’s Daily `session_id` (from `useAkapuluParticipantRoles` or `participants().local`).
   return <DailyVideo sessionId={props.sessionId} type="video" />;
 }
 
@@ -654,11 +661,10 @@ function CustomCallUi() {
   // Media controls for the underlying Daily call.
   const { toggleMic, toggleCam, isMicMuted, isCamOff } = useAkapuluMediaControls();
 
-  // Daily participant list: remote ids + local self.
+  // Daily participant roles + local self.
   const daily = useDaily();
-  // Daily ids for everyone except this browser client.
-  // In the 1:1 Akapulu call, remoteParticipantIds[0] is the bot video participant.
-  const remoteParticipantIds = useParticipantIds({ filter: "remote" });
+  // Assistant video participant id selected from Daily roles.
+  const { akapuluBotParticipantId } = useAkapuluParticipantRoles();
   // Local browser participant (the user/self-view tile).
   const localParticipant = daily?.participants().local;
   const localId = localParticipant?.session_id ?? "";
@@ -733,9 +739,9 @@ function CustomCallUi() {
       return (
         <>
           {/* TODO: in-call header (botSpeakingState, currentNode, etc.) */}
-          {/* Bot video (remote participant) */}
-          {remoteParticipantIds[0] ? (
-            <VideoTile sessionId={remoteParticipantIds[0]} isLocal={false} />
+          {/* Assistant video */}
+          {akapuluBotParticipantId ? (
+            <VideoTile sessionId={akapuluBotParticipantId} isLocal={false} />
           ) : (
             <>{/* TODO: waiting-for-bot-video placeholder */}</>
           )}
@@ -921,4 +927,4 @@ Runnable apps that mirror this guide are available in **[Akapulu/akapulu-example
 
 - [Pre-built UI](/examples/basic/prebuilt-ui) — [`fundamentals/prebuilt-ui`](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/prebuilt-ui): **`@akapulu/react`** (`AkapuluProvider` with local `connectPath` / `updatesPath`) plus **`@akapulu/react-ui`** (`AkapuluConversation` for the full default layout: video, transcript, controls). Useful when you want to ship quickly and customize via props or CSS rather than rebuilding layout.
 
-- [Custom UI](/examples/basic/custom-ui) — [`fundamentals/custom-ui`](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, participant/track hooks) for your own chrome. Useful when you need full control over markup and state wiring.
+- [Custom UI](/examples/basic/custom-ui) — [`fundamentals/custom-ui`](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluParticipantRoles`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, track hooks) for your own chrome. Useful when you need full control over markup and state wiring.

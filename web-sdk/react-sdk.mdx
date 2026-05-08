@@ -66,6 +66,7 @@ The public exports currently include:
 - `useAkapuluEvents`
 - `useAkapuluDailyCall`
 - `useAkapuluMediaControls`
+- `useAkapuluParticipantRoles`
 - `AkapuluBotAudio`
 - `AkapuluConfig`
 - `AkapuluEvent`
@@ -167,6 +168,63 @@ See [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
 Subscribes to the normalized `AkapuluEvent` stream.
 
 See [Callbacks and events](/web-sdk/callbacks-and-events).
+
+### `useAkapuluParticipantRoles(options?)`
+
+Returns participant-role mapping helpers for Daily sessions under `AkapuluProvider`.
+
+Use this hook when your call may include more than one remote participant and you want a stable assistant video participant id instead of relying on participant order.
+
+```ts
+type AkapuluParticipantRoleOptions = {
+  akapuluBotUserId?: string;
+};
+
+type AkapuluParticipantRoles = {
+  akapuluBotParticipantId: string;
+  userParticipantIds: string[];
+  remoteParticipantIds: string[];
+};
+```
+
+```tsx
+import { useAkapuluParticipantRoles } from "@akapulu/react";
+import { DailyVideo } from "@daily-co/daily-react";
+
+function AssistantVideo() {
+  const { akapuluBotParticipantId } = useAkapuluParticipantRoles();
+  if (!akapuluBotParticipantId) return null;
+  return <DailyVideo sessionId={akapuluBotParticipantId} type="video" />;
+}
+```
+
+Use `useAkapuluParticipantRoles` for the assistant tile and `useDaily()` for the local/self tile:
+
+```tsx
+import { useAkapuluParticipantRoles } from "@akapulu/react";
+import { DailyVideo, useDaily } from "@daily-co/daily-react";
+
+function VideoLayout() {
+  const { akapuluBotParticipantId } = useAkapuluParticipantRoles();
+  const daily = useDaily();
+  const localParticipantId = daily?.participants().local?.session_id ?? "";
+
+  return (
+    <>
+
+      // bot participant
+      {akapuluBotParticipantId ? (
+        <DailyVideo sessionId={akapuluBotParticipantId} type="video" />
+      ) : null}
+
+      // local participant
+      {localParticipantId ? (
+        <DailyVideo sessionId={localParticipantId} type="video" automirror />
+      ) : null}
+    </>
+  );
+}
+```
 
 ### `useAkapuluMediaControls()`
 

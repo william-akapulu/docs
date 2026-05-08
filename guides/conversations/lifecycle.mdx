@@ -40,12 +40,12 @@ flowchart TD
 
 ### Conversation participants
 
-Each live conversation has two core participants in the Daily room:
+Each live conversation has a user participant and assistant participants in the Daily room:
 
 - **User participant**: the person joining from your frontend (microphone and optional camera).
-- **Bot participant**: the Akapulu assistant runtime, which joins as the remote participant.
+- **Bot participants**: Akapulu runtime participants that handle orchestration and assistant media in the room.
 
-Your application experience is the interaction between these two participants in the same session.
+Your application experience is the interaction between your user and the assistant in the same session.
 
 ### End-to-end connection flow
 
@@ -78,8 +78,8 @@ Your application experience is the interaction between these two participants in
 6. **Assistant runtime starts in parallel**
    - The bot process starts for the selected scenario and avatar.
 
-7. **Bot joins the room**
-   - After initialization completes, the bot joins as the remote participant.
+7. **Bot participants join the room**
+   - After initialization completes, Akapulu runtime participants join and the assistant media becomes available in-room.
 
 8. **Frontend monitors readiness**
    - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`.
