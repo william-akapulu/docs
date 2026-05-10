@@ -246,6 +246,10 @@ To set `transition_to` in the UI for any function, drag the probe on the right s
 
 Open **Advanced Settings** on the node, then set **Force Function Call** to yes. While this is on, the function section on the node shows a **Call required** indicator.
 
+<Note>
+**Loop protection:** If `require_function_call` is enabled and the assistant gets stuck repeatedly calling tools without replying in text, Akapulu automatically relaxes the forced-call requirement after 5 consecutive tool-only turns for that session/node. After that, the assistant can either call a tool or reply in plain text to prevent infinite loops.
+</Note>
+
 ## Respond immediately
 
 `respond_immediately` controls whether the assistant speaks immediately after entering the node.
