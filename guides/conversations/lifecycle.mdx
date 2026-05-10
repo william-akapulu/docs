@@ -120,6 +120,10 @@ When `POST /api/conversations/connect/` succeeds, the new conversation reserves 
 
 Minutes used increase while the conversation is ongoing and are tracked in whole minutes.
 
+If a user joins a call and reaches the session duration cap while the call is active, Akapulu automatically ends the session. In this case, the frontend should handle a timeout event and show a clear message to the user (for example, usage limit reached).
+
+For Web SDK integrations, this appears as [`event.type === "timeout"`](/web-sdk/callbacks-and-events#timeout) with reason `duration_limit_reached`.
+
 You can view total minutes used, current concurrency slots used, and your next plan reset date on the [Usage](https://akapulu.com/usage) page.
 
 ## Manage Recordings and Transcripts

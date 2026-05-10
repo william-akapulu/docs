@@ -484,7 +484,9 @@ function ConversationEventBridge() {
       return;
     }
     if (event.type === "timeout") {
-      // event.reason
+      // event.reason:
+      // - "duration_limit_reached" => call ended because session duration cap was reached
+      // - "participant_join_timeout" => call ended because no participant joined in time
       return;
     }
   });
