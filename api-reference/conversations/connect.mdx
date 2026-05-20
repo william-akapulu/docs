@@ -28,10 +28,6 @@ Optional request fields include:
   - accepts either an array of strings or a comma-separated string
   - maximum `5` keywords
 - `record_conversation` whether to record this conversation session (default `false`)
-- `wait_for_client_ready` controls when the session is marked ready to begin (default `true`)
-  - when `true`, Akapulu waits until your frontend client is fully connected before marking the call ready
-  - when `false`, Akapulu proceeds once the bot and participant are ready without waiting for explicit frontend-client readiness
-  - use `true` for Web SDK integrations unless you have a specific reason not to
 
 Example request body:
 
@@ -43,7 +39,6 @@ Example request body:
     "today": "2026-03-19"
   },
   "stt_keywords": ["Akapulu", "Dr. Nguyen", "A1C"],
-  "record_conversation": true,
-  "wait_for_client_ready": true
+  "record_conversation": true
 }
 ```

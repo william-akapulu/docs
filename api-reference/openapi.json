@@ -43,8 +43,7 @@
                       "Alex",
                       "Acme"
                     ],
-                    "record_conversation": false,
-                    "wait_for_client_ready": true
+                    "record_conversation": false
                   }
                 }
               }
@@ -444,11 +443,6 @@
             "type": "boolean",
             "default": false,
             "description": "If true, enable recording for this conversation session."
-          },
-          "wait_for_client_ready": {
-            "type": "boolean",
-            "default": true,
-            "description": "If true, wait for explicit frontend client readiness before marking the call ready."
           }
         }
       },
