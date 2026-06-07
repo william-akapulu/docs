@@ -1,12 +1,12 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Akapulu",
+  "name": "Akapulu Labs",
   "variables": {
     "app-url": "https://akapulu.com",
     "api-base-url": "https://akapulu.com/api"
   },
-  "description": "Akapulu builds conversational avatars for natural, real-time voice and video interactions.",
+  "description": "Akapulu Labs is an AI research lab building a platform for real-time conversational avatars for natural voice and video interactions.",
   "redirects": [
     {
       "source": "/",
@@ -52,8 +52,7 @@
           {
             "group": "Avatars",
             "pages": [
-              "guides/avatars/avatar-catalog",
-              "guides/avatars/create-avatar"
+              "guides/avatars/avatar-catalog"
             ]
           },
           {

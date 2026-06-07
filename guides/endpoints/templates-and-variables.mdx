@@ -65,7 +65,7 @@ Use this for per-session values that your app passes at connect time (for exampl
 `runtime` variables must be passed to the [connect endpoint](/api-reference/conversations/connect) as `runtime_vars`.
 
 <Note>
-**Web SDK:** If using the [Akapulu Web SDK](/web-sdk/overview), from your backend connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** and pass **`runtime_vars`** with the same keys you use in **`{{runtime.*}}`** templates. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a full connect-route example.
+**Web SDK:** If using the [Akapulu Labs Web SDK](/web-sdk/overview), from your backend connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** and pass **`runtime_vars`** with the same keys you use in **`{{runtime.*}}`** templates. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a full connect-route example.
 </Note>
 
 Examples:
@@ -198,7 +198,7 @@ After connect, instructions show the substituted text, and the endpoint template
 
 ### Example HTTP request (after secret + runtime substitution and a tool call)
 
-Akapulu issues this as an **HTTP POST** to your endpoint URL. `Authorization` and `patient_id` / session header came from secrets + runtime. `appointment_date` and `appointment_time` are whatever the model supplied for `date` and `time` on that call.
+Akapulu Labs issues this as an **HTTP POST** to your endpoint URL. `Authorization` and `patient_id` / session header came from secrets + runtime. `appointment_date` and `appointment_time` are whatever the model supplied for `date` and `time` on that call.
 
 ```json
 {

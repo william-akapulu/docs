@@ -15,7 +15,7 @@ The node name is used as the identifier for:
 - `initial_node` (the scenario start node)
 - any function `transition_to` targets
 
-When you rename a node in the node editor, Akapulu also updates:
+When you rename a node in the node editor, Akapulu Labs also updates:
 - `initial_node` if that node is currently the start node
 - any function transitions that point to that node
 
@@ -52,7 +52,7 @@ Use `role_instruction` for long-lived identity, tone, boundaries, and behavior t
 ```json
 {
   "initial_node": "Greeting",
-  "role_instruction": "You are a friendly Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
+  "role_instruction": "You are a friendly Akapulu Labs onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "Greeting": {
       ...
@@ -79,7 +79,7 @@ Recommended pattern:
 
 ```json
 {
-  "role_instruction": "You are a friendly Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
+  "role_instruction": "You are a friendly Akapulu Labs onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "Greeting": {
       "task_instruction": "Greet the user and gather what they want to build.",
@@ -99,7 +99,7 @@ The task instruction is the text input on the node labeled **Task Instruction**.
 
 ### Runtime variables in instructions
 
-You can embed **`{{runtime.*}}`** placeholders in the global **`role_instruction`** and in any node’s **`task_instruction`**. Akapulu substitutes them from the **`runtime_vars`** your server sends on [connect](/api-reference/conversations/connect), so the model sees session-specific text without you duplicating scenarios per customer.
+You can embed **`{{runtime.*}}`** placeholders in the global **`role_instruction`** and in any node’s **`task_instruction`**. Akapulu Labs substitutes them from the **`runtime_vars`** your server sends on [connect](/api-reference/conversations/connect), so the model sees session-specific text without you duplicating scenarios per customer.
 
 <Note>
 `secret` and `llm` template variables are **not** supported in `role_instruction` or `task_instruction`. Use **`{{runtime.*}}`** for per-session variables; keep sensitive variables in endpoint headers with `{{secret.*}}`, and use **`{{llm.*}}`** only in HTTP endpoint templates. See [Templates and Variables](/guides/endpoints/templates-and-variables). 
@@ -122,7 +122,7 @@ You can embed **`{{runtime.*}}`** placeholders in the global **`role_instruction
 Your connect request should include matching keys in `runtime_vars`, for example `company_name`, `user_id`, and `display_name`.
 
 <Note>
-**Web SDK:** If using the [Akapulu Web SDK](/web-sdk/overview), in your connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** with a **`runtime_vars`** object whose keys match your **`{{runtime.*}}`** placeholders. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a complete server-side example.
+**Web SDK:** If using the [Akapulu Labs Web SDK](/web-sdk/overview), in your connect route, call **`akapulu.connectConversation`** from **`@akapulu/server`** with a **`runtime_vars`** object whose keys match your **`{{runtime.*}}`** placeholders. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for a complete server-side example.
 </Note>
 
 ## Functions
@@ -166,7 +166,7 @@ Function description guidance:
         },
         {
           "name": "Akapulu_RAG",
-          "description": "Access information on the Akapulu platform.",
+          "description": "Access information on the Akapulu Labs platform.",
           "type": "rag",
           "knowledge_base_id": "<KNOWLEDGE_BASE_ID>"
         }
@@ -174,7 +174,7 @@ Function description guidance:
       ...
     },
     "Planning Phase": {
-      "task_instruction": "Help the user plan their project on Akapulu.",
+      "task_instruction": "Help the user plan their project on Akapulu Labs.",
       "functions": [
         {
           "name": "create_project_brief",
@@ -247,7 +247,8 @@ To set `transition_to` in the UI for any function, drag the probe on the right s
 Open **Advanced Settings** on the node, then set **Force Function Call** to yes. While this is on, the function section on the node shows a **Call required** indicator.
 
 <Note>
-**Loop protection:** If `require_function_call` is enabled and the assistant gets stuck repeatedly calling tools without replying in text, Akapulu automatically relaxes the forced-call requirement after 5 consecutive tool-only turns for that session/node. After that, the assistant can either call a tool or reply in plain text to prevent infinite loops.
+**Loop protection:** If `require_function_call` is enabled and the assistant gets stuck repeatedly calling tools without replying in text, Akapulu Labs automatically relaxes the forced-call requirement after 5 consecutive tool-only turns for that session/node. After that, the assistant can either call a tool or reply in plain text to prevent infinite loops.
+
 </Note>
 
 ## Respond immediately

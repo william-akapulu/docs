@@ -1,18 +1,18 @@
 ---
-title: "How Akapulu Works"
-description: "High-level overview of how Akapulu powers real-time conversational experiences."
+title: "How it works"
+description: "High-level overview of how Akapulu Labs powers real-time conversational experiences."
 ---
 
-## What Akapulu is
+## About Akapulu Labs
 
-- Akapulu is a platform for building real-time conversational video and voice experiences.
+- Akapulu Labs is an AI research lab building a platform for real-time conversational video and voice experiences.
 - It helps you launch AI assistants (bots) that join live calls with users: the user speaks naturally, and the bot listens, responds in real time, and follows your configured instructions and tools.
 
-<img src="/images/guides/getting-started/How-akapulu-works/Akapulu%20Demo%20Image.png" alt="Akapulu demo overview" style={{ borderRadius: 12 }} />
+<img src="/images/guides/getting-started/How-akapulu-works/Akapulu%20Demo%20Image.png" alt="Akapulu Labs demo overview" style={{ borderRadius: 12 }} />
 
-## Akapulu architecture
+## Architecture
 
-Akapulu runs each conversation through a real-time pipeline of linked stages: it receives user audio (and optionally video) input, generates the bot's spoken response, and streams synchronized audio and avatar video frames back to the user.
+Akapulu Labs runs each conversation through a real-time pipeline of linked stages: it receives user audio (and optionally video) input, generates the bot's spoken response, and streams synchronized audio and avatar video frames back to the user.
 
 Each stage in that pipeline has a specific role, described below.
 
@@ -23,19 +23,19 @@ Each stage in that pipeline has a specific role, described below.
 - **Avatar rendering/animation:** synchronizes the avatar's face and mouth movement to the generated speech so the response is delivered as a talking avatar.
 - **Avatar media output:** streams the bot's synthesized audio and rendered avatar video frames back to the user in real time.
 
-### Akapulu conversation pipeline
+### Conversation pipeline
 
 <img
   className="block dark:hidden"
   src="/images/guides/getting-started/How-akapulu-works/pipeline-diagram/pipeline-light.png"
-  alt="Akapulu pipeline diagram"
+  alt="Akapulu Labs pipeline diagram"
   style={{ borderRadius: 12, margin: "0 auto" }}
 />
 
 <img
   className="hidden dark:block"
   src="/images/guides/getting-started/How-akapulu-works/pipeline-diagram/pipeline-dark.png"
-  alt="Akapulu pipeline diagram"
+  alt="Akapulu Labs pipeline diagram"
   style={{ borderRadius: 12, margin: "0 auto" }}
 />
 
@@ -43,7 +43,7 @@ Each stage in that pipeline has a specific role, described below.
 
 The content of the bot's response is determined in the LLM section of the pipeline. This is where you control behavior through both global role prompts (for the avatar's overall persona, tone, and guardrails) and node-level instructions (for what to do in each stage), plus the tools and knowledge that the llm has access to.
 
-In Akapulu, you apply that behavior by launching each conversation with a [scenario](/guides/scenarios/overview). The scenario provides the global role context, node-specific instructions, tool access, and flow that the LLM uses during the conversation.
+In Akapulu Labs, you apply that behavior by launching each conversation with a [scenario](/guides/scenarios/overview). The scenario provides the global role context, node-specific instructions, tool access, and flow that the LLM uses during the conversation.
 
 ## Scenarios and conversation stages
 
@@ -122,7 +122,7 @@ flowchart TD
 
 ## Nodes
 
-Akapulu implements these stages using [nodes](/guides/scenarios/node-basics). A node has custom instructions for the LLM and the specific tools connected to that node.
+Akapulu Labs implements these stages using [nodes](/guides/scenarios/node-basics). A node has custom instructions for the LLM and the specific tools connected to that node.
 
 The bot (LLM) can choose to transition to different nodes through tool calls.
 
@@ -133,9 +133,9 @@ The bot (LLM) can choose to transition to different nodes through tool calls.
 />
 
 
-Akapulu provides an easy-to-understand drag-and-drop UI for building and connecting nodes.
+Akapulu Labs provides an easy-to-understand drag-and-drop UI for building and connecting nodes.
 
-## Using Akapulu
+## Using Akapulu Labs
 
 1. Create a scenario for your desired use case, including a global `role_instruction` and node-level `task_instruction` prompts.
 
@@ -166,14 +166,14 @@ Example JSON request body:
 }
 ```
 
-Akapulu then sets up the live call, starts the bot, and has the bot join the call.
+Akapulu Labs then sets up the live call, starts the bot, and has the bot join the call.
 
 3. The user then joins the same call, and you're ready to go!
 
 
 ```mermaid
 flowchart LR
-  AK[Akapulu]
+  AK[Akapulu Labs]
   ROOM[Live Call]
   BOT[Bot runtime]
   USER[User]

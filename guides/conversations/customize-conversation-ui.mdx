@@ -3,7 +3,7 @@ title: "Customize Conversation UI"
 description: "Build and tailor your own conversation interface."
 ---
 
-This guide is based on the [Akapulu Web SDK](/web-sdk/overview).
+This guide is based on the [Akapulu Labs Web SDK](/web-sdk/overview).
 
 ## Packages
 
@@ -17,7 +17,7 @@ This guide is based on the [Akapulu Web SDK](/web-sdk/overview).
 - `connectPath`: your local connect endpoint
 - `updatesPath`: your local updates endpoint
 
-The SDK calls these local routes from the browser. Your server routes then call Akapulu APIs using `@akapulu/server`.
+The SDK calls these local routes from the browser. Your server routes then call Akapulu Labs APIs using `@akapulu/server`.
 
 ```tsx
 import { AkapuluProvider } from "@akapulu/react";
@@ -42,7 +42,7 @@ export function App() {
 ## Backend connect and updates routes
 
 Your local `connect` route should:
-- call `akapulu.connectConversation(...)` with the Akapulu connect schema
+- call `akapulu.connectConversation(...)` with the Akapulu Labs connect schema
   - `scenario_id: string`
   - `avatar_id: string`
   - `runtime_vars?: Record<string, string>`
@@ -97,7 +97,7 @@ Then point `AkapuluProvider` to those local paths:
 
 - **In the browser:** `AkapuluProvider` (via `config.endpoints.connectPath` and `config.endpoints.updatesPath`) requests your connect and updates backend routes. 
 
-- **On your server:** those routes use `@akapulu/server`, read the Akapulu API key from server-side environment variable, and call Akapulu’s HTTP API. That way your api key stays on the server and does not get exposed in the browser
+- **On your server:** those routes use `@akapulu/server`, read the Akapulu Labs API key from server-side environment variable, and call the Akapulu Labs HTTP API. That way your api key stays on the server and does not get exposed in the browser
 
 `AkapuluProvider` expects your local **connect** and **updates** endpoints to return the JSON schema described under **Backend connect and updates routes** above.
 
@@ -550,7 +550,7 @@ The **same** connect/updates route pattern applies: `AkapuluProvider` points at 
 
    **Correlation**
 
-   - `conversationSessionId` — Akapulu conversation session id from connect (used when polling updates; also useful if your app logs or links out to dashboard/API records).
+   - `conversationSessionId` — Akapulu Labs conversation session id from connect (used when polling updates; also useful if your app logs or links out to dashboard/API records).
 
 ```tsx
 const {
@@ -647,7 +647,7 @@ function VideoTile(props: { sessionId: string; isLocal: boolean }) {
 }
 
 function CustomCallUi() {
-  // Akapulu session: status, lifecycle controls, transcript + progress state.
+  // Akapulu Labs session: status, lifecycle controls, transcript + progress state.
   const {
     status,
     start,
@@ -893,7 +893,7 @@ Return value shape (discriminated union, `ConversationRecordingResponse` from `@
 
 | `kind` | Meaning |
 | --- | --- |
-| `"redirect"` | Akapulu responded with a redirect; follow `location`. |
+| `"redirect"` | Akapulu Labs responded with a redirect; follow `location`. |
 | `"json"` | Response body was JSON; see `payload`. |
 | `"binary"` | Raw bytes (for example a media file); see `body` and headers. |
 

@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Akapulu API",
+    "title": "Akapulu Labs API",
     "version": "1.0.0",
-    "description": "Public Akapulu API reference."
+    "description": "Public Akapulu Labs API reference."
   },
   "servers": [
     {
@@ -268,7 +268,7 @@
                       "transcript_rows": [
                         {
                           "role": "user",
-                          "content": "Hi, I want to learn more about Akapulu.",
+                          "content": "Hi, I want to learn more about Akapulu Labs.",
                           "node_id": "Greeting"
                         },
                         {

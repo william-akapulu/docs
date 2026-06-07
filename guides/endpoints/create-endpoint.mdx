@@ -12,18 +12,18 @@ This guide covers endpoint setup and attachment in both JSON and UI flows.
 
 Each endpoint has:
 
-- `name`: tool label shown in Akapulu
+- `name`: tool label shown in Akapulu Labs
 - `url`: destination HTTP URL
 - `headers`: request headers
 - `body`: JSON payload
 
 <Note>
-Akapulu invokes your endpoint with the **POST** method and a JSON-encoded body. **`Content-Type: application/json`** is sent by default; add **`Content-Type`** under **Headers** if you need a different value.
+Akapulu Labs invokes your endpoint with the **POST** method and a JSON-encoded body. **`Content-Type: application/json`** is sent by default; add **`Content-Type`** under **Headers** if you need a different value.
 </Note>
 
 ## Host your endpoint as an HTTP server
 
-Your endpoint URL must point to a running HTTP server route that can accept POST requests from Akapulu during live conversations.
+Your endpoint URL must point to a running HTTP server route that can accept POST requests from Akapulu Labs during live conversations.
 
 - Use a valid `https://` URL for production.
 - The route must be publicly reachable from the internet.
@@ -37,7 +37,7 @@ For authentication, create a [secret](https://akapulu.com/secrets) and pass it i
 HTTP endpoint tools support two transition patterns:
 
 - **Simple transition**: set `transition_to` on the HTTP function. If the endpoint returns a successful **2xx** response, the flow transitions to that node.
-- **Dynamic transition**: set `allowed_next_nodes` on the HTTP function. After a successful **2xx** response, Akapulu reads the returned JSON field `next_node` and transitions to that node.
+- **Dynamic transition**: set `allowed_next_nodes` on the HTTP function. After a successful **2xx** response, Akapulu Labs reads the returned JSON field `next_node` and transitions to that node.
 
 For dynamic transitions:
 
@@ -52,7 +52,7 @@ If an HTTP endpoint is unreachable or returns a non-2xx response such as `400` o
 If dynamic transition is configured and the response is missing `next_node`, returns a non-string `next_node`, or returns a `next_node` that is not in `allowed_next_nodes`, the tool call is treated as an error and the flow does **not** transition.
 
 <Note>
-Tool call results are included in conversation transcripts. For failed HTTP tools, Akapulu stores a sanitized error message rather than the raw upstream error text.
+Tool call results are included in conversation transcripts. For failed HTTP tools, Akapulu Labs stores a sanitized error message rather than the raw upstream error text.
 </Note>
 
 
@@ -149,7 +149,7 @@ Example shape inside `nodes` json:
           "type": "http",
           "endpoint_id": "<YOUR_ENDPOINT_ID>",
       
-          // Akapulu will only transition to one of these connected node names.
+          // Akapulu Labs will only transition to one of these connected node names.
           "allowed_next_nodes": ["Pricing Help", "Technical Help", "General Overview"]
         
           // The endpoint must return JSON with "next_node" set to
@@ -191,13 +191,13 @@ def route_demo_request():
     return {
         "status": "success",
         "message": "Send this user to pricing.",
-        "next_node": "Pricing Help", # Akapulu will read next_node to transition
+        "next_node": "Pricing Help", # Akapulu Labs will read next_node to transition
     }
 ```
 When creating HTTP Endpoint:
 
 - set the endpoint `url` to the deployed route for your handler`https://my-endpoint.com/route-demo-request`
-- Akapulu will call your endpoint and return the result to the conversation flow
+- Akapulu Labs will call your endpoint and return the result to the conversation flow
 - JSON response will be added to llm context and will transition to the "Pricing Help" node
 ### Attach via UI
 

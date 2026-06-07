@@ -7,15 +7,15 @@ This guide covers the end-to-end conversation flow.
 
 ## Connect a Conversation Session
 
-Akapulu uses [Daily](https://docs.daily.co/get-started) behind the scenes for live WebRTC audio and video transport.  
-Your app starts a session by calling the connect endpoint, and Akapulu handles room setup, assistant startup, and session coordination.
+Akapulu Labs uses [Daily](https://docs.daily.co/get-started) behind the scenes for live WebRTC audio and video transport.
+Your app starts a session by calling the connect endpoint, and Akapulu Labs handles room setup, assistant startup, and session coordination.
 
 ### Connection flow diagram
 
 ```mermaid
 flowchart TD
   USER[User Frontend]
-  AK[Akapulu]
+  AK[Akapulu Labs]
   ROOM[Daily Room]
   BOT[Bot]
 
@@ -43,7 +43,7 @@ flowchart TD
 Each live conversation has a user participant and assistant participants in the Daily room:
 
 - **User participant**: the person joining from your frontend (microphone and optional camera).
-- **Bot participants**: Akapulu runtime participants that handle orchestration and assistant media in the room.
+- **Bot participants**: Akapulu Labs runtime participants that handle orchestration and assistant media in the room.
 
 Your application experience is the interaction between your user and the assistant in the same session.
 
@@ -79,14 +79,14 @@ Your application experience is the interaction between your user and the assista
    - The bot process starts for the selected scenario and avatar.
 
 7. **Bot participants join the room**
-   - After initialization completes, Akapulu runtime participants join and the assistant media becomes available in-room.
+   - After initialization completes, Akapulu Labs runtime participants join and the assistant media becomes available in-room.
 
 8. **Frontend monitors readiness**
    - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`.
    - Once ready, transition your UI from loading state to live in-call state.
 
 <Note>
-The [Akapulu Web SDK](/web-sdk/overview) orchestrates:
+The [Akapulu Labs Web SDK](/web-sdk/overview) orchestrates:
 
 - Calling **`POST /api/conversations/connect/`**
 - Polling **`GET /api/conversations/{conversation_session_id}/updates/`** until `call_is_ready`
@@ -97,11 +97,11 @@ So you can focus on your custom scenario logic and your in-call UI experience.
 
 ### Pre-join timeout behavior
 
-If no user participant joins the Daily room shortly after connect (45 seconds), Akapulu automatically ends the session to avoid leaving an abandoned bot process running.
+If no user participant joins the Daily room shortly after connect (45 seconds), Akapulu Labs automatically ends the session to avoid leaving an abandoned bot process running.
 
 ## Understand Usage and Concurrency Limits
 
-Conversation capacity is controlled by your current [plan](https://akapulu.com/pricing). Before a session starts, Akapulu validates usage and concurrency limits for the API key owner.
+Conversation capacity is controlled by your current [plan](https://akapulu.com/pricing). Before a session starts, Akapulu Labs validates usage and concurrency limits for the API key owner.
 
 ### How plan limits are applied
 
@@ -120,7 +120,7 @@ When `POST /api/conversations/connect/` succeeds, the new conversation reserves 
 
 Minutes used increase while the conversation is ongoing and are tracked in whole minutes.
 
-If a user joins a call and reaches the session duration cap while the call is active, Akapulu automatically ends the session. In this case, the frontend should handle a timeout event and show a clear message to the user (for example, usage limit reached).
+If a user joins a call and reaches the session duration cap while the call is active, Akapulu Labs automatically ends the session. In this case, the frontend should handle a timeout event and show a clear message to the user (for example, usage limit reached).
 
 For Web SDK integrations, this appears as [`event.type === "timeout"`](/web-sdk/callbacks-and-events#timeout) with reason `duration_limit_reached`.
 

@@ -3,7 +3,7 @@ title: "Scenarios Overview"
 description: "Learn how to design conversation flows using stages, tools, and node transitions."
 ---
 
-Scenarios are how you control assistant behavior in Akapulu.
+Scenarios are how you control assistant behavior in Akapulu Labs.
 
 When you start a conversation, the scenario provides:
 
@@ -24,11 +24,11 @@ A scenario lets you design the flow as a set of stages. At each stage, you can d
 
 As the conversation evolves, the assistant transitions between stages when appropriate.
 
-For walkthrough-style examples with diagrams (interview coach and patient intake flows), see [How Akapulu works](/guides/getting-started/how-akapulu-works#scenarios-and-conversation-stages).
+For walkthrough-style examples with diagrams (interview coach and patient intake flows), see [How it works](/guides/getting-started/how-akapulu-works#scenarios-and-conversation-stages).
 
 ## Nodes
 
-Akapulu implements these stages using [nodes](/guides/scenarios/node-basics). A node contains stage instructions plus the tools the assistant can use in that stage.
+Akapulu Labs implements these stages using [nodes](/guides/scenarios/node-basics). A node contains stage instructions plus the tools the assistant can use in that stage.
 
 The model can move between nodes using transition tools.
 
@@ -38,13 +38,13 @@ The model can move between nodes using transition tools.
   style={{ borderRadius: 12, margin: "0 auto", display: "block" }}
 />
 
-Akapulu provides a drag-and-drop UI for building and connecting nodes.
+Akapulu Labs provides a drag-and-drop UI for building and connecting nodes.
 
 ## Choosing the LLM model
 
 You can control which underlying LLM generates the bot’s responses for that scenario. In the node editor, open the **Scenario Menu** on the left, go to **Settings**, and choose **LLM model**.
 
-Akapulu supports the following OpenAI models. For official specifications and pricing, see [OpenAI’s model documentation](https://platform.openai.com/docs/models).
+Akapulu Labs supports the following OpenAI models. For official specifications and pricing, see [OpenAI’s model documentation](https://platform.openai.com/docs/models).
 
 | Model | Available on Free tier |
 | --- | --- |
@@ -69,7 +69,7 @@ For setup, limits, and behavior, see [Testing Mode](/guides/scenarios/llm-test-m
 
 ## Role and task instructions
 
-Akapulu combines a global **role instruction** with each node’s **task instruction** to decide what the model should do at every stage. For how that context is assembled and how to write both fields, see [Role and task instructions](/guides/scenarios/role-and-task-instructions).
+Akapulu Labs combines a global **role instruction** with each node’s **task instruction** to decide what the model should do at every stage. For how that context is assembled and how to write both fields, see [Role and task instructions](/guides/scenarios/role-and-task-instructions).
 
 ## Create scenario walkthrough
 
@@ -80,7 +80,7 @@ Akapulu combines a global **role instruction** with each node’s **task instruc
 3. Enter the scenario name.
 4. Open the **Scenario Menu** from the **left** side of the editor (hamburger icon) so the side panel opens. Stay on the **Settings** tab.
 5. Edit the global **role instruction** in the text area.
-   - Example: `You are an onboarding assistant for Akapulu. Keep responses concise because they will be converted to audio.`
+   - Example: `You are an onboarding assistant for Akapulu Labs. Keep responses concise because they will be converted to audio.`
 6. In the same **Settings** tab, open the **LLM model** dropdown and pick the desired llm model (we recommend leaving it as GPT-4.1 Mini)
 7. Click **Add Node** to create your first node.
 8. Enter a node name (for example, `Greeting`).
@@ -101,9 +101,9 @@ The first node you create is the default **start node**. Each scenario has exact
 3. Add a task instruction:
 
 ```text
-Help the user plan their project on the Akapulu platform
+Help the user plan their project on the Akapulu Labs platform
 
-Use your Akapulu RAG tool to get information on how Akapulu works
+Use your Akapulu RAG tool to get information on how Akapulu Labs works
 ```
 
 ## Add tools and transitions
@@ -117,7 +117,7 @@ You can add tools directly to each node.
 3. In the pop up modal, open the **RAG Tool** tab.
 4. Select your knowledge base, then create the RAG function with:
    - **Name:** `Akapulu_RAG`
-   - **Description:** `Access information on the Akapulu platform`
+   - **Description:** `Access information on the Akapulu Labs platform`
 
 **What you accomplished:** You wired your knowledge base into the **Planning Phase** node as a callable RAG function named `Akapulu_RAG`.
 
@@ -129,43 +129,43 @@ You can add tools directly to each node.
 2. In the pop up modal, open the **Transition Tool** tab.
 3. Create a transition function with:
    - **Name:** `transition_to_planning_phase`
-   - **Description:** `Once you have gathered enough information on what the user wants to build with Akapulu, use this tool to transition to the planning phase`
+   - **Description:** `Once you have gathered enough information on what the user wants to build with Akapulu Labs, use this tool to transition to the planning phase`
 4. Drag the probe on the right side of `transition_to_planning_phase` to the **Planning Phase** node to set the transition target.
 
 **What you accomplished:** You gave the **Greeting** node an explicit transition tool that moves the flow into **Planning Phase** when the model chooses to call it.
 
-**What this means for the bot:** During **Greeting**, the assistant follows the greeting task instruction and only has the transition tool (not RAG yet). When it decides enough context has been collected, it can call `transition_to_planning_phase`, and Akapulu switches the active node: **Planning Phase** task instructions are added to the llm context, and `Akapulu_RAG` becomes available so behavior shifts from discovery to informed planning overview.
+**What this means for the bot:** During **Greeting**, the assistant follows the greeting task instruction and only has the transition tool (not RAG yet). When it decides enough context has been collected, it can call `transition_to_planning_phase`, and Akapulu Labs switches the active node: **Planning Phase** task instructions are added to the llm context, and `Akapulu_RAG` becomes available so behavior shifts from discovery to informed planning overview.
 
 ## Completed scenario example
 
 You have now built a simple scenario.
 
-This scenario starts in `Greeting`, where the assistant asks open-ended questions about what the user wants to build with Akapulu. Once project scope is clear, it calls `transition_to_planning_phase` and moves into `Planning Phase`, where `Akapulu_RAG` is available to pull platform information and help shape the user’s plan.
+This scenario starts in `Greeting`, where the assistant asks open-ended questions about what the user wants to build with Akapulu Labs. Once project scope is clear, it calls `transition_to_planning_phase` and moves into `Planning Phase`, where `Akapulu_RAG` is available to pull platform information and help shape the user’s plan.
 
 If you want to view or edit this scenario as JSON, use the scenario editor toggle in the top-right corner to switch between visual mode and JSON mode.
 
 ```json
 {
   "initial_node": "Greeting",
-  "role_instruction": "You are a helpful Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
+  "role_instruction": "You are a helpful Akapulu Labs onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "Greeting": {
-      "task_instruction": "Ask open-ended questions to understand what the user wants to build with Akapulu. Once project scope is clear, use the transition tool to move to planning.",
+      "task_instruction": "Ask open-ended questions to understand what the user wants to build with Akapulu Labs. Once project scope is clear, use the transition tool to move to planning.",
       "functions": [
         {
           "name": "transition_to_planning_phase",
-          "description": "Once you have gathered enough information on what the user wants to build with Akapulu, use this tool to transition to the planning phase",
+          "description": "Once you have gathered enough information on what the user wants to build with Akapulu Labs, use this tool to transition to the planning phase",
           "type": "transition",
           "transition_to": "Planning Phase"
         }
       ]
     },
     "Planning Phase": {
-      "task_instruction": "Help the user plan their project on the Akapulu platform. Use the knowledge base tool when you need platform information.",
+      "task_instruction": "Help the user plan their project on the Akapulu Labs platform. Use the knowledge base tool when you need platform information.",
       "functions": [
         {
           "name": "Akapulu_RAG",
-          "description": "Access information on the Akapulu platform",
+          "description": "Access information on the Akapulu Labs platform",
           "type": "rag",
           "knowledge_base_id": "<KNOWLEDGE_BASE_ID>"
         }

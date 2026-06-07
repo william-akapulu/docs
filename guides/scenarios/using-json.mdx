@@ -1,6 +1,6 @@
 ---
 title: "Using JSON"
-description: "Define nodes, instructions, and tools using Akapulu scenario JSON."
+description: "Define nodes, instructions, and tools using Akapulu Labs scenario JSON."
 ---
 
 Use this guide when you want to create or edit a scenario directly in JSON.
@@ -18,7 +18,7 @@ Every scenario JSON must include:
 ```json
 {
   "initial_node": "intro",
-  "role_instruction": "You are a friendly Akapulu onboarding assistant. Keep responses concise because they will be converted to audio.",
+  "role_instruction": "You are a friendly Akapulu Labs onboarding assistant. Keep responses concise because they will be converted to audio.",
   "nodes": {
     "intro": {
       "task_instruction": "Greet the user and ask what they want to build.",
@@ -141,7 +141,7 @@ Example:
 For HTTP functions, there are two transition patterns:
 
 - Use `transition_to` when the endpoint should always move to the same next node after a successful response.
-- Use `allowed_next_nodes` to have Akapulu choose the next node dynamically from the function response. (See [Endpoints](/guides/endpoints/create-endpoint))
+- Use `allowed_next_nodes` to have Akapulu Labs choose the next node dynamically from the function response. (See [Endpoints](/guides/endpoints/create-endpoint))
 
 ## Validation rules
 
@@ -220,7 +220,7 @@ For HTTP functions, there are two transition patterns:
 
 ## Example scenarios
 
-Replace placeholder IDs like `<KNOWLEDGE_BASE_ID>` and `<HTTP_ENDPOINT_ID>` with values from your Akapulu account.
+Replace placeholder IDs like `<KNOWLEDGE_BASE_ID>` and `<HTTP_ENDPOINT_ID>` with values from your Akapulu Labs account.
 
 ### 1) Interview coach
 
