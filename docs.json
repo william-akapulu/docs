@@ -13,12 +13,20 @@
       "destination": "/quickstart"
     },
     {
+      "source": "/blog",
+      "destination": "https://blog.akapulu.com"
+    },
+    {
       "source": "/blog/welcome-to-the-akapulu-blog",
-      "destination": "/blog/what-is-akapulu/what-is-akapulu"
+      "destination": "https://blog.akapulu.com/what-is-akapulu-labs"
     },
     {
       "source": "/blog/what-is-akapulu",
-      "destination": "/blog/what-is-akapulu/what-is-akapulu"
+      "destination": "https://blog.akapulu.com/what-is-akapulu-labs"
+    },
+    {
+      "source": "/blog/what-is-akapulu/what-is-akapulu",
+      "destination": "https://blog.akapulu.com/what-is-akapulu-labs"
     }
   ],
   "colors": {
@@ -145,23 +153,6 @@
             "pages": [
               "examples/scenarios/healthcare-intake-scheduling",
               "examples/scenarios/sales-roleplay-training"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Blog",
-        "groups": [
-          {
-            "group": "Blog",
-            "pages": [
-              "blog/index"
-            ]
-          },
-          {
-            "group": "Posts",
-            "pages": [
-              "blog/what-is-akapulu/what-is-akapulu"
             ]
           }
         ]
