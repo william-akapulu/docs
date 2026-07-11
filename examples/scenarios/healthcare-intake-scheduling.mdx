@@ -5,16 +5,6 @@ description: "This example scenario demonstrates how to run a full patient scree
 
 The avatar will act as a friendly medical screening assistant that guides the patient through the screening process, with access to a vision tool to view the patient's symptoms on camera if requested, as well as a RAG tool for clinic details and an appointment booking tool to schedule the appointment.
 
-<Frame caption="Healthcare intake & scheduling demo">
-  <iframe
-    className="w-full aspect-video rounded-xl"
-    src="https://www.youtube.com/embed/CyMIar4TDhw"
-    title="Healthcare Intake & Scheduling demo"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowFullScreen
-  />
-</Frame>
-
 <Card title="Tags">
 `transition-function`, `vision-function`, `rag-function`, `endpoint-function`, `endpoint-simple-transition`, `end-after-bot-response`, `stt-keywords`, `runtime-vars-in-instructions`, `runtime-vars-in-http-endpoints`, `llm-template-variables`, `secret-variables`, `role-instruction`
 </Card>
@@ -155,7 +145,7 @@ Use your hosted endpoint URL below.
   - Description: `Clinic operations, hours, policies, and scheduling information used by the demo assistant for patient Q&A.`
 
 - **Upload this file**
-  - [`Clinic-Details.md`](https://github.com/Akapulu/akapulu-examples/blob/main/example-scenarios/healthcare-intake-scheduling/Clinic-Details.md)
+  - [`Clinic-Details.md`](https://github.com/Akapulu/healthcare-intake-scheduling/blob/main/knowledge-base/Clinic-Details.md)
 
 ## Node JSON to paste
 
@@ -244,11 +234,12 @@ Replace these placeholders:
 
 After your scenario is saved, [integrate it in your own application](https://docs.akapulu.com/guides/conversations/customize-conversation-ui) using the [Akapulu Labs Web SDK](https://docs.akapulu.com/web-sdk/overview).
 
-Related docs pages:
+Web SDK examples you can pair with this scenario:
 
-- [Prebuilt UI](https://docs.akapulu.com/examples/basic/prebuilt-ui)
-- [Custom UI](https://docs.akapulu.com/examples/basic/custom-ui)
-- [Avatar Catalog](https://docs.akapulu.com/guides/avatars/avatar-catalog)
+- [Prebuilt UI](/examples/web-sdk/prebuilt-ui)
+- [Prebuilt UI (styled)](/examples/web-sdk/prebuilt-ui-styled)
+- [Customized UI](/examples/web-sdk/customized-ui)
+- [Avatar Catalog](/guides/avatars/avatar-catalog)
 
 In the payload to the [`connectConversation`](https://docs.akapulu.com/web-sdk/server-sdk#connect-conversation) method, pass `scenario_id`, `avatar_id`, and runtime variables required by this scenario (`patient_id`, `today`), for example:
 
@@ -284,4 +275,4 @@ return await akapulu.connectConversation(connectPayload);
 
 ## View on GitHub
 
-- [example-scenarios/healthcare-intake-scheduling](https://github.com/Akapulu/akapulu-examples/tree/main/example-scenarios/healthcare-intake-scheduling)
+- [healthcare-intake-scheduling](https://github.com/Akapulu/healthcare-intake-scheduling)

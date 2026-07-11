@@ -1,0 +1,95 @@
+---
+title: "Prebuilt UI"
+description: "The quickest way to run an Akapulu conversation locally with the prebuilt UI."
+---
+
+A minimal Vite + Express app using Akapulu's prebuilt conversation UI. Use it when you want the fastest path to a working call and prefer to customize via props or CSS rather than build your own layout.
+
+Two folders:
+
+- **`backend/`** — Express server that holds your API key and calls Akapulu with [`@akapulu/server`](/web-sdk/server-sdk)
+- **`frontend/`** — React app (Vite) using [`@akapulu/react`](/web-sdk/react-sdk) and [`@akapulu/react-ui`](/web-sdk/react-ui)
+
+## Prerequisites
+
+- **Node.js 20+** and npm
+- An **Akapulu API key** — [akapulu.com/api-keys](https://akapulu.com/api-keys)
+- A **scenario** — [akapulu.com/scenarios](https://akapulu.com/scenarios) ([guide](/guides/scenarios/overview))
+
+## Setup
+
+Clone the repo:
+
+```bash
+git clone https://github.com/Akapulu/prebuilt-ui.git && cd prebuilt-ui
+```
+
+Install and configure the backend. Copy `backend/.env.example` to `backend/.env.local` and add your API key:
+
+```bash
+cd backend && npm install && cp .env.example .env.local
+```
+
+```env
+AKAPULU_API_KEY=your_real_api_key_here
+```
+
+Set your scenario id in `backend/server.ts`:
+
+```ts
+const connectPayload = {
+  scenario_id: "<your-scenario-id>", // <--- replace with your scenario id
+  avatar_id: "1285bfe4-3512-4b34-93ad-196098597a1c",
+  runtime_vars: {},
+  record_conversation: false,
+};
+```
+
+Start the backend (`localhost:3001`) and leave it running:
+
+```bash
+npm run dev
+```
+
+In a **second** terminal, start the frontend:
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Open [localhost:5173](http://localhost:5173) and click **Start Call**.
+
+## How it works
+
+The frontend (`localhost:5173`) calls your backend (`localhost:3001`), which calls Akapulu with your API key.
+
+The backend exposes two routes:
+
+```ts
+// POST /api/connect  →  starts a conversation
+// GET  /api/updates  →  polled while the avatar boots
+```
+
+The frontend wires those into `AkapuluProvider` and renders `AkapuluConversation`:
+
+```tsx
+<AkapuluProvider
+  config={{
+    endpoints: {
+      connectPath: "http://localhost:3001/api/connect",
+      updatesPath: "http://localhost:3001/api/updates",
+    },
+  }}
+>
+  <AkapuluConversation title="Akapulu prebuilt UI demo" />
+</AkapuluProvider>
+```
+
+## Related examples
+
+- [Prebuilt UI (styled)](/examples/web-sdk/prebuilt-ui-styled) — dark theme, custom tool toasts, post-call review
+- [Customized UI](/examples/web-sdk/customized-ui) — custom hooks + Daily video UI + post-call review
+
+## View on GitHub
+
+- [prebuilt-ui](https://github.com/Akapulu/prebuilt-ui)

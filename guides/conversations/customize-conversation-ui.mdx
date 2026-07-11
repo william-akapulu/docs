@@ -925,8 +925,10 @@ Return value shape (discriminated union, `ConversationRecordingResponse` from `@
 
 ## Examples
 
-Runnable apps that mirror this guide are available in **[Akapulu/akapulu-examples](https://github.com/Akapulu/akapulu-examples)** (`fundamentals/`). Both are Next.js apps with **`@akapulu/server`** route handlers for `POST …/connect` and `GET …/updates?conversation_session_id=…`
+Runnable apps that mirror this guide are available as standalone Vite + Express repos. Each has an Express `backend/` with **`@akapulu/server`** route handlers for `POST /api/connect` and `GET /api/updates?conversation_session_id=…`, plus a React `frontend/`.
 
-- [Pre-built UI](/examples/basic/prebuilt-ui) — [`fundamentals/prebuilt-ui`](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/prebuilt-ui): **`@akapulu/react`** (`AkapuluProvider` with local `connectPath` / `updatesPath`) plus **`@akapulu/react-ui`** (`AkapuluConversation` for the full default layout: video, transcript, controls). Useful when you want to ship quickly and customize via props or CSS rather than rebuilding layout.
+- [Prebuilt UI](/examples/web-sdk/prebuilt-ui) — [`Akapulu/prebuilt-ui`](https://github.com/Akapulu/prebuilt-ui): **`@akapulu/react`** (`AkapuluProvider` with local `connectPath` / `updatesPath`) plus **`@akapulu/react-ui`** (`AkapuluConversation` for the full default layout: video, transcript, controls). Useful when you want to ship quickly and customize via props or CSS rather than rebuilding layout.
 
-- [Custom UI](/examples/basic/custom-ui) — [`fundamentals/custom-ui`](https://github.com/Akapulu/akapulu-examples/tree/main/fundamentals/custom-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluParticipantRoles`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, track hooks) for your own chrome. Useful when you need full control over markup and state wiring.
+- [Prebuilt UI (styled)](/examples/web-sdk/prebuilt-ui-styled) — [`Akapulu/prebuilt-ui-styled`](https://github.com/Akapulu/prebuilt-ui-styled): the same prebuilt path with a dark theme, a custom tool toast, and a post-call review screen (recording + transcript).
+
+- [Customized UI](/examples/web-sdk/customized-ui) — [`Akapulu/customized-ui`](https://github.com/Akapulu/customized-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluParticipantRoles`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, track hooks) for your own chrome. Useful when you need full control over markup and state wiring.

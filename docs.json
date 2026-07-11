@@ -27,6 +27,14 @@
     {
       "source": "/blog/what-is-akapulu/what-is-akapulu",
       "destination": "https://blog.akapulu.com/what-is-akapulu-labs"
+    },
+    {
+      "source": "/examples/basic/prebuilt-ui",
+      "destination": "/examples/web-sdk/prebuilt-ui"
+    },
+    {
+      "source": "/examples/basic/custom-ui",
+      "destination": "/examples/web-sdk/customized-ui"
     }
   ],
   "colors": {
@@ -142,14 +150,15 @@
             ]
           },
           {
-            "group": "Basic",
+            "group": "Web SDK examples",
             "pages": [
-              "examples/basic/prebuilt-ui",
-              "examples/basic/custom-ui"
+              "examples/web-sdk/prebuilt-ui",
+              "examples/web-sdk/prebuilt-ui-styled",
+              "examples/web-sdk/customized-ui"
             ]
           },
           {
-            "group": "Example Scenarios",
+            "group": "Example scenarios",
             "pages": [
               "examples/scenarios/healthcare-intake-scheduling",
               "examples/scenarios/sales-roleplay-training"

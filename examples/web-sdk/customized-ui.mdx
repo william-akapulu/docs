@@ -1,0 +1,91 @@
+---
+title: "Customized UI"
+description: "A fully custom conversation UI built from Akapulu's React hooks and Daily primitives."
+---
+
+A fully custom conversation UI built from [`@akapulu/react`](/web-sdk/react-sdk) hooks plus Daily primitives. You build the call surface yourself — video tiles, mic/cam/end controls, transcript, loading and error states, and tool toasts — and end with a post-call review screen (recording + transcript). Use it when you need full control over markup and state wiring.
+
+Two folders:
+
+- **`backend/`** — Express server that holds your API key and calls Akapulu with [`@akapulu/server`](/web-sdk/server-sdk)
+- **`frontend/`** — React app (Vite); no `@akapulu/react-ui`
+
+## Prerequisites
+
+- **Node.js 20+** and npm
+- An **Akapulu API key** — [akapulu.com/api-keys](https://akapulu.com/api-keys)
+- A **scenario** — [akapulu.com/scenarios](https://akapulu.com/scenarios) ([guide](/guides/scenarios/overview))
+
+## Setup
+
+Clone the repo:
+
+```bash
+git clone https://github.com/Akapulu/customized-ui.git && cd customized-ui
+```
+
+Install and configure the backend. Copy `backend/.env.example` to `backend/.env.local` and add your API key:
+
+```bash
+cd backend && npm install && cp .env.example .env.local
+```
+
+```env
+AKAPULU_API_KEY=your_real_api_key_here
+```
+
+Set your scenario id in `backend/server.ts`:
+
+```ts
+const connectPayload = {
+  scenario_id: "<your-scenario-id>", // <--- replace with your scenario id
+  avatar_id: "1285bfe4-3512-4b34-93ad-196098597a1c",
+  runtime_vars: {},
+  record_conversation: true,
+};
+```
+
+`record_conversation: true` is required for the post-call review to have a recording to show.
+
+Start the backend (`localhost:3001`) and leave it running:
+
+```bash
+npm run dev
+```
+
+In a **second** terminal, start the frontend:
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Open [localhost:5173](http://localhost:5173) and click **Start call**. When the call ends, you land on the review screen.
+
+## How it works
+
+The frontend (`localhost:5173`) calls your backend (`localhost:3001`), which calls Akapulu with your API key.
+
+The backend exposes four routes:
+
+```ts
+// POST /api/connect              →  starts a conversation (record_conversation: true)
+// GET  /api/updates              →  polled while the avatar boots
+// GET  /api/conversation-details →  transcript + metadata for the review screen
+// GET  /api/recording            →  streams the recorded video
+```
+
+On the frontend:
+
+- **`src/App.tsx`** — `AkapuluProvider` (points at the backend) plus a single `reviewId` state that decides which screen shows (live call UI or conversation review).
+- **`src/CustomConversation.tsx`** — the custom call surface: `useAkapuluSession` for lifecycle, Daily hooks (`useDaily`, `useVideoTrack`, `DailyVideo`) for video, `useAkapuluMediaControls` for mic/cam, `useAkapuluEvents` for tool toasts, and `AkapuluBotAudio` for audio.
+- **`src/ConversationReview.tsx`** — post-call screen; fetches details and polls until the recording is ready.
+- **`src/styles.css`** — the call surface styling.
+
+## Related examples
+
+- [Prebuilt UI](/examples/web-sdk/prebuilt-ui) — minimal `AkapuluConversation` demo
+- [Prebuilt UI (styled)](/examples/web-sdk/prebuilt-ui-styled) — styled prebuilt UI + post-call review
+
+## View on GitHub
+
+- [customized-ui](https://github.com/Akapulu/customized-ui)

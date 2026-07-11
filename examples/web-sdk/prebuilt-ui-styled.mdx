@@ -1,0 +1,90 @@
+---
+title: "Prebuilt UI (styled)"
+description: "The prebuilt conversation UI with a dark theme, custom tool toast, and a post-call review screen."
+---
+
+The prebuilt conversation UI, extended with a custom dark theme, a custom tool toast, and a post-call review screen (recording + transcript). Use it when you like the prebuilt layout but want to theme it and add a review flow.
+
+Two folders:
+
+- **`backend/`** — Express server that holds your API key and calls Akapulu with [`@akapulu/server`](/web-sdk/server-sdk)
+- **`frontend/`** — React app (Vite) using [`@akapulu/react`](/web-sdk/react-sdk) and [`@akapulu/react-ui`](/web-sdk/react-ui)
+
+## Prerequisites
+
+- **Node.js 20+** and npm
+- An **Akapulu API key** — [akapulu.com/api-keys](https://akapulu.com/api-keys)
+- A **scenario** — [akapulu.com/scenarios](https://akapulu.com/scenarios) ([guide](/guides/scenarios/overview))
+
+## Setup
+
+Clone the repo:
+
+```bash
+git clone https://github.com/Akapulu/prebuilt-ui-styled.git && cd prebuilt-ui-styled
+```
+
+Install and configure the backend. Copy `backend/.env.example` to `backend/.env.local` and add your API key:
+
+```bash
+cd backend && npm install && cp .env.example .env.local
+```
+
+```env
+AKAPULU_API_KEY=your_real_api_key_here
+```
+
+Set your scenario id in `backend/server.ts`:
+
+```ts
+const connectPayload = {
+  scenario_id: "<your-scenario-id>", // <--- replace with your scenario id
+  avatar_id: "1285bfe4-3512-4b34-93ad-196098597a1c",
+  runtime_vars: {},
+  record_conversation: true,
+};
+```
+
+`record_conversation: true` is required for the post-call review to have a recording to show.
+
+Start the backend (`localhost:3001`) and leave it running:
+
+```bash
+npm run dev
+```
+
+In a **second** terminal, start the frontend:
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Open [localhost:5173](http://localhost:5173) and click **Start Call**. When the call ends, you land on the review screen.
+
+## How it works
+
+The frontend (`localhost:5173`) calls your backend (`localhost:3001`), which calls Akapulu with your API key.
+
+The backend exposes four routes:
+
+```ts
+// POST /api/connect              →  starts a conversation (record_conversation: true)
+// GET  /api/updates              →  polled while the avatar boots
+// GET  /api/conversation-details →  transcript + metadata for the review screen
+// GET  /api/recording            →  streams the recorded video
+```
+
+On the frontend:
+
+- **`src/App.tsx`** — the styled `AkapuluConversation` (dark styles, custom tool toast, custom transcript rows) plus an event logger. A single `reviewId` state switches to the review screen when the call ends (no router).
+- **`src/customization.tsx`** — the `darkStyles` object and the custom tool toast renderer.
+- **`src/ConversationReview.tsx`** — post-call screen; fetches details and polls until the recording is ready.
+
+## Related examples
+
+- [Prebuilt UI](/examples/web-sdk/prebuilt-ui) — minimal `AkapuluConversation` demo
+- [Customized UI](/examples/web-sdk/customized-ui) — custom hooks + Daily video UI + post-call review
+
+## View on GitHub
+
+- [prebuilt-ui-styled](https://github.com/Akapulu/prebuilt-ui-styled)
