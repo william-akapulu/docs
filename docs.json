@@ -61,6 +61,7 @@
               "guides/scenarios/overview",
               "guides/scenarios/role-and-task-instructions",
               "guides/scenarios/llm-test-mode",
+              "guides/scenarios/hosted-links",
               "guides/scenarios/using-json",
               "guides/scenarios/node-basics"
             ]

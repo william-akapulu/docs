@@ -1,0 +1,92 @@
+---
+title: "Hosted Links"
+description: "Generate a public, shareable link to run a scenario as a full live avatar conversation"
+---
+
+A **Hosted Link** is a public URL that runs your scenario as a **full live avatar conversation** (voice and video), hosted by Akapulu. Anyone you share the link with can open it and click **Start Call**. No SDK, backend, or API key required.
+
+Unlike [Testing Mode](/guides/scenarios/llm-test-mode), which is a text-only simulation, a hosted link starts a **real conversation** with a real avatar, so it consumes your voice/video **conversation minutes**.
+
+## What you can configure
+
+Each hosted link stores its own connection settings, so you can create several links for the same scenario:
+
+- **Avatar**: the avatar that will appear on the call.
+- **Label**: the title shown above **Start Call** in the hosted UI, and how the link appears in your list of hosted links on the scenario page.
+- **Runtime variables**: a JSON object passed as `runtime_vars` when the call starts.
+- **STT keywords**: optional speech-to-text keyword hints.
+- **Record conversation**: whether the conversation is recorded.
+- **Redirect URL**: where the visitor is sent after the call ends (optional).
+
+## Create a hosted link
+
+1. Open a scenario in the editor (Make sure visual mode is toggled)
+2. Open the **Scenario Menu** (side panel on left hand side) and select the **Hosted Link** tab.
+3. Click **+ Add hosted link** and fill in the connect settings above.
+4. Click **Add Link**. Then to persist your changes - click "save" in the upper right hand corder
+5. Copy the **url** and paste into a browser to start your live conversation
+
+## Runtime variables
+
+A hosted link must provide a value for **every** [runtime](/guides/scenarios/role-and-task-instructions#variables-in-instructions) variable your scenario declares (the ones referenced as `{{runtime.*}}` in your role instruction, task instructions, and endpoint templates). Values may be **blank**, but the keys must be present.
+
+Example:
+
+```json
+{
+  "company_name": "Northwind Labs",
+  "display_name": "Sam Rivera",
+  "account_id": "acct_99102"
+}
+```
+
+## The generated link
+
+Hosted links use the format:
+
+```
+https://live.akapulu.com/session/<token>
+```
+
+Open the link, click **Start Call**, and the conversation starts with the avatar and settings you configured. Anyone with the link can start a conversation.
+
+## Redirects and tracking parameters
+
+When you create a hosted link, you can set an optional **Redirect URL**. After the call ends, the visitor is sent there.
+
+For example, set the redirect URL to:
+
+```
+https://your-site.com/thanks
+```
+
+Then share your hosted link with your own query parameters attached (CRM IDs, UTM tags, or anything else you use for tracking):
+
+```
+https://live.akapulu.com/session/<token>?crm_id=abc123&utm_source=email
+```
+
+When the call ends, those query parameters are carried over onto your redirect URL. Akapulu Labs also appends a **`conversation_session_id`** so you can sync the hosted conversation with your own systems and fetch the [transcript](/api-reference/conversations/detail) or [recording](/api-reference/conversations/recording):
+
+```
+https://your-site.com/thanks?crm_id=abc123&utm_source=email&conversation_session_id=<uuid>
+```
+
+If your redirect URL already includes query parameters, those are preserved. Incoming parameters with the same name do not overwrite them.
+
+## Manage hosted links
+
+Every hosted link appears as a card in the **Hosted Link** tab. Expand a card to view its full settings, copy the link, or delete it. Deleting a scenario also deletes its hosted links.
+
+## When to use a hosted link vs. the Web SDK
+
+Hosted links are built for **quick integrations, demos, and testing**. They are the fastest way to put a scenario in front of someone.
+
+For **production and enterprise use cases** where you need maximum security and full control (your own domain, authentication, and UI, with no publicly shareable token), we recommend using the Web SDK instead. See the [Web SDK Overview](/web-sdk/overview) and [Customize Conversation UI](/guides/conversations/customize-conversation-ui).
+
+## See also
+
+- [Scenarios overview](/guides/scenarios/overview): how nodes, tools, and context fit together
+- [Testing Mode](/guides/scenarios/llm-test-mode): text-only simulation of your scenario
+- [Templates and variables](/guides/endpoints/templates-and-variables): `runtime`, `secret`, and `llm` placeholders
+- [Web SDK Overview](/web-sdk/overview): build your own integration
