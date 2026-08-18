@@ -1,0 +1,16 @@
+---
+title: "Delete Knowledge Bases"
+openapi: "openapi/akapulu.json POST /knowledge-bases/delete"
+---
+
+Delete one or more knowledge bases you own.
+
+Request body:
+
+```json
+{
+  "ids": ["33333333-4444-5555-6666-777777777777"]
+}
+```
+
+Delete is rejected if a scenario still references the knowledge base.

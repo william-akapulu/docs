@@ -1,0 +1,10 @@
+---
+title: "Create Knowledge Base"
+openapi: "openapi/akapulu.json POST /knowledge-bases/create"
+---
+
+Create a knowledge base (a container for documents used by RAG tools).
+
+Required: `name` (unique per user). Optional: `description` (400 characters or fewer).
+
+Then [upload documents](/api-reference/knowledge-bases/documents-create) and attach the knowledge base to a scenario with a `type: "rag"` function. See [Knowledge bases](/guides/knowledge-bases/overview).

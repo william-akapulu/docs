@@ -1,0 +1,16 @@
+---
+title: "Delete Endpoints"
+openapi: "openapi/akapulu.json POST /endpoints/delete"
+---
+
+Delete one or more HTTP endpoints you own.
+
+Request body:
+
+```json
+{
+  "ids": ["22222222-3333-4444-5555-666666666666"]
+}
+```
+
+Delete is rejected if a scenario still references the endpoint.

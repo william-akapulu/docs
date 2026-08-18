@@ -1,0 +1,18 @@
+---
+title: "Create Endpoint"
+openapi: "openapi/akapulu.json POST /endpoints/create"
+---
+
+Create an HTTP endpoint the assistant can call from a scenario `http` tool.
+
+Required request fields:
+
+- `name` (unique per user)
+- `url`
+
+Optional:
+
+- `headers` — JSON object. Put `{{secret.*}}` placeholders here, not in `body`.
+- `body` — JSON object. Use `{{runtime.*}}` / `{{llm.*}}` templates as needed.
+
+Akapulu Labs invokes your URL with **POST** and a JSON body. Secrets themselves are still created in the [dashboard](https://akapulu.com/secrets/). See [Endpoints](/guides/endpoints/create-endpoint) and [Templates and variables](/guides/endpoints/templates-and-variables).

@@ -1,0 +1,16 @@
+---
+title: "Update Scenario"
+openapi: "openapi/akapulu.json POST /scenarios/update"
+---
+
+Update a scenario's name, `nodes_json`, and optional LLM model.
+
+Required request fields:
+
+- `id` of the scenario to update
+- `name`
+- `nodes_json`
+
+<Warning>
+If you send `hosted_links`, the array is a **full replace**. Links omitted from the array are deleted. Include each existing link's `id` to keep or edit it. Omit `hosted_links` entirely to leave existing links unchanged.
+</Warning>

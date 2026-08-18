@@ -1,0 +1,23 @@
+---
+title: "Create Scenario"
+openapi: "openapi/akapulu.json POST /scenarios/create"
+---
+
+Create a scenario from [scenario JSON](/guides/scenarios/using-json). You can mint [hosted links](/guides/scenarios/hosted-links) in the same request.
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+Required request fields:
+
+- `name`
+- `nodes_json` with `initial_node` and `nodes`
+
+Optional request fields:
+
+- `llm_model` (defaults to `gpt-4.1-mini`; full-size models require a paid plan)
+- `hosted_links` — each link needs `avatar_id` and a `runtime_vars` key for every `{{runtime.*}}` variable the scenario references (blank values are allowed)
+
+The response `hosted_links` array includes the public `url` (`https://live.akapulu.com/session/<token>`).

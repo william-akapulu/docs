@@ -397,6 +397,1683 @@
           }
         }
       }
+    },
+    "/scenarios": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "List scenarios",
+        "description": "List scenarios owned by the API key's user.",
+        "responses": {
+          "200": {
+            "description": "Scenarios listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioListResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "scenarios": [
+                        {
+                          "id": "11111111-2222-3333-4444-555555555555",
+                          "name": "Sales Qualification",
+                          "created_at": "2026-08-16T21:47:46.000000+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/create": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Create scenario",
+        "description": "Create a scenario. Optionally mint hosted links in the same request.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenarioRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Sales Qualification",
+                    "llm_model": "gpt-4.1-mini",
+                    "nodes_json": {
+                      "initial_node": "intro",
+                      "role_instruction": "You are a friendly sales assistant. Keep responses concise because they will be converted to audio.",
+                      "nodes": {
+                        "intro": {
+                          "task_instruction": "Greet {{runtime.user_name}} from {{runtime.company_name}} and ask what they want to build.",
+                          "respond_immediately": true,
+                          "functions": [
+                            {
+                              "name": "go_end",
+                              "description": "End the conversation when the visitor is done.",
+                              "type": "transition",
+                              "transition_to": "end"
+                            }
+                          ]
+                        },
+                        "end": {
+                          "task_instruction": "Thank them and say goodbye.",
+                          "end_after_bot_response": true
+                        }
+                      }
+                    },
+                    "hosted_links": [
+                      {
+                        "avatar_id": "66666666-7777-8888-9999-000000000000",
+                        "label": "Acme demo",
+                        "runtime_vars": {
+                          "user_name": "Alex",
+                          "company_name": "Acme Corp"
+                        },
+                        "stt_keywords": [
+                          "Acme"
+                        ],
+                        "record_conversation": false,
+                        "redirect_url": "https://your-site.com/thanks"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scenario created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "created",
+                      "id": "11111111-2222-3333-4444-555555555555",
+                      "hosted_links": [
+                        {
+                          "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                          "token": "abc123token",
+                          "url": "https://live.akapulu.com/session/abc123token",
+                          "label": "Acme demo",
+                          "scenario_id": "11111111-2222-3333-4444-555555555555",
+                          "avatar_id": "66666666-7777-8888-9999-000000000000",
+                          "runtime_vars": {
+                            "user_name": "Alex",
+                            "company_name": "Acme Corp"
+                          },
+                          "stt_keywords": [
+                            "Acme"
+                          ],
+                          "record_conversation": false,
+                          "redirect_url": "https://your-site.com/thanks",
+                          "created_at": "2026-08-16T21:47:46.000000+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/update": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Update scenario",
+        "description": "Update a scenario. If `hosted_links` is present, omitted links are deleted (full reconcile). Omit `hosted_links` to leave existing links unchanged.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateScenarioRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "id": "11111111-2222-3333-4444-555555555555",
+                    "name": "Sales Qualification v2",
+                    "llm_model": "gpt-4.1-mini",
+                    "nodes_json": {
+                      "initial_node": "intro",
+                      "role_instruction": "You are a closer.",
+                      "nodes": {
+                        "intro": {
+                          "task_instruction": "Greet the visitor.",
+                          "respond_immediately": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scenario updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "updated",
+                      "id": "11111111-2222-3333-4444-555555555555",
+                      "hosted_links": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scenario not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "ConversationConfig not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/delete": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Delete scenarios",
+        "description": "Delete one or more scenarios owned by the API key's user. Deleting a scenario also deletes its hosted links.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "11111111-2222-3333-4444-555555555555"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scenarios deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScenariosResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "deleted",
+                      "deleted_count": 1,
+                      "config_ids": [
+                        "11111111-2222-3333-4444-555555555555"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "config_ids are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scenarios not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "ConversationConfigs not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{config_id}": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Get scenario",
+        "description": "Fetch a scenario's nodes_json, LLM model, and hosted links (owner only).",
+        "parameters": [
+          {
+            "name": "config_id",
+            "in": "path",
+            "required": true,
+            "description": "Scenario ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scenario fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "config_id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Scenario not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "ConversationConfig not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "List endpoints",
+        "description": "List HTTP endpoints owned by the API key's user.",
+        "responses": {
+          "200": {
+            "description": "Endpoints listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndpointListResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "endpoints": [
+                        {
+                          "id": "22222222-3333-4444-5555-666666666666",
+                          "name": "Book Appointment",
+                          "url": "https://api.yourcompany.com/v1/book-appointment",
+                          "created_at": "2026-08-16T21:47:46.000000+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints/create": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create endpoint",
+        "description": "Create an HTTP endpoint the assistant can call from a scenario tool.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEndpointRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Book Appointment",
+                    "url": "https://api.yourcompany.com/v1/book-appointment",
+                    "headers": {
+                      "Authorization": "Bearer {{secret.crm_token}}"
+                    },
+                    "body": {
+                      "patient_id": "{{runtime.patient_id}}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endpoint created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "created",
+                      "id": "22222222-3333-4444-5555-666666666666"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints/update": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update endpoint",
+        "description": "Update an HTTP endpoint owned by the API key's user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEndpointRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "id": "22222222-3333-4444-5555-666666666666",
+                    "name": "Book Appointment",
+                    "url": "https://api.yourcompany.com/v1/book-appointment",
+                    "headers": {
+                      "Authorization": "Bearer {{secret.crm_token}}"
+                    },
+                    "body": {
+                      "patient_id": "{{runtime.patient_id}}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endpoint updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "updated",
+                      "id": "22222222-3333-4444-5555-666666666666"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Endpoint not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "HttpEndpoint not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints/delete": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete endpoints",
+        "description": "Delete one or more HTTP endpoints. Delete is blocked if a scenario still references the endpoint.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "22222222-3333-4444-5555-666666666666"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endpoints deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteEndpointsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "deleted",
+                      "deleted_count": 1,
+                      "endpoint_ids": [
+                        "22222222-3333-4444-5555-666666666666"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or endpoint in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_ids": {
+                    "value": {
+                      "error": "endpoint_ids are required"
+                    }
+                  },
+                  "in_use": {
+                    "value": {
+                      "error": "Cannot delete endpoints 22222222-3333-4444-5555-666666666666 in use by conversation configs Sales Qualification"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Endpoints not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Endpoints not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/endpoints/{endpoint_id}": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Get endpoint",
+        "description": "Fetch an HTTP endpoint (owner only).",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "required": true,
+            "description": "Endpoint ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoint fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndpointDetailResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "name": "Book Appointment",
+                      "url": "https://api.yourcompany.com/v1/book-appointment",
+                      "headers": {
+                        "Authorization": "Bearer {{secret.crm_token}}"
+                      },
+                      "body": {
+                        "patient_id": "{{runtime.patient_id}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "endpoint_id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Endpoint not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "HttpEndpoint not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases": {
+      "get": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "List knowledge bases",
+        "description": "List knowledge bases owned by the API key's user.",
+        "responses": {
+          "200": {
+            "description": "Knowledge bases listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseListResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "knowledge_bases": [
+                        {
+                          "id": "33333333-4444-5555-6666-777777777777",
+                          "name": "Product Docs",
+                          "description": "Main KB",
+                          "document_count": 2,
+                          "created_at": "2026-08-16T21:47:46.000000+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/create": {
+      "post": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Create knowledge base",
+        "description": "Create a knowledge base (document container for RAG).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKnowledgeBaseRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Product Docs",
+                    "description": "Main KB"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Knowledge base created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "created",
+                      "id": "33333333-4444-5555-6666-777777777777"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/update": {
+      "post": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Update knowledge base",
+        "description": "Update a knowledge base's name and description.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateKnowledgeBaseRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "id": "33333333-4444-5555-6666-777777777777",
+                    "name": "Product Docs v2",
+                    "description": "Updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Knowledge base updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceMutationResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "updated",
+                      "id": "33333333-4444-5555-6666-777777777777"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Knowledge base not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Knowledge base not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/delete": {
+      "post": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Delete knowledge bases",
+        "description": "Delete one or more knowledge bases. Delete is blocked if a scenario still references the knowledge base.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "33333333-4444-5555-6666-777777777777"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Knowledge bases deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteKnowledgeBasesResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "deleted",
+                      "deleted_count": 1,
+                      "corpus_ids": [
+                        "33333333-4444-5555-6666-777777777777"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or knowledge base in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_ids": {
+                    "value": {
+                      "error": "corpus_ids are required"
+                    }
+                  },
+                  "in_use": {
+                    "value": {
+                      "error": "Cannot delete knowledge bases 33333333-4444-5555-6666-777777777777 in use by conversation configs Product FAQ"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Knowledge bases not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Knowledge bases not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/documents/delete": {
+      "post": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Delete documents",
+        "description": "Delete one or more documents. Pending documents (still embedding) cannot be deleted.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "44444444-5555-6666-7777-888888888888"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Documents deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteDocumentsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "deleted",
+                      "deleted_count": 1,
+                      "document_ids": [
+                        "44444444-5555-6666-7777-888888888888"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or document still pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_ids": {
+                    "value": {
+                      "error": "document_ids are required"
+                    }
+                  },
+                  "pending": {
+                    "value": {
+                      "error": "Pending documents cannot be deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Documents not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Documents not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/{corpus_id}": {
+      "get": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Get knowledge base",
+        "description": "Fetch a knowledge base (owner only).",
+        "parameters": [
+          {
+            "name": "corpus_id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge base ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Knowledge base fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseDetailResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "33333333-4444-5555-6666-777777777777",
+                      "name": "Product Docs",
+                      "description": "Main KB"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "corpus_id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Knowledge base not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Knowledge base not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/{corpus_id}/documents": {
+      "get": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "List documents",
+        "description": "List documents in a knowledge base (owner only).",
+        "parameters": [
+          {
+            "name": "corpus_id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge base ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documents listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentListResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "documents": [
+                        {
+                          "id": "44444444-5555-6666-7777-888888888888",
+                          "name": "Guide",
+                          "description": "KB guide",
+                          "file_size_bytes": 1024,
+                          "status": "completed",
+                          "created_at": "2026-08-16T21:47:46.000000+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "corpus_id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Knowledge base not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Knowledge base not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-bases/{corpus_id}/documents/create": {
+      "post": {
+        "tags": [
+          "Knowledge bases"
+        ],
+        "summary": "Upload document",
+        "description": "Upload a UTF-8 text file into a knowledge base. The document is created with status `pending` while embedding runs in the background. Maximum file size is 130 KB.",
+        "parameters": [
+          {
+            "name": "corpus_id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge base ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadDocumentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document accepted for embedding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadDocumentResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": "pending",
+                      "id": "44444444-5555-6666-7777-888888888888"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "file is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Knowledge base not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Knowledge base not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -608,6 +2285,714 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConversationTranscriptRow"
+            }
+          }
+        }
+      },
+      "LlmModel": {
+        "type": "string",
+        "description": "OpenAI chat model for this scenario. Defaults to gpt-4.1-mini. Full-size models require a paid plan.",
+        "enum": [
+          "gpt-4.1-nano",
+          "gpt-4.1-mini",
+          "gpt-4.1",
+          "gpt-5.4-nano",
+          "gpt-5.4-mini",
+          "gpt-5.4"
+        ]
+      },
+      "NodesJson": {
+        "type": "object",
+        "description": "Scenario flow JSON. See the Using JSON guide for the full contract.",
+        "additionalProperties": true,
+        "properties": {
+          "initial_node": {
+            "type": "string"
+          },
+          "role_instruction": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "HostedLinkWrite": {
+        "type": "object",
+        "required": [
+          "avatar_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Existing hosted link ID. Required to keep/update a link on scenario update. Omit to create a new link."
+          },
+          "avatar_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "runtime_vars": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Must include a key for every {{runtime.*}} variable the scenario references. Blank values are allowed."
+          },
+          "stt_keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5
+          },
+          "record_conversation": {
+            "type": "boolean",
+            "default": false
+          },
+          "redirect_url": {
+            "type": "string",
+            "description": "Optional http(s) URL to send the visitor after the call ends."
+          }
+        }
+      },
+      "HostedLink": {
+        "type": "object",
+        "required": [
+          "id",
+          "token",
+          "url",
+          "label",
+          "scenario_id",
+          "avatar_id",
+          "runtime_vars",
+          "stt_keywords",
+          "record_conversation",
+          "redirect_url",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "token": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Public hosted-link URL, for example https://live.akapulu.com/session/<token>."
+          },
+          "label": {
+            "type": "string"
+          },
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "avatar_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "runtime_vars": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "stt_keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "record_conversation": {
+            "type": "boolean"
+          },
+          "redirect_url": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateScenarioRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "nodes_json"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nodes_json": {
+            "$ref": "#/components/schemas/NodesJson"
+          },
+          "llm_model": {
+            "$ref": "#/components/schemas/LlmModel"
+          },
+          "hosted_links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HostedLinkWrite"
+            },
+            "description": "Optional hosted links to create with the scenario."
+          }
+        }
+      },
+      "UpdateScenarioRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "nodes_json"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nodes_json": {
+            "$ref": "#/components/schemas/NodesJson"
+          },
+          "llm_model": {
+            "$ref": "#/components/schemas/LlmModel"
+          },
+          "hosted_links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HostedLinkWrite"
+            },
+            "description": "If present, this array is the full set of hosted links after the update. Links omitted from the array are deleted. Omit this field to leave existing links unchanged."
+          }
+        }
+      },
+      "ScenarioSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "ScenarioListResponse": {
+        "type": "object",
+        "required": [
+          "scenarios"
+        ],
+        "properties": {
+          "scenarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScenarioSummary"
+            }
+          }
+        }
+      },
+      "ScenarioDetailResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "nodes_json",
+          "llm_model",
+          "hosted_links"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nodes_json": {
+            "$ref": "#/components/schemas/NodesJson"
+          },
+          "llm_model": {
+            "$ref": "#/components/schemas/LlmModel"
+          },
+          "hosted_links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HostedLink"
+            }
+          }
+        }
+      },
+      "ScenarioMutationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id",
+          "hosted_links"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hosted_links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HostedLink"
+            }
+          },
+          "redirect_url": {
+            "type": "string",
+            "description": "Dashboard path. Ignore for API clients."
+          }
+        }
+      },
+      "DeleteScenariosResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "deleted_count",
+          "config_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "deleted_count": {
+            "type": "integer"
+          },
+          "config_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "IdsRequest": {
+        "type": "object",
+        "required": [
+          "ids"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs to delete."
+          }
+        }
+      },
+      "ResourceMutationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "redirect_url": {
+            "type": "string",
+            "description": "Dashboard path. Ignore for API clients."
+          }
+        }
+      },
+      "CreateEndpointRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Request headers. Secrets belong here as {{secret.*}} placeholders."
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "JSON body templates. Cannot use {{secret.*}}; put secrets in headers."
+          }
+        }
+      },
+      "UpdateEndpointRequest": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/CreateEndpointRequest"
+          }
+        ]
+      },
+      "EndpointSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "url",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "EndpointListResponse": {
+        "type": "object",
+        "required": [
+          "endpoints"
+        ],
+        "properties": {
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EndpointSummary"
+            }
+          }
+        }
+      },
+      "EndpointDetailResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "url",
+          "headers",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "DeleteEndpointsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "deleted_count",
+          "endpoint_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "deleted_count": {
+            "type": "integer"
+          },
+          "endpoint_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "CreateKnowledgeBaseRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 400
+          }
+        }
+      },
+      "UpdateKnowledgeBaseRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 400
+          }
+        }
+      },
+      "KnowledgeBaseSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "document_count",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "document_count": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "KnowledgeBaseListResponse": {
+        "type": "object",
+        "required": [
+          "knowledge_bases"
+        ],
+        "properties": {
+          "knowledge_bases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeBaseSummary"
+            }
+          }
+        }
+      },
+      "KnowledgeBaseDetailResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "DeleteKnowledgeBasesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "deleted_count",
+          "corpus_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "deleted_count": {
+            "type": "integer"
+          },
+          "corpus_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "DocumentSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "file_size_bytes",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "file_size_bytes": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed"
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "DocumentListResponse": {
+        "type": "object",
+        "required": [
+          "documents"
+        ],
+        "properties": {
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentSummary"
+            }
+          }
+        }
+      },
+      "UploadDocumentRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "file"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "UTF-8 text file. Maximum 130 KB."
+          }
+        }
+      },
+      "UploadDocumentResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "redirect_url": {
+            "type": "string",
+            "description": "Dashboard path. Ignore for API clients."
+          }
+        }
+      },
+      "DeleteDocumentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "deleted_count",
+          "document_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "deleted_count": {
+            "type": "integer"
+          },
+          "document_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
             }
           }
         }

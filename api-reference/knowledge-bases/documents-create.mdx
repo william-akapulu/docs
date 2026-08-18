@@ -1,0 +1,24 @@
+---
+title: "Upload Document"
+openapi: "openapi/akapulu.json POST /knowledge-bases/{corpus_id}/documents/create"
+---
+
+Upload a UTF-8 text file into a knowledge base. This is a **multipart** request, not JSON.
+
+Form fields:
+
+- `name` (required)
+- `description` (optional, 2000 characters or fewer)
+- `file` (required, maximum 130 KB)
+
+The document is created with `status: "pending"` while Akapulu Labs chunks and embeds it (usually about 15–20 seconds). Poll [list documents](/api-reference/knowledge-bases/documents-list) until `status` is `completed`.
+
+Example:
+
+```bash
+curl -X POST "https://akapulu.com/api/knowledge-bases/<KNOWLEDGE_BASE_ID>/documents/create/" \
+  -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
+  -F "name=Product FAQ" \
+  -F "description=Support answers" \
+  -F "file=@./faq.txt"
+```
