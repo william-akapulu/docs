@@ -118,6 +118,39 @@
               "api-reference/conversations/detail",
               "api-reference/conversations/recording"
             ]
+          },
+          {
+            "group": "Scenarios",
+            "pages": [
+              "api-reference/scenarios/list",
+              "api-reference/scenarios/create",
+              "api-reference/scenarios/get",
+              "api-reference/scenarios/update",
+              "api-reference/scenarios/delete"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/endpoints/list",
+              "api-reference/endpoints/create",
+              "api-reference/endpoints/get",
+              "api-reference/endpoints/update",
+              "api-reference/endpoints/delete"
+            ]
+          },
+          {
+            "group": "Knowledge bases",
+            "pages": [
+              "api-reference/knowledge-bases/list",
+              "api-reference/knowledge-bases/create",
+              "api-reference/knowledge-bases/get",
+              "api-reference/knowledge-bases/update",
+              "api-reference/knowledge-bases/delete",
+              "api-reference/knowledge-bases/documents-list",
+              "api-reference/knowledge-bases/documents-create",
+              "api-reference/knowledge-bases/documents-delete"
+            ]
           }
         ]
       },

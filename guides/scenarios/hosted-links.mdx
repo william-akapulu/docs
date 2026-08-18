@@ -18,6 +18,14 @@ Each hosted link stores its own connection settings, so you can create several l
 - **Record conversation**: whether the conversation is recorded.
 - **Redirect URL**: where the visitor is sent after the call ends (optional).
 
+## Create via API
+
+You can mint hosted links when you [create](/api-reference/scenarios/create) or [update](/api-reference/scenarios/update) a scenario. Send a `hosted_links` array on the scenario payload. The response includes each link's public `url`.
+
+<Warning>
+On **update**, if you send `hosted_links`, omitted links are deleted. Include each existing link's `id` to keep it. Omit `hosted_links` entirely to leave existing links unchanged.
+</Warning>
+
 ## Create a hosted link
 
 1. Open a scenario in the editor (Make sure visual mode is toggled)

@@ -1,0 +1,16 @@
+---
+title: "Delete Documents"
+openapi: "openapi/akapulu.json POST /knowledge-bases/documents/delete"
+---
+
+Delete one or more documents you own.
+
+Request body:
+
+```json
+{
+  "ids": ["44444444-5555-6666-7777-888888888888"]
+}
+```
+
+Pending documents (still embedding) cannot be deleted. Wait until `status` is `completed`.
