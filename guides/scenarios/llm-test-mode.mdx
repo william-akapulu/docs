@@ -5,9 +5,9 @@ description: "Run your scenario as an LLM-only, text-based simulation in the vis
 
 **Testing Mode** runs your scenario as a **text-only** chat inside the scenario editor. It uses the same nodes and configuration present in the editor so you can validate flow logic before starting a real conversation.
 
-It does **not** use microphone, camera, avatar video, or text-to-speech. 
+It does **not** use microphone, camera, avatar video, or text-to-speech.
 
-Testing sessions do **not** consume your voice or video **conversation minutes** (Testing Mode uses a separate monthly allowance instead).
+Each successful **Start Conversation** in Testing Mode uses **0.25 credits** from the same credit pool as live conversations (one live conversation minute = **1 credit**). There is no separate test-session allowance.
 
 ## Open Testing Mode
 
@@ -37,11 +37,11 @@ You can iterate on the scenario and test how the bot will behave before you save
 
 For a **full live avatar conversation** you can share without writing code, see [Hosted Links](/guides/scenarios/hosted-links).
 
-## Monthly testing sessions
+## Credits
 
-Each successful **Testing Session** counts against a **monthly quota** for LLM-only testing.
+Testing Mode shares your plan’s **credit** pool with live avatar conversations. Included credits per plan are listed on [Pricing](https://akapulu.com/pricing). Current usage is on the [Usage](https://akapulu.com/usage) page.
 
-The limit depends on your [**billing plan**](https://akapulu.com/pricing).
+If you have fewer than **0.25 credits** remaining, **Start Conversation** returns an error (`No credits remaining for current plan`).
 
 <Note>
 Vision tools do not work in LLM only Testing Mode
