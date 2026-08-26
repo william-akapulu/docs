@@ -1,0 +1,16 @@
+---
+title: "Create take"
+openapi: "openapi/akapulu.json POST /clips/{clip_id}/takes"
+---
+
+Create a take on a clip and start audio.
+
+Send `avatar_id` and **exactly one** of `text` or `phonemes`. Optional `name` defaults to `Take N`.
+
+If `text` is sent, it is converted to [phonemes](/guides/clips/phonemes), then synthesized. Pass `phonemes` for pronunciation control. Do not send both.
+
+Or send `from_take_id` (and nothing else except optional `name`) to copy audio, phonemes, and video instructions from another take on the **same** clip. That copy does not charge extra credits. The source take must already have audio.
+
+Credits are charged when audio starts from `text` or `phonemes`. If there are not enough credits, the request fails and no take is created.
+
+Poll [Get take](/api-reference/takes/get) until `status` is `ready_to_render` and `audio_url` is set. Full flow is in [Workflow](/guides/clips/workflow).

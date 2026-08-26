@@ -107,7 +107,7 @@ Conversation capacity is controlled by your current [plan](https://akapulu.com/p
 
 - **Concurrency limit**: each active conversation uses **one** concurrency slot.
 - **Max concurrency**: total available slots come from your plan.
-- **Credits limit**: total credits available come from your plan. One live conversation minute uses **1 credit**. Scenario editor Testing Mode uses **0.25 credits** per start (see [Testing Mode](/guides/scenarios/llm-test-mode)).
+- **Credits limit**: total credits available come from your plan. One live conversation minute uses **1 credit**. Scenario editor Testing Mode uses **0.25 credits** per start (see [Testing Mode](/guides/scenarios/llm-test-mode)). [Scripted clip](/guides/clips/overview) audio and video use the same pool.
 - **Per-call duration cap**: each live session is capped by the lower of:
   - your plan's max live call duration
   - your remaining credits (as whole minutes)
@@ -119,6 +119,8 @@ When `POST /api/conversations/connect/` succeeds, the new conversation reserves 
 ### Credit usage behavior
 
 Live conversations debit **1 credit per minute** while the call is ongoing (whole minutes). If remaining credits cannot cover another minute, connect is rejected (`No minutes remaining for current plan`).
+
+Clip audio and video charges are listed in [clips overview](/guides/clips/overview#why-audio-and-video-are-separate). They come out of this same pool.
 
 If a user joins a call and reaches the session duration cap while the call is active, Akapulu Labs automatically ends the session. In this case, the frontend should handle a timeout event and show a clear message to the user (for example, usage limit reached).
 

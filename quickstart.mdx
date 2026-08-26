@@ -1,32 +1,34 @@
 ---
 title: "Quickstart"
-description: "Build your first conversational avatar experience in minutes."
+description: "Build your first live conversation or scripted clip in minutes."
 mode: "wide"
 ---
 
 ## About Akapulu Labs
 
-Akapulu Labs is an AI research lab building a platform for real-time conversational video and voice experiences with AI avatars.
+Akapulu Labs is an AI research lab building a platform for AI avatars: **live conversations** and **scripted video clips**.
 
-You can launch an AI assistant that joins a live call with your users, responds naturally, and follows your defined behavior.
+You can launch an AI assistant that joins a live call with your users, responds naturally, and follows your defined behavior. You can also generate a talking-avatar video from a script, over the API.
 
 <video width="960" src="/wren_demo.mp4" autoPlay muted loop playsInline preload="metadata" style={{ borderRadius: 12 }}></video>
 
 ## How it works
 
-During the call, the bot follows your configured behavior, including:
+During a live call, the bot follows your configured behavior, including:
 
 - global role prompts for overall persona and tone
 - stage-specific instructions for each part of the conversation
 - tool access for actions like transitions, endpoints, knowledge, or vision
 
-For a full walkthrough, see [How it works](/guides/getting-started/how-akapulu-works).
+A scripted clip is offline: you supply the line, optionally edit pronunciation and video instructions, then render audio and video. Clips do not use the Web SDK.
+
+For a full walkthrough of live calls, see [How it works](/guides/getting-started/how-akapulu-works). For clips, see [Overview](/guides/clips/overview).
 
 ## Choose your starting path
 
 Pick the path that matches what you want to build first.
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
   <Card title="Prebuilt UI" icon="sparkles" href="/examples/web-sdk/prebuilt-ui">
     Start with the Akapulu Labs prebuilt conversation UI and a minimal Vite + Express integration.
   </Card>
@@ -37,5 +39,9 @@ Pick the path that matches what you want to build first.
 
   <Card title="End-to-End Workflow" icon="stethoscope" href="/examples/scenarios/healthcare-intake-scheduling">
     Build a full healthcare patient intake and scheduling workflow.
+  </Card>
+
+  <Card title="Scripted clip" icon="clapperboard" href="/examples/clips/scripted-clip-workflow">
+    Create a clip, generate audio, then render talking-avatar video.
   </Card>
 </CardGroup>

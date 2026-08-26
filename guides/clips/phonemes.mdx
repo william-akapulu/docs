@@ -1,0 +1,79 @@
+---
+title: "Phonemes"
+description: "The American pronunciation alphabet used for avatar video clip audio."
+---
+
+Phonemes are how a line is pronounced — a string of sound symbols, not English spelling.
+
+[Misaki](https://github.com/hexgrad/misaki) is the grapheme-to-phoneme (G2P) engine we use. If you send English `text`, Misaki converts it to this American English alphabet. Pass `phonemes` yourself when you want tighter control over a word (a name, a stress, a vowel).
+
+<Note>
+Right now you can only edit phonemes for an **American** accent. Other accents and languages are coming soon.
+</Note>
+
+How to send `text` vs `phonemes` on a take is in [Workflow](/guides/clips/workflow). The symbol notes below follow Misaki’s [`EN_PHONES.md`](https://github.com/hexgrad/misaki/blob/main/EN_PHONES.md).
+
+This is not textbook IPA. Capital `A`, `I`, `W`, `Y`, and `O` are diphthongs.
+
+## Stress
+
+| Symbol | Meaning | Example |
+| --- | --- | --- |
+| `ˈ` | Primary stress | `yes` → `jˈɛs` |
+| `ˌ` | Secondary stress | |
+
+## Consonants
+
+| Symbol | Meaning | Example |
+| --- | --- | --- |
+| `b` `d` `f` `h` `k` `l` `m` `n` `p` `s` `t` `v` `w` `z` | As in English spelling | |
+| `j` | "y" as in yes | `yes` → `jˈɛs` |
+| `ɡ` | Hard g (`U+0261`, not ASCII `g`) | `get` → `ɡɛt` |
+| `ŋ` | ng | `sung` → `sˈʌŋ` |
+| `ɹ` | r | `red` → `ɹˈɛd` |
+| `ʃ` | sh | `shin` → `ʃˈɪn` |
+| `ʒ` | zh | `Asia` → `ˈAʒə` |
+| `ð` | voiced th | `than` → `ðən` |
+| `θ` | unvoiced th | `thin` → `θˈɪn` |
+| `ʤ` | j / dg | `jump` → `ʤˈʌmp` |
+| `ʧ` | ch | `chump` → `ʧˈʌmp` |
+| `ɾ` | flap t/d (American) | `butter` → `bˈʌɾəɹ` |
+
+## Vowels
+
+| Symbol | Meaning | Example |
+| --- | --- | --- |
+| `ə` | Schwa | |
+| `ᵊ` | Muted schwa | `pixel` → `pˈɪksᵊl` |
+| `i` | easy | `easy` → `ˈizi` |
+| `u` | flu | `flu` → `flˈu` |
+| `ɑ` | spa | `spa` → `spˈɑ` |
+| `ɔ` | all | `all` → `ˈɔl` |
+| `ɛ` | bed / hair | `bed` → `bˈɛd` |
+| `ɜ` | her | `her` → `hɜɹ` |
+| `ɪ` | brick | `brick` → `bɹˈɪk` |
+| `ʊ` | wood | `wood` → `wˈʊd` |
+| `ʌ` | sun | `sun` → `sˈʌn` |
+| `æ` | ash (American) | `ash` → `ˈæʃ` |
+| `ᵻ` | Between `ə` and `ɪ` (American) | `boxes` → `bˈɑksᵻz` |
+| `A` | ay (IPA `eɪ`) | `hey` → `hˈA` |
+| `I` | eye (IPA `aɪ`) | `high` → `hˈI` |
+| `W` | ow (IPA `aʊ`) | `how` → `hˌW` |
+| `Y` | oy (IPA `ɔɪ`) | `soy` → `sˈY` |
+| `O` | oh (IPA `oʊ`, American) | |
+
+## Gaps
+
+These are pauses and punctuation, not speech sounds:
+
+` ` (space) `;` `:` `,` `.` `!` `?` `—` `…` `"` `(` `)` `“` `”`
+
+Any other character is rejected.
+
+## Example
+
+English `Look the price`:
+
+```
+lˈʊk ðə pɹˈIs
+```

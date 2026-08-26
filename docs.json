@@ -6,7 +6,7 @@
     "app-url": "https://akapulu.com",
     "api-base-url": "https://akapulu.com/api"
   },
-  "description": "Akapulu Labs is an AI research lab building a platform for real-time conversational avatars for natural voice and video interactions.",
+  "description": "Akapulu Labs is an AI research lab building a platform for live conversational avatars and scripted talking-avatar video.",
   "redirects": [
     {
       "source": "/",
@@ -93,7 +93,16 @@
               "guides/knowledge-bases/overview",
               "guides/vision/vision-tool-overview"
             ]
-          }
+          },
+          {
+            "group": "Scripted Video Clips",
+            "pages": [
+              "guides/clips/overview",
+              "guides/clips/workflow",
+              "guides/clips/phonemes",
+              "guides/clips/ai-content-disclosure"
+            ]
+          }          
         ]
       },
       {
@@ -151,7 +160,28 @@
               "api-reference/knowledge-bases/documents-create",
               "api-reference/knowledge-bases/documents-delete"
             ]
-          }
+          },
+          {
+            "group": "Clips",
+            "pages": [
+              "api-reference/clips/list",
+              "api-reference/clips/create",
+              "api-reference/clips/get",
+              "api-reference/clips/update",
+              "api-reference/clips/delete"
+            ]
+          },
+          {
+            "group": "Takes",
+            "pages": [
+              "api-reference/takes/create",
+              "api-reference/takes/get",
+              "api-reference/takes/phonemes",
+              "api-reference/takes/prompts",
+              "api-reference/takes/render",
+              "api-reference/takes/delete"
+            ]
+          }          
         ]
       },
       {
@@ -196,6 +226,12 @@
             "pages": [
               "examples/scenarios/healthcare-intake-scheduling",
               "examples/scenarios/sales-roleplay-training"
+            ]
+          },
+          {
+            "group": "Scripted video clips",
+            "pages": [
+              "examples/clips/scripted-clip-workflow"
             ]
           }
         ]

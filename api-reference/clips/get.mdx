@@ -1,0 +1,8 @@
+---
+title: "Get clip"
+openapi: "openapi/akapulu.json GET /clips/{clip_id}"
+---
+
+Fetch a clip and its takes in created order.
+
+Take rows on this response are summaries (`status`, `audio_url`, `video_url`). Phonemes, video instructions, and `estimated_seconds` are on [Get take](/api-reference/takes/get).

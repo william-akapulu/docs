@@ -1,0 +1,12 @@
+---
+title: "Update take phonemes"
+openapi: "openapi/akapulu.json POST /clips/{clip_id}/takes/{take_id}/phonemes"
+---
+
+Rewrite pronunciation and regenerate audio and video instructions.
+
+`phonemes` is required. Optional `text` relabels the line; omit it to keep the existing `text`. Alphabet and symbols are in [Phonemes](/guides/clips/phonemes).
+
+This charges a new audio job. If there are not enough credits, the request fails and the take is unchanged. It also fails if audio is still in progress, or after video has started.
+
+Poll [Get take](/api-reference/takes/get) until `audio_url` is set again.

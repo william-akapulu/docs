@@ -1,0 +1,17 @@
+---
+title: "Render take video"
+openapi: "openapi/akapulu.json POST /clips/{clip_id}/takes/{take_id}/render"
+---
+
+Start talking-avatar video for a take that is `ready_to_render` with `audio_url` set.
+
+This locks phonemes and video instructions. Credits are charged when the job starts. If there are not enough credits, the request fails and the take is unchanged.
+
+Optional body (both default `true`):
+
+- `show_ai_label` — overlay **This is AI**. Can be `false` on any plan.
+- `show_logo` — overlay **Made by** plus the Akapulu Labs logo. `false` requires [Starter](https://akapulu.com/pricing) or higher.
+
+Recommend leaving `show_ai_label` on. Invisible watermarks and Content Credentials still go on the files. Details: [AI content disclosure](/guides/clips/ai-content-disclosure).
+
+Poll [Get take](/api-reference/takes/get) until `status` is `complete`, then download `video_url`.

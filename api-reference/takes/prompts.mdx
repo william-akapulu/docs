@@ -1,0 +1,12 @@
+---
+title: "Update take video instructions"
+openapi: "openapi/akapulu.json POST /clips/{clip_id}/takes/{take_id}/prompts"
+---
+
+Replace `face_prompt` and `upper_body_prompt` on every chunk.
+
+Each object needs `index`, `upper_body_prompt`, and `face_prompt`. Send one object per stored chunk; indexes and timing stay locked. Prompt edits are free and do not regenerate audio.
+
+Fails after video has started.
+
+What to put in those strings is in [Workflow](/guides/clips/workflow#video-instructions).

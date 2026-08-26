@@ -1,0 +1,109 @@
+---
+title: "Overview"
+description: "Generate a talking-avatar video from a script, as a clip with one or more takes."
+---
+
+A clip is a talking-avatar video you generate from a script. You write what the avatar should say, generate the resulting TTS audio, optionally edit pronunciation and avatar video instructions, then render the video.
+
+This is separate from [live conversations](/guides/conversations/lifecycle). 
+
+A live conversation is a real-time call, where you talk to the avatar, and we then transcribe your speech, think of a textual response via an llm, then return a spoken response with the resulting avatar video stream. 
+
+A clip is offline: you supply the inputs (what to say, how to pronounce it, instructions for the avatar during the video, etc..), and Akapulu Labs generates the audio and video.
+
+<Note>
+Today clips are created over the API. Creating and viewing clips in the Akapulu Labs UI is coming soon.
+
+Live conversation avatars will also be updated soon so they look like clip avatars.
+</Note>
+
+## Clips and takes
+
+A **clip** is a named project. A **take** is one generation of that script.
+
+```
+Clip: Product intro
+├── Take 1 (favorite) — "Welcome to Acme. Thanks for..."
+├── Take 2 — "Welcome to Acme. Thanks for..."
+└── Take 3 — "Hey, welcome to Acme. Thanks for..."
+
+Clip: Outro
+├── Take 1 (favorite) — "That's all for today. See you..."
+└── Take 2 — "That's all for today. See you..."
+```
+
+Use a clip to group related takes of the same piece, for example several pronunciations or looks of one line. The first take on a clip is marked as the favorite. You can change `favorite_id` later.
+
+To start a take, enter in the text you would like your avatar to say, as well as which avatar you would like to use, and we will generate the spoken audio. 
+
+From there, you can optionally edit the **phonemes** (how the line is pronounced) and the **video instructions** (how the avatar should look and move, i.e. face, emotion, and body).
+
+After audio is ready, we split it into chunks of about **2.5–3 seconds** and write two prompts per chunk: **face** (head / expression) and **upper body** (shoulders, arms, hands). We generate those automatically from the line; you can edit them before you render.
+
+```
+text: "Hey everyone, welcome back. Today I want to show you..."
+  `-- audio (~8s)
+        |-- Chunk 0 (~0-3s)  "Hey everyone, welcome back."
+        |     face: A lady is talking with animated...
+        |     upper body: Right hand rises to chest height...
+        |-- Chunk 1 (~3-5.5s)  "Today I want to show you"
+        |     face: A lady is talking with animated...
+        |     upper body: A lady is talking to the camera...
+        `-- Chunk 2 (~5.5-8s)  "how easy this is to set up."
+              face: A lady is talking with animated...
+              upper body: Fingers of the left hand shift...
+```
+
+Then render the video. After render, that take is frozen: you cannot change phonemes, prompts, or render it again. 
+
+Start a new take (from scratch, or by copying an existing take configuration) if you want another version.
+
+## Why audio and video are separate
+
+Video takes a long time to generate and uses a lot of credits. Audio is relatively quick and cheap, so we recommend playing with the spoken line, i.e. pronunciation, timing, and video instructions, until you like it, **then** triggering the video job.
+
+That is why we have chosen to disentangle audio & video generation, as opposed to one sweep from text to video. Splitting the methods also lets you edit **face** and **upper-body** prompts on each chunk before you spend the video credits.
+
+Here's the approximate time and credit cost for a given length of spoken audio/video (generation time is how long the job runs, not how long the clip lasts):
+
+**Audio**
+
+| Spoken length | Time to generate | Credits |
+| --- | ---: | ---: |
+| 10 seconds | ~20 seconds | 0.25 |
+| 20 seconds | ~25 seconds | 0.50 |
+| 30 seconds | ~25 seconds | 0.50 |
+| 45 seconds | ~30 seconds | 0.75 |
+
+**Video**
+
+| Spoken length | Time to generate | Credits |
+| --- | ---: | ---: |
+| 10 seconds | ~3.5 minutes | 4.00 |
+| 20 seconds | ~5 minutes | 5.75 |
+| 30 seconds | ~6 minutes | 7.25 |
+| 45 seconds | ~8 minutes | 9.50 |
+
+## Quickstart
+
+**1. Create a clip** — `POST /api/clips/create/` with `{ "name": "Product intro" }`. You get back a clip `id`.
+
+**2. Generate audio** — `POST /api/clips/<clip_id>/takes/` with `avatar_id` and `text` (the line to speak). 
+
+Use a [catalog avatar](/guides/avatars/avatar-catalog) `avatar_id`, or one of your own (private avatars require an enterprise plan).
+
+You get back a take `id`, `status`, and the converted `phonemes`. `audio_url` is `null` at first.
+
+**3. Poll** — `GET /api/clips/<clip_id>/takes/<take_id>/` until `status` is `ready_to_render`.
+
+Then `audio_url` will be set and you can download the audio.
+
+**4. Render** — `POST /api/clips/<clip_id>/takes/<take_id>/render/` starts video generation.
+
+Poll the same GET until `status` is `complete`. Then `video_url` will be set.
+
+Video takes longer and uses more credits than audio.
+
+For phonemes, video instructions, status values, and credits, see [Workflow](/guides/clips/workflow).
+
+Also: [Phonemes](/guides/clips/phonemes) · [AI content disclosure](/guides/clips/ai-content-disclosure) · [Python example](/examples/clips/scripted-clip-workflow)

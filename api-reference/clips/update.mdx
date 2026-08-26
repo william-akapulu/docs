@@ -1,0 +1,13 @@
+---
+title: "Update clip"
+openapi: "openapi/akapulu.json POST /clips/update"
+---
+
+Rename a clip or set its favorite take.
+
+Send `id` plus at least one of:
+
+- `name`
+- `favorite_id` — a take on this clip, or `null` to clear
+
+The first take on a clip is marked favorite automatically. Use this endpoint to change that later.

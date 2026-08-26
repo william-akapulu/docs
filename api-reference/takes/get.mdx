@@ -1,0 +1,10 @@
+---
+title: "Get take"
+openapi: "openapi/akapulu.json GET /clips/{clip_id}/takes/{take_id}"
+---
+
+Poll a take.
+
+`audio_url` and `video_url` are hour-long download links once those files exist; otherwise `null`. `error` is `null` unless the take failed.
+
+After audio is ready, `chunk_prompts` has face and upper-body instructions per ~2.5–3 second chunk. Status meanings are in [Workflow](/guides/clips/workflow).

@@ -1,0 +1,10 @@
+---
+title: "Create clip"
+openapi: "openapi/akapulu.json POST /clips/create"
+---
+
+Create a named clip with no takes.
+
+`name` is required (max 120 characters). The response includes `id` for later URLs. `favorite_id` is `null` until the first take is created.
+
+Next: [create a take](/api-reference/takes/create) to generate audio. End-to-end flow is in [Workflow](/guides/clips/workflow).

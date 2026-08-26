@@ -2074,6 +2074,1326 @@
           }
         }
       }
+    },
+    "/clips": {
+      "get": {
+        "summary": "List clips",
+        "description": "List clips on the account, newest first.",
+        "responses": {
+          "200": {
+            "description": "Clips listed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClipListResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "clips": [
+                        {
+                          "id": "11111111-2222-3333-4444-555555555555",
+                          "name": "Product intro",
+                          "favorite_id": "22222222-3333-4444-5555-666666666666",
+                          "take_count": 1,
+                          "created_at": "2026-08-25T20:00:00+00:00",
+                          "updated_at": "2026-08-25T20:00:12+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/create": {
+      "post": {
+        "summary": "Create clip",
+        "description": "Create a named clip with no takes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClipRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Product intro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clip created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clip"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Product intro",
+                      "favorite_id": null,
+                      "take_count": 0,
+                      "takes": [],
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:00+00:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/update": {
+      "post": {
+        "summary": "Update clip",
+        "description": "Rename a clip or set its favorite take.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClipRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "id": "11111111-2222-3333-4444-555555555555",
+                    "favorite_id": "22222222-3333-4444-5555-666666666666"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clip updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clip"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Product intro",
+                      "favorite_id": "22222222-3333-4444-5555-666666666666",
+                      "take_count": 1,
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:12+00:00",
+                      "takes": [
+                        {
+                          "id": "22222222-3333-4444-5555-666666666666",
+                          "clip_id": "11111111-2222-3333-4444-555555555555",
+                          "name": "Take 1",
+                          "status": "ready_to_render",
+                          "avatar_id": "66666666-7777-8888-9999-000000000000",
+                          "error": null,
+                          "audio_url": "https://example.s3.amazonaws.com/audio?X-Amz-Expires=3600",
+                          "video_url": null,
+                          "created_at": "2026-08-25T20:00:00+00:00",
+                          "updated_at": "2026-08-25T20:00:12+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name or favorite_id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clip not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Clip not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/delete": {
+      "post": {
+        "summary": "Delete clips",
+        "description": "Delete one or more clips by id. Takes on those clips are deleted too.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteIdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "11111111-2222-3333-4444-555555555555"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clips deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteIdsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "deleted_count": 1,
+                      "ids": [
+                        "11111111-2222-3333-4444-555555555555"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "ids are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clip not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Clip not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}": {
+      "get": {
+        "summary": "Get clip",
+        "description": "Fetch a clip and its takes in created order. Take rows are summaries; poll a take for phonemes, video instructions, and download URLs.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clip fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clip"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Product intro",
+                      "favorite_id": "22222222-3333-4444-5555-666666666666",
+                      "take_count": 1,
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:12+00:00",
+                      "takes": [
+                        {
+                          "id": "22222222-3333-4444-5555-666666666666",
+                          "clip_id": "11111111-2222-3333-4444-555555555555",
+                          "name": "Take 1",
+                          "status": "ready_to_render",
+                          "avatar_id": "66666666-7777-8888-9999-000000000000",
+                          "error": null,
+                          "audio_url": "https://example.s3.amazonaws.com/audio?X-Amz-Expires=3600",
+                          "video_url": null,
+                          "created_at": "2026-08-25T20:00:00+00:00",
+                          "updated_at": "2026-08-25T20:00:12+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid clip id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "clip_id must be a valid UUID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clip not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Clip not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}/takes": {
+      "post": {
+        "summary": "Create take",
+        "description": "Create a take on a clip and start audio. Send avatar_id plus exactly one of text or phonemes, or from_take_id to copy audio, phonemes, and video instructions from another take on the same clip.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTakeRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "avatar_id": "66666666-7777-8888-9999-000000000000",
+                    "text": "Welcome to Acme. Thanks for watching."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Take created; audio is starting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Take"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "clip_id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Take 1",
+                      "status": "starting_tts",
+                      "avatar_id": "66666666-7777-8888-9999-000000000000",
+                      "error": null,
+                      "audio_url": null,
+                      "video_url": null,
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:12+00:00",
+                      "text": "Welcome to Acme. Thanks for watching.",
+                      "phonemes": "w\u02c8\u025blk\u0259m t\u0259 \u02c8\u00e6kmi",
+                      "chunk_prompts": [],
+                      "show_ai_label": true,
+                      "show_logo": true,
+                      "estimated_seconds": 22.0,
+                      "credits_charged": 0.25,
+                      "credits_used": 0.25,
+                      "credits_remaining": 24.75
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "exactly one of text or phonemes is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not enough credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "You don't have enough credits on your current plan",
+                      "credits_needed": 0.25,
+                      "credits_remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clip or avatar not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Clip not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Source take is not ready to copy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take has no synthesized audio"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}/takes/{take_id}": {
+      "get": {
+        "summary": "Get take",
+        "description": "Poll a take. audio_url and video_url are hour-long download links once those files exist; otherwise null. Status values are listed in the Take schema.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "take_id",
+            "in": "path",
+            "required": true,
+            "description": "Take ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Take fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Take"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "clip_id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Take 1",
+                      "status": "ready_to_render",
+                      "avatar_id": "66666666-7777-8888-9999-000000000000",
+                      "error": null,
+                      "audio_url": "https://example.s3.amazonaws.com/audio?X-Amz-Expires=3600",
+                      "video_url": null,
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:12+00:00",
+                      "text": "Welcome to Acme. Thanks for watching.",
+                      "phonemes": "w\u02c8\u025blk\u0259m t\u0259 \u02c8\u00e6kmi",
+                      "chunk_prompts": [
+                        {
+                          "index": 0,
+                          "start": 0.0,
+                          "end": 2.92,
+                          "text": "Welcome to Acme.",
+                          "face_prompt": "A lady is talking with animated facial expressions, frequently raising and arching the eyebrows for emphasis. Only the foreground is moving, the background remains static.",
+                          "upper_body_prompt": "A lady is talking to the camera with natural movements while speaking. The torso and shoulders stay steady. Only the foreground person is moving, the background remains static."
+                        }
+                      ],
+                      "show_ai_label": true,
+                      "show_logo": true,
+                      "estimated_seconds": 18.0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "id must be a valid UUID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Take not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}/takes/{take_id}/phonemes": {
+      "post": {
+        "summary": "Update take phonemes",
+        "description": "Rewrite pronunciation and regenerate audio and video instructions. Optional text relabels the line. Fails after video has started, or while audio is still in progress.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "take_id",
+            "in": "path",
+            "required": true,
+            "description": "Take ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTakePhonemesRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "phonemes": "w\u02c8\u025blk\u0259m t\u0259 \u02c8\u00e6kmi"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio rebuild started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTakePhonemesResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "text": "Welcome to Acme. Thanks for watching.",
+                      "phonemes": "w\u02c8\u025blk\u0259m t\u0259 \u02c8\u00e6kmi",
+                      "estimated_seconds": 22.0,
+                      "credits_charged": 0.25,
+                      "credits_used": 0.5,
+                      "credits_remaining": 24.5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "phonemes must be a string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not enough credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "You don't have enough credits on your current plan",
+                      "credits_needed": 0.25,
+                      "credits_remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Take not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Take cannot be edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take video has already started"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}/takes/{take_id}/prompts": {
+      "post": {
+        "summary": "Update take video instructions",
+        "description": "Replace face_prompt and upper_body_prompt on every chunk. Window count and timing stay locked. Prompt edits are free. Fails after video has started.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "take_id",
+            "in": "path",
+            "required": true,
+            "description": "Take ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTakePromptsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "chunk_prompts": [
+                      {
+                        "index": 0,
+                        "face_prompt": "A lady is talking with animated facial expressions, frequently raising and arching the eyebrows for emphasis. Only the foreground is moving, the background remains static.",
+                        "upper_body_prompt": "A lady is talking to the camera with natural movements while speaking. The torso and shoulders stay steady. Only the foreground person is moving, the background remains static."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video instructions updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTakePromptsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "chunk_prompts": [
+                        {
+                          "index": 0,
+                          "start": 0.0,
+                          "end": 2.92,
+                          "text": "Welcome to Acme.",
+                          "face_prompt": "A lady is talking with animated facial expressions, frequently raising and arching the eyebrows for emphasis. Only the foreground is moving, the background remains static.",
+                          "upper_body_prompt": "A lady is talking to the camera with natural movements while speaking. The torso and shoulders stay steady. Only the foreground person is moving, the background remains static."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "chunk_prompts must be a non-empty list"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Take not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Take cannot be edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take video has already started"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clips/{clip_id}/takes/{take_id}/render": {
+      "post": {
+        "summary": "Render take video",
+        "description": "Start talking-avatar video for a take that is ready_to_render. Locks phonemes and video instructions. show_ai_label and show_logo default to true. show_logo false requires Starter or higher.",
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "description": "Clip ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "take_id",
+            "in": "path",
+            "required": true,
+            "description": "Take ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenderTakeRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "show_ai_label": true,
+                    "show_logo": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video job started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Take"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": "22222222-3333-4444-5555-666666666666",
+                      "clip_id": "11111111-2222-3333-4444-555555555555",
+                      "name": "Take 1",
+                      "status": "starting_video",
+                      "avatar_id": "66666666-7777-8888-9999-000000000000",
+                      "error": null,
+                      "audio_url": "https://example.s3.amazonaws.com/audio?X-Amz-Expires=3600",
+                      "video_url": null,
+                      "created_at": "2026-08-25T20:00:00+00:00",
+                      "updated_at": "2026-08-25T20:00:12+00:00",
+                      "text": "Welcome to Acme. Thanks for watching.",
+                      "phonemes": "w\u02c8\u025blk\u0259m t\u0259 \u02c8\u00e6kmi",
+                      "chunk_prompts": [
+                        {
+                          "index": 0,
+                          "start": 0.0,
+                          "end": 2.92,
+                          "text": "Welcome to Acme.",
+                          "face_prompt": "A lady is talking with animated facial expressions, frequently raising and arching the eyebrows for emphasis. Only the foreground is moving, the background remains static.",
+                          "upper_body_prompt": "A lady is talking to the camera with natural movements while speaking. The torso and shoulders stay steady. Only the foreground person is moving, the background remains static."
+                        }
+                      ],
+                      "show_ai_label": true,
+                      "show_logo": true,
+                      "estimated_seconds": 210.0,
+                      "credits_charged": 4.0,
+                      "credits_used": 4.25,
+                      "credits_remaining": 20.75
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "show_ai_label must be a boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not enough credits, or show_logo false on the Free plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "not_enough_credits": {
+                    "value": {
+                      "error": "You don't have enough credits on your current plan",
+                      "credits_needed": 4.0,
+                      "credits_remaining": 1.0
+                    }
+                  },
+                  "logo_plan": {
+                    "value": {
+                      "error": "The Akapulu Labs logo cannot be turned off on the Free plan. Upgrade to Starter or higher to pass show_logo: false."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Take not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Take is not ready to render",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take has no synthesized audio"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/takes/delete": {
+      "post": {
+        "summary": "Delete takes",
+        "description": "Delete one or more takes by id. If a clip's favorite is deleted, the oldest remaining take on that clip becomes the favorite.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteIdsRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "22222222-3333-4444-5555-666666666666"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Takes deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteIdsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "deleted_count": 1,
+                      "ids": [
+                        "22222222-3333-4444-5555-666666666666"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "ids are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Take not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "Take not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2994,6 +4314,431 @@
               "type": "string",
               "format": "uuid"
             }
+          }
+        }
+      },
+      "ClipSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "favorite_id",
+          "take_count",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "favorite_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Favorite take on this clip, or null."
+          },
+          "take_count": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TakeSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "clip_id",
+          "name",
+          "status",
+          "avatar_id",
+          "error",
+          "audio_url",
+          "video_url",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clip_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "starting_tts",
+              "generating_audio",
+              "generating_motion_instructions",
+              "ready_to_render",
+              "starting_video",
+              "preparing_video",
+              "generating_face_video",
+              "generating_avatar_gestures",
+              "compositing",
+              "applying_labels",
+              "watermarking",
+              "signing",
+              "complete",
+              "failed"
+            ],
+            "description": "Current landmark. Poll until ready_to_render for audio, complete for video."
+          },
+          "avatar_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "audio_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Hour-long download URL once audio exists."
+          },
+          "video_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Hour-long download URL once video exists."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Clip": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ClipSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "takes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TakeSummary"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ClipListResponse": {
+        "type": "object",
+        "required": [
+          "clips"
+        ],
+        "properties": {
+          "clips": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClipSummary"
+            }
+          }
+        }
+      },
+      "CreateClipRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Clip name (max 120 characters)."
+          }
+        }
+      },
+      "UpdateClipRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Clip ID."
+          },
+          "name": {
+            "type": "string"
+          },
+          "favorite_id": {
+            "description": "Take ID on this clip, or null to clear.",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "DeleteIdsRequest": {
+        "type": "object",
+        "required": [
+          "ids"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "DeleteIdsResponse": {
+        "type": "object",
+        "required": [
+          "deleted_count",
+          "ids"
+        ],
+        "properties": {
+          "deleted_count": {
+            "type": "integer"
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "ChunkPrompt": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "start": {
+            "type": "number",
+            "description": "Chunk start in seconds."
+          },
+          "end": {
+            "type": "number",
+            "description": "Chunk end in seconds."
+          },
+          "text": {
+            "type": "string",
+            "description": "Spoken words in this chunk."
+          },
+          "face_prompt": {
+            "type": "string"
+          },
+          "upper_body_prompt": {
+            "type": "string"
+          }
+        }
+      },
+      "Take": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TakeSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "phonemes": {
+                "type": "string"
+              },
+              "chunk_prompts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChunkPrompt"
+                }
+              },
+              "show_ai_label": {
+                "type": "boolean"
+              },
+              "show_logo": {
+                "type": "boolean"
+              },
+              "estimated_seconds": {
+                "type": "number",
+                "description": "Approximate seconds left in the current job."
+              },
+              "credits_charged": {
+                "description": "Credits charged for this request, when a job was billed."
+              },
+              "credits_used": {},
+              "credits_remaining": {}
+            }
+          }
+        ]
+      },
+      "CreateTakeRequest": {
+        "type": "object",
+        "properties": {
+          "avatar_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Required unless from_take_id is set."
+          },
+          "text": {
+            "type": "string",
+            "description": "English line to speak. Converted to phonemes, then audio."
+          },
+          "phonemes": {
+            "type": "string",
+            "description": "Pronunciation string. Do not send with text."
+          },
+          "from_take_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Copy audio, phonemes, and video instructions from another take on this clip. Do not send with text, phonemes, or avatar_id."
+          },
+          "name": {
+            "type": "string",
+            "description": "Take name. Defaults to Take N."
+          }
+        }
+      },
+      "UpdateTakePhonemesRequest": {
+        "type": "object",
+        "required": [
+          "phonemes"
+        ],
+        "properties": {
+          "phonemes": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string",
+            "description": "Optional relabel of the spoken line. Omit to keep the existing text."
+          }
+        }
+      },
+      "UpdateTakePhonemesResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "phonemes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "phonemes": {
+            "type": "string"
+          },
+          "estimated_seconds": {
+            "type": "number"
+          },
+          "credits_charged": {},
+          "credits_used": {},
+          "credits_remaining": {},
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateTakePromptsRequest": {
+        "type": "object",
+        "required": [
+          "chunk_prompts"
+        ],
+        "properties": {
+          "chunk_prompts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "index",
+                "face_prompt",
+                "upper_body_prompt"
+              ],
+              "properties": {
+                "index": {
+                  "type": "integer"
+                },
+                "face_prompt": {
+                  "type": "string"
+                },
+                "upper_body_prompt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateTakePromptsResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "chunk_prompts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "chunk_prompts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChunkPrompt"
+            }
+          }
+        }
+      },
+      "RenderTakeRequest": {
+        "type": "object",
+        "properties": {
+          "show_ai_label": {
+            "type": "boolean",
+            "default": true,
+            "description": "Overlay This is AI. Allowed false on every plan."
+          },
+          "show_logo": {
+            "type": "boolean",
+            "default": true,
+            "description": "Overlay Made by plus the Akapulu Labs logo. false requires Starter or higher."
           }
         }
       },
