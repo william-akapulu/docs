@@ -17,11 +17,11 @@ The SDK is split into these public packages:
 
 ## Package structure
 
-| Package | Purpose | Runtime |
-| --- | --- | --- |
-| `@akapulu/server` | Server-side client for calling Akapulu APIs | Server |
-| `@akapulu/react` | React provider, hooks, media controls, and event subscriptions | React app |
-| `@akapulu/react-ui` | Prebuilt React conversation UI on top of `@akapulu/react` | React app |
+| Package | Purpose | Runtime | Current version |
+| --- | --- | --- | --- |
+| `@akapulu/server` | Server-side client for calling Akapulu APIs | Server | `1.0.3` |
+| `@akapulu/react` | React provider, hooks, media controls, and event subscriptions | React app | `1.0.4` |
+| `@akapulu/react-ui` | Prebuilt React conversation UI on top of `@akapulu/react` | React app | `1.0.7` |
 
 ## How the packages relate
 
@@ -29,13 +29,16 @@ The SDK is split into these public packages:
 2. Your local server routes call Akapulu with `@akapulu/server`.
 3. Your React frontend uses `@akapulu/react` to manage session state and media.
 4. If you want prebuilt UI, `@akapulu/react-ui` renders on top of `@akapulu/react`.
-5. Shared event and transcript models are handled internally across the SDK packages.
 
 In this setup:
 
 - `@akapulu/server` handles API calls and keeps your API key on the server
 - `@akapulu/react` handles session state, event subscriptions, and media controls
 - `@akapulu/react-ui` is optional and gives you a higher-level conversation UI
+
+<Note>
+Keep `AKAPULU_API_KEY` on the server. The browser should only call **your** connect route. That route starts a billed conversation, so authenticate users before starting a call. Pass user auth with `config.headers` on `AkapuluProvider`. Do not put the API key in frontend code.
+</Note>
 
 ## Explore the packages
 
@@ -56,3 +59,14 @@ Reference implementations and implementation guides:
 - [Customized UI](/examples/web-sdk/customized-ui)
   Uses `@akapulu/react` only and renders the conversation UI manually.
 - [Customize Conversation UI](/guides/conversations/customize-conversation-ui)
+
+## Daily, Pipecat, and nested packages
+
+Install `@akapulu/react` (and `@akapulu/react-ui` if you want the prebuilt UI). Do **not** pick Daily or Pipecat versions yourself. They come in with `@akapulu/react`.
+
+- **Daily** is the live audio/video room. `@akapulu/react` joins it for you. If you build a custom tile and import `DailyVideo` or Daily hooks, add `@daily-co/daily-react` as a direct dependency so that import is yours — let npm resolve the version that `@akapulu/react` already uses. The [customized-ui](/examples/web-sdk/customized-ui) example does that.
+- **Pipecat** is the internal media client. Do not install it or import it unless you pass a custom `transport`.
+
+`@akapulu/react` also needs `react` and `react-dom` (`>=18 <20`).
+
+You may also see `@akapulu/web-core` in `node_modules`. That is the session store and shared types under `@akapulu/react`. You do not install it. `@akapulu/react` already re-exports the types.

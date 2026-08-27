@@ -7,9 +7,12 @@ This guide is based on the [Akapulu Labs Web SDK](/web-sdk/overview).
 
 ## Packages
 
-- `@akapulu/react`
-- `@akapulu/react-ui`
-- `@akapulu/server`
+Install these:
+
+- `@akapulu/server` on your backend
+- `@akapulu/react` in the React app
+- `@akapulu/react-ui` only if you use the prebuilt `AkapuluConversation`
+- `@daily-co/daily-react` only if your own components import `DailyVideo` or Daily hooks
 
 ## Quickstart (React)
 
@@ -62,7 +65,7 @@ Your local `updates` route should:
   - `latest_update_text`
   - `conversation_session_id`
 
-The SDK always calls your `updatesPath` with `conversation_session_id` in the URL query string.
+The SDK always calls your `updatesPath` with `conversation_session_id` in the URL query string. It polls that route only while the avatar is booting, then stops. Authenticate those GETs with `config.headers` the same way you authenticate connect.
 
 Install `@akapulu/server` in your backend and create two routes:
 - `POST /api/akapulu/connect`
@@ -97,16 +100,23 @@ Then point `AkapuluProvider` to those local paths:
 
 - **In the browser:** `AkapuluProvider` (via `config.endpoints.connectPath` and `config.endpoints.updatesPath`) requests your connect and updates backend routes. 
 
-- **On your server:** those routes use `@akapulu/server`, read the Akapulu Labs API key from server-side environment variable, and call the Akapulu Labs HTTP API. That way your api key stays on the server and does not get exposed in the browser
+- **On your server:** those routes use `@akapulu/server`, read the Akapulu Labs API key from a server-side environment variable, and call the Akapulu Labs HTTP API. That way your API key stays on the server and does not get exposed in the browser.
+
+Authenticate users on your connect **and** updates routes the same way you authenticate the rest of your product. Connect starts a billed conversation, so only authenticated users should be able to start a call. Pass those auth headers with `config.headers` (object or function); do not put them in `connectBody`. The SDK sends those headers on the connect POST and on each boot-time updates GET.
 
 `AkapuluProvider` expects your local **connect** and **updates** endpoints to return the JSON schema described under **Backend connect and updates routes** above.
 
-## Passing custom payload to your local connect route
+## Passing a body and headers to your local connect route
 
-If you want, `AkapuluProvider` can send a custom JSON payload to your local `connectPath` route via `config.connectBody`.
+`AkapuluProvider` can send JSON to your local `connectPath` via `config.connectBody`, and headers on connect and updates via `config.headers`.
+
+Each can be a plain object, or a function that is called when the request is sent (not when the provider mounts). Use a function when the value can change or you need to load it asynchronously — for example an auth token. `getAccessToken` below is your own helper.
 
 - If `connectBody` is provided, the SDK sends it as the POST JSON body to your local connect route.
 - If `connectBody` is omitted, the SDK sends `POST /connectPath` with no body.
+- If `headers` is provided, those headers are sent on the connect POST and on each updates GET.
+
+`config` has no API key field and no fetch interceptor. User auth is `headers`; `connectBody` is payload only. Functions for `connectBody` and `headers` run when the request is sent. `endpoints` and `transport` stay from first mount. The full `AkapuluConfig` type is on the [React SDK](/web-sdk/react-sdk) page.
 
 Frontend example:
 
@@ -126,6 +136,10 @@ export function App() {
           tenant_id: "acme-health",
           patient_id: "patient_001",
           should_record: true,
+        },
+        headers: async () => {
+          const token = await getAccessToken();
+          return { Authorization: `Bearer ${token}` };
         },
       }}
     >
@@ -568,7 +582,7 @@ const {
 } = useAkapuluSession();
 ```
 
-3. The provider joins the **Daily** room for realtime media. Install `@daily-co/daily-react` (and peer `@daily-co/daily-js`) and use its primitives to draw video—for example `DailyVideo`, `useDaily`, and `useVideoTrack`. For assistant video selection, use `useAkapuluParticipantRoles` from `@akapulu/react`.
+3. The provider joins the **Daily** room for realtime media. `@akapulu/react` already depends on `@daily-co/daily-react`. Add it as a **direct** dependency too if you import `DailyVideo`, `useDaily`, or `useVideoTrack` in your own files (so the import is yours, not a nested package). For assistant video selection, use `useAkapuluParticipantRoles` from `@akapulu/react`.
 
 ```tsx
 import { useAkapuluParticipantRoles } from "@akapulu/react";
@@ -790,7 +804,7 @@ export function App() {
           connectPath: "/api/akapulu/connect",
           updatesPath: "/api/akapulu/updates",
         },
-        // Optional connectBody — see "Passing custom payload" above.
+        // Optional connectBody / headers — see "Passing a body and headers" above.
       }}
     >
       <CustomCallUi />

@@ -144,6 +144,10 @@ Most apps create local routes like:
 
 Those routes then call the Akapulu APIs with `@akapulu/server`.
 
+<Note>
+Your connect route starts a billed conversation. Keep `AKAPULU_API_KEY` on the server, and authenticate users on that route before starting a call. Demo apps often skip this; add it before production.
+</Note>
+
 ## How it fits with the rest of the SDK
 
 In a typical app:
@@ -155,7 +159,7 @@ In a typical app:
 
 ## What your local routes return
 
-**`AkapuluProvider`** (from [`@akapulu/react`](/web-sdk/react-sdk)) reads **`config.endpoints.connectPath`** and **`config.endpoints.updatesPath`**, sends a **POST** request to the connect URL, then sends **GET** requests to the updates URL while the session is joining. 
+**`AkapuluProvider`** (from [`@akapulu/react`](/web-sdk/react-sdk)) reads **`config.endpoints.connectPath`** and **`config.endpoints.updatesPath`**, sends a **POST** request to the connect URL, then **GET**s the updates URL only while the session is joining (until `call_is_ready`). Live transcripts after that come from Daily, not this poll. `config.headers` are sent on both requests. 
 
 Those handlers must respond with **snake_case** JSON in the same shape Akapulu returns. See [Customize Conversation UI](/guides/conversations/customize-conversation-ui). The usual pattern is to **`return` the resolved promise** from **`@akapulu/server`** so the response types stay aligned.
 
@@ -211,6 +215,10 @@ export function App() {
           tenant_id: "acme-health",
           patient_id: "patient_001",
           should_record: true,
+        },
+        headers: async () => {
+          const token = await getAccessToken();
+          return { Authorization: `Bearer ${token}` };
         },
       }}
     >

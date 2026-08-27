@@ -7,6 +7,18 @@
     "api-base-url": "https://akapulu.com/api"
   },
   "description": "Akapulu Labs is an AI research lab building a platform for live conversational avatars and scripted talking-avatar video.",
+  "markdown": {
+    "instructions": [
+      "Pick a path before writing code.",
+      "Share a live avatar call with no code: use a hosted link (a public URL). No SDK and no API key in the customer's app.",
+      "Embed a live conversation in an app: use the Web SDK. @akapulu/server 1.0.3+ on the backend, @akapulu/react or @akapulu/react-ui in the browser. Do not call POST /conversations/connect or updates from frontend code with the API key. Do not reimplement those two calls with fetch.",
+      "Scripted talking-avatar video (offline, not a live call): use the clip and take REST API, or the Python clip example. No Web SDK.",
+      "Create and manage scenarios, hosted links, HTTP endpoints, knowledge bases and documents, and clips and takes with the REST API. Keep AKAPULU_API_KEY on the server for every REST call. Never put the key in frontend or Vite code.",
+      "If embedding: the browser calls YOUR connect and updates routes. Authenticate users on those routes before starting a billed call. Demo examples skip that check. User auth is config.headers (object or a function called when the request is sent). connectBody is JSON payload, not auth.",
+      "Do not install Daily or Pipecat yourself; they come with @akapulu/react. Add @daily-co/daily-react only if your own files import DailyVideo.",
+      "Conversation API errors include error_code. Branch on that field, not the English error string."
+    ]
+  },
   "redirects": [
     {
       "source": "/",

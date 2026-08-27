@@ -82,14 +82,14 @@ Your application experience is the interaction between your user and the assista
    - After initialization completes, Akapulu Labs runtime participants join and the assistant media becomes available in-room.
 
 8. **Frontend monitors readiness**
-   - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`.
-   - Once ready, transition your UI from loading state to live in-call state.
+   - Poll `GET /api/conversations/{conversation_session_id}/updates/` until `call_is_ready` is `true`, then **stop**.
+   - Once ready, transition your UI from loading state to live in-call state. Transcripts and speaking state then come from the Daily room, not updates.
 
 <Note>
 The [Akapulu Labs Web SDK](/web-sdk/overview) orchestrates:
 
 - Calling **`POST /api/conversations/connect/`**
-- Polling **`GET /api/conversations/{conversation_session_id}/updates/`** until `call_is_ready`
+- Polling **`GET /api/conversations/{conversation_session_id}/updates/`** until `call_is_ready`, then stopping (about every 200ms while joining, up to 200 seconds)
 - Joining the Daily room with `room_url` and `token` from the connect response
 
 So you can focus on your custom scenario logic and your in-call UI experience.

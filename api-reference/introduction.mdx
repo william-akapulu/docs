@@ -6,7 +6,7 @@ description: "Overview of Akapulu Labs API authentication and base usage."
 The Akapulu Labs API is the programmatic interface for building with Akapulu Labs: live conversations, scenarios, and scripted video clips.
 
 <Note>
-For a browser conversation UI, use the [Akapulu Labs Web SDK](/web-sdk/overview) instead of calling connect and updates yourself. Its client and server libraries implement that flow, session state, realtime media wiring, and conversation detail and recording retrieval.
+For a browser conversation UI, use the [Akapulu Labs Web SDK](/web-sdk/overview) instead of calling connect and updates from frontend code. Put the API key on **your server**, have the browser call **your** connect route, and authenticate users on that route before starting a call. The SDK's client and server libraries implement that flow, session state, realtime media wiring, and conversation detail and recording retrieval.
 
 Scripted clips have no Web SDK. Call the [clip](/guides/clips/overview) and [take](/api-reference/takes/create) REST endpoints, or start from the [Python example](/examples/clips/scripted-clip-workflow).
 </Note>
@@ -45,6 +45,33 @@ curl -X POST "https://akapulu.com/api/conversations/connect/" \
     }
   }'
 ```
+
+## Error responses
+
+Conversation connect, updates, detail, and recording errors return JSON with:
+
+- `error` — human-readable message
+- `error_code` — stable string you can switch on
+
+HTTP status is still set, but several different failures share the same number (for example more than one kind of 403). Prefer `error_code`.
+
+| `error_code` | Typical status | When |
+| --- | --- | --- |
+| `AUTH_MISSING` | 401 | No Bearer API key |
+| `AUTH_INVALID` | 401 | API key not recognized |
+| `AUTH_DENIED` | 403 | Key does not own this scenario |
+| `VALIDATION` | 400 | Missing or invalid request fields |
+| `SCENARIO_NOT_FOUND` | 404 | `scenario_id` does not exist |
+| `AVATAR_NOT_FOUND` | 404 | `avatar_id` does not exist |
+| `SESSION_NOT_FOUND` | 404 | Conversation session does not exist |
+| `QUOTA_EXCEEDED` | 403 | No minutes (or call duration) remaining |
+| `CONCURRENCY_LIMIT` | 403 | Too many concurrent calls for the plan |
+| `RECORDING_NOT_STARTED` | 404 | Recording was not enabled for this session |
+| `RECORDING_UNAVAILABLE` | 404 | Recording file is not available |
+| `RECORDING_PROCESSING` | 409 | Recording is not ready yet |
+| `INTERNAL` | 500 | Unexpected server error |
+
+The React SDK copies `error_code` onto `error.code` when the session fails. Client-only codes such as `UPDATES_TIMEOUT` are not returned by the REST API.
 
 ## Getting Started
 

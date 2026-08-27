@@ -81,7 +81,8 @@
                 "examples": {
                   "invalid_payload": {
                     "value": {
-                      "error": "scenario_id is required"
+                      "error": "scenario_id is required",
+                      "error_code": "VALIDATION"
                     }
                   }
                 }
@@ -98,7 +99,8 @@
                 "examples": {
                   "invalid_key": {
                     "value": {
-                      "error": "Invalid API key"
+                      "error": "Invalid API key",
+                      "error_code": "AUTH_INVALID"
                     }
                   }
                 }
@@ -115,12 +117,14 @@
                 "examples": {
                   "limit_reached": {
                     "value": {
-                      "error": "No minutes remaining for current plan"
+                      "error": "No minutes remaining for current plan",
+                      "error_code": "QUOTA_EXCEEDED"
                     }
                   },
                   "concurrency_limit_reached": {
                     "value": {
                       "error": "Concurrency limit reached for current plan",
+                      "error_code": "CONCURRENCY_LIMIT",
                       "max_concurrency": 2,
                       "active_calls": 2
                     }
@@ -139,7 +143,8 @@
                 "examples": {
                   "missing_scenario": {
                     "value": {
-                      "error": "scenario_id not found"
+                      "error": "scenario_id not found",
+                      "error_code": "SCENARIO_NOT_FOUND"
                     }
                   }
                 }
@@ -196,7 +201,8 @@
                 "examples": {
                   "invalid_key": {
                     "value": {
-                      "error": "Invalid API key"
+                      "error": "Invalid API key",
+                      "error_code": "AUTH_INVALID"
                     }
                   }
                 }
@@ -621,6 +627,10 @@
           "error": {
             "type": "string",
             "description": "Human-readable error message."
+          },
+          "error_code": {
+            "type": "string",
+            "description": "Stable machine code for this error. Switch on this field, not the HTTP status or the `error` sentence."
           }
         }
       }

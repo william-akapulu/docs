@@ -8,7 +8,7 @@ A fully custom conversation UI built from [`@akapulu/react`](/web-sdk/react-sdk)
 Two folders:
 
 - **`backend/`** — Express server that holds your API key and calls Akapulu with [`@akapulu/server`](/web-sdk/server-sdk)
-- **`frontend/`** — React app (Vite); no `@akapulu/react-ui`
+- **`frontend/`** — React app (Vite); `@akapulu/react` plus a direct `@daily-co/daily-react` because this app imports `DailyVideo`. No `@akapulu/react-ui`.
 
 ## Prerequisites
 
@@ -64,6 +64,8 @@ Open [localhost:5173](http://localhost:5173) and click **Start call**. When the 
 ## How it works
 
 The frontend (`localhost:5173`) calls your backend (`localhost:3001`), which calls Akapulu with your API key.
+
+This demo does not authenticate users. Anyone who can reach `/api/connect` can start a conversation on your account. Before production, authenticate users on that route. Pass those headers with `config.headers` on `AkapuluProvider` (object or a function called when the request is sent).
 
 The backend exposes four routes:
 

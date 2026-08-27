@@ -3,11 +3,11 @@ title: "Poll Conversation Updates"
 openapi: "openapi/akapulu.json GET /conversations/{conversation_session_id}/updates"
 ---
 
-Use this endpoint to track conversation progress after calling `POST /conversations/connect`.
+Use this endpoint to track **setup progress** after `POST /conversations/connect`. It is for the loading screen until the assistant is ready. It is not a live transcript channel — once `call_is_ready` is `true`, stop polling. Live captions and speaking state come from the Daily call.
 
-This endpoint returns a **single latest status text** plus readiness/progress values.
+The Web SDK polls this (via your local updates route) about every **200ms** while joining, then stops. If you call the REST API yourself, poll until `call_is_ready` is `true` and then stop. Every 0.5 seconds is fine if you are not using the SDK.
 
-We recommend polling every 0.5 seconds and showing a loading state until `call_is_ready` is `true`.
+If you expose your own updates route to the browser, authenticate it the same way as connect. The SDK sends `config.headers` on each updates GET.
 
 ## Response behavior
 

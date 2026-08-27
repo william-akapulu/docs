@@ -9,7 +9,9 @@ Use this endpoint to create a conversation session and receive:
 - `token`
 - `conversation_session_id`
 
-The connect endpoint returns immediately after creating the conversation session and Daily room credentials. Use the [updates endpoint](/api-reference/conversations/updates) to poll setup progress until the conversation is ready.
+The connect endpoint returns immediately after creating the conversation session and Daily room credentials. Use the [updates endpoint](/api-reference/conversations/updates) to poll **setup** progress until the conversation is ready, then stop.
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).
 
 Required headers:
 

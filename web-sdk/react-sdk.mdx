@@ -15,6 +15,8 @@ It gives you the provider, hooks, and media helpers you need to build your own R
 npm install @akapulu/react
 ```
 
+If your own components import `DailyVideo` or Daily hooks, also install `@daily-co/daily-react`.
+
 ## Quickstart
 
 `AkapuluProvider` takes paths to your local API routes:
@@ -22,7 +24,7 @@ npm install @akapulu/react
 - `connectPath`
 - `updatesPath`
 
-The browser calls those local routes. Your server routes then call Akapulu APIs through [`@akapulu/server`](/web-sdk/server-sdk).
+The browser calls those local routes. Your server routes then call Akapulu APIs through [`@akapulu/server`](/web-sdk/server-sdk). Keep the API key on the server, and authenticate users on your connect route before starting a call. Pass user auth with `config.headers` (object or a function called when the request is sent).
 
 ```tsx
 import { AkapuluProvider, useAkapuluSession } from "@akapulu/react";
@@ -92,15 +94,19 @@ type AkapuluProviderProps = {
   Local updates endpoint called by the browser.
 </ParamField>
 
-<ParamField path="connectBody" type="Record<string, unknown>">
-  Optional JSON payload forwarded to your local connect route.
+<ParamField path="connectBody" type="object | (() => object | Promise<object>)">
+  Optional JSON payload forwarded to your local connect route. Pass an object, or a function that is called when connect is requested (not when the provider mounts).
+</ParamField>
+
+<ParamField path="headers" type="object | (() => object | Promise<object>)">
+  Optional headers on your local connect POST and updates GET. Pass an object, or a function that is called when each request is sent. Use this to authenticate users on those routes.
 </ParamField>
 
 <ParamField path="updatesPollIntervalMs" type="number">
-  Optional polling interval override for the local updates route.
+  Optional interval for polling your local updates route while the avatar boots. Default is **200ms**. Polling stops once the call is ready. Live transcripts and speaking state then come from Daily, not this route.
 </ParamField>
 
-While `status === "connecting"`, the React SDK waits up to **100 seconds** for the backend to report that the call is ready.
+While `status === "connecting"`, the React SDK waits up to **200 seconds** for the backend to report that the call is ready.
 
 If the updates route never reports `call_is_ready: true` within that window, the session transitions to:
 
@@ -111,6 +117,31 @@ If the updates route never reports `call_is_ready: true` within that window, the
 <ParamField path="transport" type="AkapuluTransport">
   Optional custom transport implementation.
 </ParamField>
+
+Import `AkapuluConfig` from `@akapulu/react`:
+
+```ts
+type MaybeAsyncValue<T> = T | (() => T | Promise<T | undefined> | undefined);
+
+interface AkapuluConfig {
+  endpoints: {
+    connectPath: string;
+    updatesPath: string;
+  };
+  connectBody?: MaybeAsyncValue<Record<string, unknown>>;
+  headers?: MaybeAsyncValue<Record<string, string>>;
+  updatesPollIntervalMs?: number;
+  transport?: AkapuluTransport;
+}
+```
+
+What is **not** on `config`:
+
+- No API key. Keep `AKAPULU_API_KEY` on the server.
+- No `getAuthToken` and no fetch interceptor. User auth is `headers`.
+- `connectBody` is JSON for your local connect route (for example `patient_id`). Do not put secrets there.
+
+`connectBody` and `headers` are read when each request is sent, so a function (or a later object) can pick up a fresh token. `endpoints` and `transport` are taken from the first mount; changing those later does not recreate the session.
 
 **Ending a call:** When **your user** ends the call in your app, call `end()` from `useAkapuluSession()`. That leaves the Daily room from the browser and runs the SDK teardown so the session is no longer live. If the **assistant** disconnects from Daily first, `AkapuluProvider` calls `end()` for you so `status` does not stay `connected` with no assistant in the room.
 
@@ -140,9 +171,11 @@ const {
 
 - `status` — where the client is in the join/leave flow: `"idle"` → `"connecting"` → `"connected"` → `"disconnecting"` / `"ended"`, or `"error"` if something failed.
 - `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state.
-- `error` — when `status` is `"error"`, structured details (`code` optional, `message` required) for your error UI or logging.
+- `error` — when `status` is `"error"`, structured details (`code` optional, `message` required) for your error UI or logging. If your local connect/updates route forwards the Akapulu JSON, `code` is the API `error_code` (for example `QUOTA_EXCEEDED`). Otherwise it may be the HTTP status string (`"403"`) or a client code such as `UPDATES_TIMEOUT`.
 
 **Call readiness & updates** (from your **updates** route)
+
+The SDK GETs this route only while `status === "connecting"` and the call is not ready yet. It does not poll for the rest of the call. Use `config.headers` on those GETs if you authenticate users on that route.
 
 - `callIsReady` — whether the backend considers the call ready (often used while `status === "connecting"` so you are not stuck on a spinner forever).
 - `completionPercent` — numeric progress through the scenario (0–100).
