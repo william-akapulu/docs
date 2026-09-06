@@ -26,7 +26,7 @@ digraph ScenarioOutline {
     label=<
       <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
         <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="16"><B>Role instruction</B></FONT></TD></TR>
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="13">You are an onboarding assistant for Akapulu.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#fde68a" POINT-SIZE="13">You are an onboarding assistant for Akapulu Labs.</FONT></TD></TR>
       </TABLE>
     >,
     fillcolor="#3a2a14",
@@ -41,7 +41,7 @@ digraph ScenarioOutline {
         <TR><TD ALIGN="LEFT"><FONT COLOR="#86efac" POINT-SIZE="16"><B>Greeting</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#6ee7b7" POINT-SIZE="11"><B>Task instruction</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">Greet the user and ask open-ended questions</FONT></TD></TR>
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">about what they want to build with Akapulu.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dcfce7" POINT-SIZE="12">about what they want to build with Akapulu Labs.</FONT></TD></TR>
       </TABLE>
     >,
     fillcolor="#10261a",
@@ -54,7 +54,7 @@ digraph ScenarioOutline {
       <TABLE BORDER="0" CELLBORDER="0" CELLPADDING="8" CELLSPACING="0">
         <TR><TD ALIGN="LEFT"><FONT COLOR="#93c5fd" POINT-SIZE="16"><B>Planning Phase</B></FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#60a5fa" POINT-SIZE="11"><B>Task instruction</B></FONT></TD></TR>
-        <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Help the user plan their project on the Akapulu platform.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Help the user plan their project on the Akapulu Labs platform.</FONT></TD></TR>
         <TR><TD ALIGN="LEFT"><FONT COLOR="#dbeafe" POINT-SIZE="12">Use Akapulu_RAG to gather platform context.</FONT></TD></TR>
       </TABLE>
     >,
@@ -97,7 +97,7 @@ digraph ScenarioOutline {
     color="#6b7280"
   ];
   akapulu_rag -> planning_phase [
-    label="Access information on the Akapulu platform.",
+    label="Access information on the Akapulu Labs platform.",
     style="dashed",
     dir="both",
     constraint=false

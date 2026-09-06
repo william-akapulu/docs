@@ -9,11 +9,11 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 372.75)">
 <title>AkapuluPipeline</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-372.75 443.75,-372.75 443.75,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="219.88" y="-353.35" font-family="Helvetica,sans-Serif" font-size="12.00">Akapulu Conversation Pipeline</text>
+<text xml:space="preserve" text-anchor="middle" x="219.88" y="-353.35" font-family="Helvetica,sans-Serif" font-size="12.00">Akapulu Labs Conversation Pipeline</text>
 <g id="clust1" class="cluster">
 <title>cluster_akapulu</title>
 <path fill="#f0f9ff" stroke="#0369a1" stroke-width="1.6" d="M327,-51C327,-51 419.75,-51 419.75,-51 425.75,-51 431.75,-57 431.75,-63 431.75,-63 431.75,-328 431.75,-328 431.75,-334 425.75,-340 419.75,-340 419.75,-340 327,-340 327,-340 321,-340 315,-334 315,-328 315,-328 315,-63 315,-63 315,-57 321,-51 327,-51"/>
-<text xml:space="preserve" text-anchor="middle" x="373.38" y="-324.6" font-family="Helvetica,sans-Serif" font-size="12.00">Akapulu</text>
+<text xml:space="preserve" text-anchor="middle" x="373.38" y="-324.6" font-family="Helvetica,sans-Serif" font-size="12.00">Akapulu Labs</text>
 </g>
 <!-- user -->
 <g id="node1" class="node">

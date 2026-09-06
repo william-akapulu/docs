@@ -46,7 +46,7 @@ digraph AkapuluPipeline {
   ];
 
   subgraph cluster_akapulu {
-    label="Akapulu";
+    label="Akapulu Labs";
     color="#0C4A6E";
     fontcolor="#E2E8F0";
     penwidth=1.6;
