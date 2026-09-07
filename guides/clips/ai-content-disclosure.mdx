@@ -3,7 +3,7 @@ title: "AI content disclosure"
 description: "Visible AI labels, watermarks, and Content Credentials on generated audio and video."
 ---
 
-Generated clip audio and video can be recognized as AI in two ways: a visible overlay on the video, and machine-readable marks on the files.
+Generated clip audio and video can be recognized as AI in two ways: a visible overlay on the video, and machine-readable provenance on the files.
 
 This page describes those marks. 
 
@@ -13,11 +13,10 @@ These marks are on every take. They cannot be turned off.
 
 | Mark | Where | What it is |
 | --- | --- | --- |
-| [AudioSeal](https://ai.meta.com/research/publications/proactive-detection-of-voice-cloning-with-localized-watermarking/) | Generated audio | Invisible watermark in the waveform |
 | [VideoSeal](https://ai.meta.com/research/publications/video-seal-open-and-efficient-video-watermarking/) | Generated video | Invisible watermark in the pixels |
 | [C2PA](https://c2pa.org/) Content Credentials | Audio and video files | Signed provenance attached to the file |
 
-The AudioSeal and VideoSeal payload is `0x414C` (ASCII `AL`, Akapulu Labs). The watermarks stay in the media if someone copies the file without the C2PA box.
+The VideoSeal payload is `0x414C` (ASCII `AL`, Akapulu Labs). That watermark stays in the picture if someone copies the file without the C2PA box. Audio provenance is the C2PA signature on the wav.
 
 C2PA uses intent `CREATE` and digital source type `trainedAlgorithmicMedia`. The files are signed with an Akapulu Labs ES256 certificate. Download the public root and verification notes from [Content Credentials](https://akapulu.com/c2pa/).
 
@@ -34,7 +33,7 @@ Both default to `true`. `show_ai_label` can be `false` on any plan. `show_logo: 
 
 We recommend leaving `show_ai_label` as `true` so people watching can tell the clip is AI-generated. Some places, including the EU, have [rules about disclosing AI-generated media](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
 
-Turning the on-screen label off does **not** remove AudioSeal, VideoSeal, or C2PA.
+Turning the on-screen label off does **not** remove VideoSeal or C2PA.
 
 How to set the flags is in [Workflow](/guides/clips/workflow#5-render-video).
 
