@@ -3648,12 +3648,14 @@
         "type": "string",
         "description": "OpenAI chat model for this scenario. Defaults to gpt-4.1-mini. Full-size models require a paid plan.",
         "enum": [
-          "gpt-4.1-nano",
           "gpt-4.1-mini",
           "gpt-4.1",
           "gpt-5.4-nano",
           "gpt-5.4-mini",
-          "gpt-5.4"
+          "gpt-5.4",
+          "gpt-5.5",
+          "gpt-5.6-luna",
+          "gpt-5.6-sol"
         ]
       },
       "NodesJson": {
