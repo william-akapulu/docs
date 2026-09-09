@@ -141,7 +141,8 @@ For each session, you can:
 
 For programmatic access to conversation details and recordings:
 
-- **[Conversation detail](/api-reference/conversations/detail)** — session metadata and transcript rows.
-- **[Conversation recording](/api-reference/conversations/recording)** — signed URL for downloading the session recording.
+- **[Conversation detail](/api-reference/conversations/detail)**: session metadata and transcript rows.
+- **[Conversation recording](/api-reference/conversations/recording)**: signed URL for downloading the session recording.
+- **[Post a system message](/api-reference/conversations/system-messages)**: append context to a live call from your server. See [Updating Conversation Context](/guides/conversations/updating-conversation-context).
 
 The [Customized UI](/examples/web-sdk/customized-ui) example implements `conversation-details` and `recording` handlers that call these endpoints with the [Server SDK](/web-sdk/server-sdk) (`@akapulu/server`).

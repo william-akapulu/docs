@@ -229,6 +229,142 @@
         }
       }
     },
+    "/conversations/{conversation_session_id}/system-messages": {
+      "post": {
+        "summary": "Post a system message",
+        "description": "Append a system message to a live conversation's LLM context. The message is not spoken and is not a user turn. Call this from your server with an API key. The session id must belong to the API key owner (live conversation or Testing Mode).",
+        "parameters": [
+          {
+            "name": "conversation_session_id",
+            "in": "path",
+            "required": true,
+            "description": "Conversation session ID from connect, or `X-Akapulu-Conversation-Session-Id` on an HTTP tool POST.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMessageRequest"
+              },
+              "examples": {
+                "inject_only": {
+                  "summary": "Append context without speaking",
+                  "value": {
+                    "content": "Background research is complete. The patient's last A1C was 7.2. Use this if they ask about lab results.",
+                    "run_llm": false
+                  }
+                },
+                "inject_and_speak": {
+                  "summary": "Append context and have the assistant reply now",
+                  "value": {
+                    "content": "The chart review is done. Summarize the A1C result for the patient in one short sentence.",
+                    "run_llm": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "System message queued for the live session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemMessageResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "conversation_session_id": "7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d",
+                      "run_llm": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_content": {
+                    "value": {
+                      "error": "content is required",
+                      "error_code": "VALIDATION"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error": "Invalid API key",
+                      "error_code": "AUTH_INVALID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation session not found or not owned by this API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "missing_session": {
+                    "value": {
+                      "error": "ConversationSession not found",
+                      "error_code": "SESSION_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Could not enqueue the system message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "queue_unavailable": {
+                    "value": {
+                      "error": "Failed to enqueue system message",
+                      "error_code": "SERVICE_UNAVAILABLE"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/conversations/{conversation_session_id}": {
       "get": {
         "summary": "Get conversation detail",
@@ -3528,6 +3664,43 @@
           }
         }
       },
+      "SystemMessageRequest": {
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16000,
+            "description": "Text appended to the live LLM context as a system message. Not spoken and not treated as a user turn."
+          },
+          "run_llm": {
+            "type": "boolean",
+            "default": false,
+            "description": "If false (default), only append the system message. If true, also trigger an assistant reply that can see the new context."
+          }
+        }
+      },
+      "SystemMessageResponse": {
+        "type": "object",
+        "required": [
+          "conversation_session_id",
+          "run_llm"
+        ],
+        "properties": {
+          "conversation_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Session that received the system message."
+          },
+          "run_llm": {
+            "type": "boolean",
+            "description": "Echo of the request `run_llm` value."
+          }
+        }
+      },
       "ConversationAvatarSummary": {
         "type": "object",
         "required": [
@@ -4806,6 +4979,7 @@
               "RECORDING_NOT_STARTED",
               "RECORDING_UNAVAILABLE",
               "RECORDING_PROCESSING",
+              "SERVICE_UNAVAILABLE",
               "INTERNAL"
             ]
           }

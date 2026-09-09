@@ -7,6 +7,8 @@ description: "Use runtime, LLM, and secret variables in endpoint templates."
 
 You can use template variables in both `headers` and `body` for HTTP endpoints.
 
+Akapulu also stamps **`X-Akapulu-Conversation-Session-Id`** on every HTTP tool POST (live conversation and Testing Mode). That value is not a template. It is added at call time so your server can identify the session. If you set the same header in the endpoint config, Akapulu overwrites it. Use it to [update conversation context](/guides/conversations/updating-conversation-context) after a background job finishes.
+
 Template format:
 
 ```text
@@ -158,7 +160,7 @@ Fragment showing runtime templates in prompts (your full scenario also needs rou
 }
 ```
 
-Omitted here: `functions`, edges, and other required scenario fields—in your real JSON, attach the HTTP function tool that uses the endpoint template below.
+Omitted here: `functions`, edges, and other required scenario fields. In your real JSON, attach the HTTP function tool that uses the endpoint template below.
 
 ### HTTP endpoint template (function tool)
 

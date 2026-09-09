@@ -1,0 +1,47 @@
+---
+title: "Post a System Message"
+openapi: "openapi/akapulu.json POST /conversations/{conversation_session_id}/system-messages"
+---
+
+Append a **system** message to a live conversation's LLM context while the call is in progress.
+
+The posted `content` is added as exactly one message:
+
+```json
+{ "role": "system", "content": "<your content>" }
+```
+
+It is **not** spoken, and it is **not** a user turn. Use this from **your server** with an API key, not from browser code.
+
+For the workflow, see [Updating Conversation Context](/guides/conversations/updating-conversation-context).
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+Required request fields:
+
+- `content`: non-empty string, at most 16,000 characters
+
+Optional request fields:
+
+- `run_llm`: boolean, default `false`
+  - `false`: append the system message only. The assistant sees it on the next LLM run (typically the next user turn).
+  - `true`: append the system message and immediately run the LLM so the assistant can reply.
+
+The session id in the path must be owned by the API key. Live conversations from [connect](/api-reference/conversations/connect) and [Testing Mode](/guides/scenarios/llm-test-mode) sessions both work.
+
+Example request:
+
+```bash
+curl -X POST "https://akapulu.com/api/conversations/7f1e7f76-b38d-4d03-b8f8-2570ce8d4e6d/system-messages/" \
+  -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Chart review is complete. Last A1C was 7.2. Share that if the patient asks.",
+    "run_llm": false
+  }'
+```

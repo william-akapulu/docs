@@ -88,6 +88,7 @@
             "group": "Conversations",
             "pages": [
               "guides/conversations/lifecycle",
+              "guides/conversations/updating-conversation-context",
               "guides/conversations/customize-conversation-ui"
             ]
           },
@@ -131,6 +132,12 @@
             "pages": [
               "api-reference/conversations/connect",
               "api-reference/conversations/updates"
+            ]
+          },
+          {
+            "group": "During a conversation",
+            "pages": [
+              "api-reference/conversations/system-messages"
             ]
           },
           {

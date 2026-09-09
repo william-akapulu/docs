@@ -48,10 +48,10 @@ curl -X POST "https://akapulu.com/api/conversations/connect/" \
 
 ## Error responses
 
-Conversation connect, updates, detail, and recording errors return JSON with:
+Conversation connect, updates, detail, recording, and system-message errors return JSON with:
 
-- `error` — human-readable message
-- `error_code` — stable string you can switch on
+- `error`: human-readable message
+- `error_code`: stable string you can switch on
 
 HTTP status is still set, but several different failures share the same number (for example more than one kind of 403). Prefer `error_code`.
 
@@ -69,13 +69,14 @@ HTTP status is still set, but several different failures share the same number (
 | `RECORDING_NOT_STARTED` | 404 | Recording was not enabled for this session |
 | `RECORDING_UNAVAILABLE` | 404 | Recording file is not available |
 | `RECORDING_PROCESSING` | 409 | Recording is not ready yet |
+| `SERVICE_UNAVAILABLE` | 503 | Could not enqueue a live system message |
 | `INTERNAL` | 500 | Unexpected server error |
 
 The React SDK copies `error_code` onto `error.code` when the session fails. Client-only codes such as `UPDATES_TIMEOUT` are not returned by the REST API.
 
 ## Getting Started
 
-Use **Starting a conversation** for connecting and live status polling, then **Transcripts and recordings** for conversation analysis.
+Use **Starting a conversation** for connecting and live status polling, **During a conversation** to inject context while a call is live, then **Transcripts and recordings** for conversation analysis.
 
 For talking-avatar video from a script, use **Clips** and **Takes**. The request-by-request flow is in [Workflow](/guides/clips/workflow).
 

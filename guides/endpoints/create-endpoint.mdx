@@ -18,7 +18,7 @@ Each endpoint has:
 - `body`: JSON payload
 
 <Note>
-Akapulu Labs invokes your endpoint with the **POST** method and a JSON-encoded body. **`Content-Type: application/json`** is sent by default; add **`Content-Type`** under **Headers** if you need a different value.
+Akapulu Labs invokes your endpoint with the **POST** method and a JSON-encoded body. **`Content-Type: application/json`** is sent by default; add **`Content-Type`** under **Headers** if you need a different value. Every tool POST also includes **`X-Akapulu-Conversation-Session-Id`** (live and Testing Mode). Use that header if your server needs to call back into the same conversation, including [Updating Conversation Context](/guides/conversations/updating-conversation-context). You cannot put the id in the endpoint template ahead of time.
 </Note>
 
 ## Host your endpoint as an HTTP server
