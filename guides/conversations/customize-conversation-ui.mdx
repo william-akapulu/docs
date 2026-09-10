@@ -303,6 +303,7 @@ Beyond styles, `@akapulu/react-ui` lets you customize behavior and rendering for
 - `onToolEvent(tool)` to run side effects when a tool event arrives
 - `renderToolEvent(tool)` to replace the default tool toast element
 - `toolEventTimeoutMs` to control how long the tool toast stays visible
+- `playConnectChime` to play a short chime when the call goes live (default `true`; pass `false` to disable)
 
 Callback signatures:
 
@@ -312,6 +313,7 @@ renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode;
 onToolEvent?: (tool: NormalizedToolEvent) => void;
 renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
 toolEventTimeoutMs?: number | null;
+playConnectChime?: boolean;
 ```
 
 `toolEventTimeoutMs` behavior:
@@ -319,6 +321,13 @@ toolEventTimeoutMs?: number | null;
 - default: `4000`
 - pass a number to customize the auto-hide timeout
 - pass `null` to disable auto-hide
+
+`playConnectChime` behavior:
+
+- default: `true`
+- pass `false` to disable
+- plays when session status goes `connecting` → `connected` (loading screen ends)
+- skipped when `prefers-reduced-motion: reduce`
 
 `TranscriptEntry` shape (`entry`):
 
@@ -544,7 +553,7 @@ The **same** connect/updates route pattern applies: `AkapuluProvider` points at 
    **Lifecycle & connection**
 
    - `status` — where the client is in the join/leave flow: `"idle"` → `"connecting"` → `"connected"` → `"disconnecting"` / `"ended"`, or `"error"` if something failed.
-   - `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state.
+   - `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state. `start()` also arms `AudioContext` during the Start Call click so `useConnectChime()` can play after a long boot.
    - `error` — when `status` is `"error"`, structured details (`code` optional, `message` required) for your error UI or logging.
 
    **Call readiness & updates** (from your **updates** route)
@@ -623,7 +632,13 @@ const { toggleMic, toggleCam, isMicMuted, isCamOff } = useAkapuluMediaControls()
 <AkapuluBotAudio />
 ```
 
-6. Optionally `useAkapuluEvents(callback)` to react to the full event stream (`transcript_updated`, `tool_event`, `node_changed`, `timeout`, etc.) while still rendering your own UI.
+6. Call `useConnectChime()` to play the same connect chime as `AkapuluConversation` when status goes `connecting` → `connected`. Skip this hook if you do not want a chime.
+
+```tsx
+useConnectChime();
+```
+
+7. Optionally `useAkapuluEvents(callback)` to react to the full event stream (`transcript_updated`, `tool_event`, `node_changed`, `timeout`, etc.) while still rendering your own UI.
 
 ```tsx
 useAkapuluEvents((event) => {
@@ -643,6 +658,7 @@ import {
   useAkapuluMediaControls,
   useAkapuluParticipantRoles,
   useAkapuluSession,
+  useConnectChime,
 } from "@akapulu/react";
 import { DailyVideo, useDaily, useVideoTrack } from "@daily-co/daily-react";
 
@@ -676,6 +692,8 @@ function CustomCallUi() {
 
   // Media controls for the underlying Daily call.
   const { toggleMic, toggleCam, isMicMuted, isCamOff } = useAkapuluMediaControls();
+
+  useConnectChime();
 
   // Daily participant roles + local self.
   const daily = useDaily();
@@ -818,9 +836,11 @@ export function App() {
 | Export | Role |
 | --- | --- |
 | `AkapuluProvider` | Config, session store, Daily context for children |
-| `useAkapuluSession` | Session state + `start` / `end` |
+| `useAkapuluSession` | Session state + `start` / `end` (`start()` also arms AudioContext for the connect chime) |
 | `useAkapuluMediaControls` | Mic/cam state and toggles |
 | `AkapuluBotAudio` | Plays bot audio track |
+| `useConnectChime` | Plays a short chime when status goes `connecting` → `connected` |
+| `armConnectAudio` / `playConnectChime` | Low-level Web Audio helpers used by the hook |
 | `useAkapuluEvents` | Subscribe to `AkapuluEvent` stream |
 | `useAkapuluDailyCall` | Access the Daily call object when you need lower-level APIs |
 
@@ -945,4 +965,4 @@ Runnable apps that mirror this guide are available as standalone Vite + Express 
 
 - [Prebuilt UI (styled)](/examples/web-sdk/prebuilt-ui-styled) — [`Akapulu/prebuilt-ui-styled`](https://github.com/Akapulu/prebuilt-ui-styled): the same prebuilt path with a dark theme, a custom tool toast, and a post-call review screen (recording + transcript).
 
-- [Customized UI](/examples/web-sdk/customized-ui) — [`Akapulu/customized-ui`](https://github.com/Akapulu/customized-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluParticipantRoles`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, track hooks) for your own chrome. Useful when you need full control over markup and state wiring.
+- [Customized UI](/examples/web-sdk/customized-ui) — [`Akapulu/customized-ui`](https://github.com/Akapulu/customized-ui): **`@akapulu/react` only**—same provider pattern, then **`useAkapuluSession`**, **`useAkapuluMediaControls`**, **`useAkapuluParticipantRoles`**, **`useConnectChime`**, **`useAkapuluEvents`**, **`AkapuluBotAudio`**, and **`@daily-co/daily-react`** (`DailyVideo`, track hooks) for your own chrome. Useful when you need full control over markup and state wiring.

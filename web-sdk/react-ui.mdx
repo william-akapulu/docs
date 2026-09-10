@@ -27,6 +27,7 @@ type AkapuluConversationProps = {
   onToolEvent?: (tool: NormalizedToolEvent) => void;
   renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
   toolEventTimeoutMs?: number | null;
+  playConnectChime?: boolean;
   className?: string;
   classes?: Partial<AkapuluConversationClasses>;
   styles?: Partial<AkapuluConversationStyles>;
@@ -220,6 +221,7 @@ Beyond styles, `@akapulu/react-ui` lets you customize behavior and rendering for
 - `onToolEvent(tool)` to run side effects when a tool event arrives
 - `renderToolEvent(tool)` to replace the default tool toast element
 - `toolEventTimeoutMs` to control how long the tool toast stays visible
+- `playConnectChime` to play a short chime when the call goes live (default `true`; pass `false` to disable)
 
 Callback signatures:
 
@@ -229,6 +231,7 @@ renderTranscriptEntry?: (entry: TranscriptEntry) => ReactNode;
 onToolEvent?: (tool: NormalizedToolEvent) => void;
 renderToolEvent?: (tool: NormalizedToolEvent) => ReactNode;
 toolEventTimeoutMs?: number | null;
+playConnectChime?: boolean;
 ```
 
 `toolEventTimeoutMs` behavior:
@@ -236,6 +239,13 @@ toolEventTimeoutMs?: number | null;
 - default: `4000`
 - pass a number to customize the auto-hide timeout
 - pass `null` to disable auto-hide
+
+`playConnectChime` behavior:
+
+- default: `true`
+- pass `false` to disable
+- plays when session status goes `connecting` → `connected` (loading screen ends)
+- skipped when `prefers-reduced-motion: reduce`
 
 `TranscriptEntry` shape (`entry`):
 

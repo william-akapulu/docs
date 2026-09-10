@@ -79,7 +79,7 @@ The backend exposes four routes:
 On the frontend:
 
 - **`src/App.tsx`** — `AkapuluProvider` (points at the backend) plus a single `reviewId` state that decides which screen shows (live call UI or conversation review).
-- **`src/CustomConversation.tsx`** — the custom call surface: `useAkapuluSession` for lifecycle, Daily hooks (`useDaily`, `useVideoTrack`, `DailyVideo`) for video, `useAkapuluMediaControls` for mic/cam, `useAkapuluEvents` for tool toasts, and `AkapuluBotAudio` for audio.
+- **`src/CustomConversation.tsx`** — the custom call surface: `useAkapuluSession` for lifecycle, Daily hooks (`useDaily`, `useVideoTrack`, `DailyVideo`) for video, `useAkapuluMediaControls` for mic/cam, `useConnectChime` for the connect chime, `useAkapuluEvents` for tool toasts, and `AkapuluBotAudio` for audio.
 - **`src/ConversationReview.tsx`** — post-call screen; fetches details and polls until the recording is ready.
 - **`src/styles.css`** — the call surface styling.
 

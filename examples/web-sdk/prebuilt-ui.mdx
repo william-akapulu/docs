@@ -72,7 +72,7 @@ The backend exposes two routes:
 // GET  /api/updates  →  polled while the avatar boots
 ```
 
-The frontend wires those into `AkapuluProvider` and renders `AkapuluConversation`:
+The frontend wires those into `AkapuluProvider` and renders `AkapuluConversation` (connect chime plays when the call goes live; pass `playConnectChime={false}` to disable):
 
 ```tsx
 <AkapuluProvider

@@ -69,6 +69,9 @@ The public exports currently include:
 - `useAkapuluDailyCall`
 - `useAkapuluMediaControls`
 - `useAkapuluParticipantRoles`
+- `useConnectChime`
+- `armConnectAudio`
+- `playConnectChime`
 - `AkapuluBotAudio`
 - `AkapuluConfig`
 - `AkapuluEvent`
@@ -170,7 +173,7 @@ const {
 **Lifecycle & connection**
 
 - `status` — where the client is in the join/leave flow: `"idle"` → `"connecting"` → `"connected"` → `"disconnecting"` / `"ended"`, or `"error"` if something failed.
-- `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state.
+- `start` / `end` — async actions that begin the conversation (connect + Daily join) or hang up and reset session state. `start()` also arms `AudioContext` during the Start Call click so `useConnectChime()` can play after a long boot.
 - `error` — when `status` is `"error"`, structured details (`code` optional, `message` required) for your error UI or logging. If your local connect/updates route forwards the Akapulu JSON, `code` is the API `error_code` (for example `QUOTA_EXCEEDED`). Otherwise it may be the HTTP status string (`"403"`) or a client code such as `UPDATES_TIMEOUT`.
 
 **Call readiness & updates** (from your **updates** route)
@@ -195,6 +198,20 @@ The SDK GETs this route only while `status === "connecting"` and the call is not
 - `conversationSessionId` — Akapulu conversation session id from connect (used when polling updates; also useful if your app logs or links out to dashboard/API records).
 
 See [Customize Conversation UI](/guides/conversations/customize-conversation-ui) for how this fits into a full custom layout with Daily and media helpers.
+
+### `useConnectChime(enabled?)`
+
+Plays a short chime when session status goes `connecting` → `connected` (the loading screen ends). `start()` already arms `AudioContext` during the user gesture. Pass `false` to disable. The chime is skipped when `prefers-reduced-motion: reduce`.
+
+`AkapuluConversation` calls this hook for you (default on). In a custom UI, call it under `AkapuluProvider`:
+
+```tsx
+import { useConnectChime } from "@akapulu/react";
+
+useConnectChime();
+```
+
+Low-level helpers `armConnectAudio` and `playConnectChime` are also exported if you need to arm from a custom Start Call button that does not go through `start()`.
 
 ### `useAkapuluEvents(listener)`
 
