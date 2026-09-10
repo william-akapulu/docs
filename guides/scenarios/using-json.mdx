@@ -63,6 +63,8 @@ Allowed function `type` values:
 - `rag`
 - `vision`
 
+All function types accept optional `filler_speech` (boolean). When `true`, connect adds a required `filler_speech` argument. The model's instruction for that argument is: "Extremely short spoken filler while this tool runs. A few words only, never more than one short sentence."
+
 ## Function type schemas
 
 ### `transition`
@@ -72,6 +74,7 @@ Allowed function `type` values:
 - `type`: must be `transition`
 - `transition_to`: target node name to move to
 - `require_reason` (optional boolean): when `true`, the LLM must pass a `reason` argument when calling the tool. The reason appears in the tool-call payload in the transcript. Useful for debugging transitions, adds a small amount of latency. See [Transition Tools](/guides/tools/transition-tools#require-reason)
+- `filler_speech` (optional boolean): when `true`, connect adds a required `filler_speech` argument.
 
 Example:
 
@@ -90,6 +93,7 @@ Example:
 - `description`: instruction shown to the LLM that explains what the endpoint does and when to call it
 - `type`: must be `http`
 - `endpoint_id`: ID of a saved HTTP [endpoint](/guides/endpoints/create-endpoint) in your account
+- `filler_speech` (optional boolean): when `true`, connect adds a required `filler_speech` argument.
 
 Example:
 
@@ -108,6 +112,7 @@ Example:
 - `description`: instruction shown to the LLM that explains what knowledge this tool retrieves and when to use it
 - `type`: must be `rag`
 - `knowledge_base_id`: ID of a saved [knowledge base](/guides/knowledge-bases/overview) in your account
+- `filler_speech` (optional boolean): when `true`, connect adds a required `filler_speech` argument.
 
 Example:
 
@@ -125,6 +130,7 @@ Example:
 - `name`: unique function name in the node
 - `description`: instruction shown to the LLM that explains when to inspect user video context
 - `type`: must be `vision`
+- `filler_speech` (optional boolean): when `true`, connect adds a required `filler_speech` argument.
 
 Example:
 
@@ -176,7 +182,7 @@ For HTTP functions, there are two transition patterns:
 
 - `functions` must be a list of direct function objects
 - each function must be a JSON object
-- function keys are limited to `name`, `description`, `type`, `transition_to`, `allowed_next_nodes`, `endpoint_id`, `knowledge_base_id`, `parameters`, and `require_reason`
+- function keys are limited to `name`, `description`, `type`, `transition_to`, `allowed_next_nodes`, `endpoint_id`, `knowledge_base_id`, `parameters`, `require_reason`, and `filler_speech`
 - `function.name` is required, must be unique per node, and only allows letters, numbers, `_`, `-`
 - `function.name` cannot include leading or trailing whitespace
 - `function.description` is required
@@ -190,6 +196,12 @@ For HTTP functions, there are two transition patterns:
 - if `transition_to` is set, it must target an existing node
 - `require_reason`, if provided, must be a boolean
 - `require_reason` is only valid for `transition` functions
+
+#### Filler speech rules
+
+- `filler_speech`, if provided, must be a boolean
+- `filler_speech` is valid on `transition`, `http`, `rag`, and `vision` functions
+- HTTP templates cannot use an LLM variable named `filler_speech`
 
 #### HTTP function rules
 
