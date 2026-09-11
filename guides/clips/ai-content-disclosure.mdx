@@ -31,10 +31,18 @@ On render an on-screen card can also be overlaid on the video:
 
 Both default to `true`. `show_ai_label` can be `false` on any plan. `show_logo: false` needs [Starter](https://akapulu.com/pricing) or higher.
 
-We recommend leaving `show_ai_label` as `true` so people watching can tell the clip is AI-generated. Some places, including the EU, have [rules about disclosing AI-generated media](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
+We recommend leaving `show_ai_label` as `true` so people can tell the media is AI-generated. Some places, including the EU, have [rules about disclosing AI-generated media](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
 
 Turning the on-screen label off does **not** remove VideoSeal or C2PA.
 
 How to set the flags is in [Workflow](/guides/clips/workflow#5-render-video).
+
+## Live conversations
+
+Live avatar video can overlay the same **This is AI** card. It is off by default except on the public landing-page demo, which always shows it.
+
+- [Connect](/api-reference/conversations/connect) accepts optional `show_ai_label` (Web SDK `@akapulu/server` `connectConversation` too). Allowed on every plan.
+- [Hosted links](/guides/scenarios/hosted-links) store `show_ai_label` on the link. Visitors cannot override it.
+- The Akapulu logo on live video is a Free-plan watermark, not a connect flag.
 
 Also: [Overview](/guides/clips/overview) · [Python example](/examples/clips/scripted-clip-workflow)

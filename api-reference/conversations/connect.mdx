@@ -30,6 +30,7 @@ Optional request fields include:
   - accepts either an array of strings or a comma-separated string
   - maximum `5` keywords
 - `record_conversation` whether to record this conversation session (default `false`)
+- `show_ai_label` whether to overlay a **This is AI** label on the live video (default `false`; allowed on every plan). The public landing-page demo always shows this label.
 
 Example request body:
 
@@ -41,6 +42,7 @@ Example request body:
     "today": "2026-03-19"
   },
   "stt_keywords": ["Akapulu", "Dr. Nguyen", "A1C"],
-  "record_conversation": true
+  "record_conversation": true,
+  "show_ai_label": true
 }
 ```

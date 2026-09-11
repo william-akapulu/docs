@@ -43,7 +43,8 @@
                       "Alex",
                       "Acme"
                     ],
-                    "record_conversation": false
+                    "record_conversation": false,
+                    "show_ai_label": false
                   }
                 }
               }
@@ -449,6 +450,11 @@
             "type": "boolean",
             "default": false,
             "description": "If true, enable recording for this conversation session."
+          },
+          "show_ai_label": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, overlay a This is AI label on the live video. Allowed on every plan. The landing-page demo always shows this label."
           }
         }
       },

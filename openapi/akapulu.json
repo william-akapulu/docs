@@ -43,7 +43,8 @@
                       "Alex",
                       "Acme"
                     ],
-                    "record_conversation": false
+                    "record_conversation": false,
+                    "show_ai_label": false
                   }
                 }
               }
@@ -645,6 +646,7 @@
                           "Acme"
                         ],
                         "record_conversation": false,
+                        "show_ai_label": false,
                         "redirect_url": "https://your-site.com/thanks"
                       }
                     ]
@@ -683,6 +685,7 @@
                             "Acme"
                           ],
                           "record_conversation": false,
+                          "show_ai_label": false,
                           "redirect_url": "https://your-site.com/thanks",
                           "created_at": "2026-08-16T21:47:46.000000+00:00"
                         }
@@ -3611,6 +3614,11 @@
             "type": "boolean",
             "default": false,
             "description": "If true, enable recording for this conversation session."
+          },
+          "show_ai_label": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, overlay a This is AI label on the live video. Allowed on every plan. The landing-page demo always shows this label."
           }
         }
       },
@@ -3883,6 +3891,11 @@
             "type": "boolean",
             "default": false
           },
+          "show_ai_label": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, overlay a This is AI label on conversations started from this hosted link. Visitors cannot override this."
+          },
           "redirect_url": {
             "type": "string",
             "description": "Optional http(s) URL to send the visitor after the call ends."
@@ -3901,6 +3914,7 @@
           "runtime_vars",
           "stt_keywords",
           "record_conversation",
+          "show_ai_label",
           "redirect_url",
           "created_at"
         ],
@@ -3938,6 +3952,9 @@
             }
           },
           "record_conversation": {
+            "type": "boolean"
+          },
+          "show_ai_label": {
             "type": "boolean"
           },
           "redirect_url": {

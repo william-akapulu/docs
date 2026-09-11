@@ -51,6 +51,7 @@ Your local `connect` route should:
   - `runtime_vars?: Record<string, string>`
   - `stt_keywords?: string[]`
   - `record_conversation?: boolean`
+  - `show_ai_label?: boolean`
 - return the connect response fields required by the SDK:
   - `room_url`
   - `token`
@@ -83,6 +84,7 @@ export async function connectRoute() {
     avatar_id: "YOUR_AVATAR_ID",
     runtime_vars: {},
     record_conversation: false,
+    show_ai_label: false,
   });
 }
 
@@ -171,6 +173,7 @@ export async function connectRoute(body: LocalConnectBody) {
       tenant_id: body.tenant_id || "default_tenant",
     },
     record_conversation: body.should_record === true,
+    show_ai_label: false,
   });
 }
 ```
