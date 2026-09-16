@@ -3,8 +3,10 @@ title: "Create clip"
 openapi: "openapi/akapulu.json POST /clips/create"
 ---
 
-Create a named clip with no takes.
+Start a talking-clip job. Send `avatar_id` and **exactly one** of `text` or `phonemes`. Optional `name`, `show_ai_label`, and `show_logo`.
 
-`name` is required (max 120 characters). The response includes `id` for later URLs. `favorite_id` is `null` until the first take is created.
+If `text` is sent, it is converted to [phonemes](/guides/clips/phonemes), then synthesized. Pass `phonemes` for pronunciation control. Do not send both.
 
-Next: [create a take](/api-reference/takes/create) to generate audio. End-to-end flow is in [Workflow](/guides/clips/workflow).
+Credits are charged on create: 1 credit per estimated minute of generated video. If there are not enough credits, the request fails and no clip is created.
+
+Poll [Get clip](/api-reference/clips/get) until `status` is `complete` and `video_url` is set. Full flow is in [Workflow](/guides/clips/workflow).

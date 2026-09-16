@@ -3,6 +3,6 @@ title: "Get clip"
 openapi: "openapi/akapulu.json GET /clips/{clip_id}"
 ---
 
-Fetch a clip and its takes in created order.
+Poll a clip job.
 
-Take rows on this response are summaries (`status`, `audio_url`, `video_url`). Phonemes, video instructions, and `estimated_seconds` are on [Get take](/api-reference/takes/get).
+`audio_url` and `video_url` are hour-long download links once those files exist; otherwise `null`. Call this again if a link expired. `status` is `generating`, `complete`, or `failed`.

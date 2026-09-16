@@ -5,6 +5,6 @@ openapi: "openapi/akapulu.json GET /clips"
 
 List clips on the account, newest first.
 
-Each row includes `id`, `name`, `favorite_id`, and `take_count`. Take details are on [Get clip](/api-reference/clips/get) and [Get take](/api-reference/takes/get).
+Each row includes `id`, `name`, `status`, and download URLs when the files exist. Phonemes and overlay flags are on [Get clip](/api-reference/clips/get).
 
-How clips and takes fit together is in [Overview](/guides/clips/overview).
+How a clip job works is in [Overview](/guides/clips/overview).

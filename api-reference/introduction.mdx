@@ -8,7 +8,7 @@ The Akapulu Labs API is the programmatic interface for building with Akapulu Lab
 <Note>
 For a browser conversation UI, use the [Akapulu Labs Web SDK](/web-sdk/overview) instead of calling connect and updates from frontend code. Put the API key on **your server**, have the browser call **your** connect route, and authenticate users on that route before starting a call. The SDK's client and server libraries implement that flow, session state, realtime media wiring, and conversation detail and recording retrieval.
 
-Scripted clips have no Web SDK. Call the [clip](/guides/clips/overview) and [take](/api-reference/takes/create) REST endpoints, or start from the [Python example](/examples/clips/scripted-clip-workflow).
+Scripted clips have no Web SDK. Call the [clip](/guides/clips/overview) REST endpoints, or start from the [Python example](/examples/clips/scripted-clip-workflow).
 </Note>
 
 ## Authentication
@@ -78,6 +78,6 @@ The React SDK copies `error_code` onto `error.code` when the session fails. Clie
 
 Use **Starting a conversation** for connecting and live status polling, **During a conversation** to inject context while a call is live, then **Transcripts and recordings** for conversation analysis.
 
-For talking-avatar video from a script, use **Clips** and **Takes**. The request-by-request flow is in [Workflow](/guides/clips/workflow).
+For talking-avatar video from a script, use **Clips**. The request-by-request flow is in [Workflow](/guides/clips/workflow).
 
 You can also create and manage **scenarios** (including hosted links), **endpoints**, and **knowledge bases** with the same Bearer API key. Secrets used in endpoint headers are still created in the [dashboard](https://akapulu.com/secrets/).

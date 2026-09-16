@@ -8,10 +8,10 @@ Phonemes are how a line is pronounced — a string of sound symbols, not English
 [Misaki](https://github.com/hexgrad/misaki) is the grapheme-to-phoneme (G2P) engine we use. If you send English `text`, Misaki converts it to this American English alphabet. Pass `phonemes` yourself when you want tighter control over a word (a name, a stress, a vowel).
 
 <Note>
-Right now you can only edit phonemes for an **American** accent. Other accents and languages are coming soon.
+Right now this alphabet is **American** English. Other accents and languages are coming soon.
 </Note>
 
-How to send `text` vs `phonemes` on a take is in [Workflow](/guides/clips/workflow). Most symbols below follow Misaki’s [`EN_PHONES.md`](https://github.com/hexgrad/misaki/blob/main/EN_PHONES.md). One extra: unstressed *a* / *an* / *am* use `ɐ`, which that table omits but Misaki still emits.
+How to send `text` vs `phonemes` on create is in [Workflow](/guides/clips/workflow). Most symbols below follow Misaki’s [`EN_PHONES.md`](https://github.com/hexgrad/misaki/blob/main/EN_PHONES.md). One extra: unstressed *a* / *an* / *am* use `ɐ`, which that table omits but Misaki still emits.
 
 This is not textbook IPA. Capital `A`, `I`, `W`, `Y`, and `O` are diphthongs.
 

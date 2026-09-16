@@ -1,41 +1,22 @@
 ---
 title: "AI content disclosure"
-description: "Visible AI labels, watermarks, and Content Credentials on generated audio and video."
+description: "Visible AI labels and the Akapulu Labs logo on generated clip video."
 ---
 
-Generated clip audio and video can be recognized as AI in two ways: a visible overlay on the video, and machine-readable provenance on the files.
+Generated clip video can show an on-screen card so people watching can tell the media is AI-generated.
 
-This page describes those marks. 
+## Visible labels
 
-## What we always apply
-
-These marks are on every take. They cannot be turned off.
-
-| Mark | Where | What it is |
-| --- | --- | --- |
-| [VideoSeal](https://ai.meta.com/research/publications/video-seal-open-and-efficient-video-watermarking/) | Generated video | Invisible watermark in the pixels |
-| [C2PA](https://c2pa.org/) Content Credentials | Audio and video files | Signed provenance attached to the file |
-
-The VideoSeal payload is `0x414C` (ASCII `AL`, Akapulu Labs). That watermark stays in the picture if someone copies the file without the C2PA box. Audio provenance is the C2PA signature on the wav.
-
-C2PA uses intent `CREATE` and digital source type `trainedAlgorithmicMedia`. The files are signed with an Akapulu Labs ES256 certificate. Download the public root and verification notes from [Content Credentials](https://akapulu.com/c2pa/).
-
-Readers that do not have our root (Photoshop, default `c2patool`) will report `signingCredential.untrusted` until it is added as a user trust anchor. The signature still proves the bytes were not edited after we signed them.
-
-## Visible labels (optional)
-
-On render an on-screen card can also be overlaid on the video:
+On create, an on-screen card can be overlaid on the video:
 
 - `show_ai_label` — **This is AI**
 - `show_logo` — **Made by** plus the Akapulu Labs logo
 
 Both default to `true`. `show_ai_label` can be `false` on any plan. `show_logo: false` needs [Starter](https://akapulu.com/pricing) or higher.
 
-We recommend leaving `show_ai_label` as `true` so people can tell the media is AI-generated. Some places, including the EU, have [rules about disclosing AI-generated media](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
+We recommend leaving `show_ai_label` as `true`. Some places, including the EU, have [rules about disclosing AI-generated media](https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act).
 
-Turning the on-screen label off does **not** remove VideoSeal or C2PA.
-
-How to set the flags is in [Workflow](/guides/clips/workflow#5-render-video).
+How to set the flags is in [Workflow](/guides/clips/workflow#1-create-a-clip).
 
 ## Live conversations
 
