@@ -64,8 +64,8 @@
             "group": "Getting started",
             "pages": [
               "quickstart",
-              "agent-setup",
-              "guides/getting-started/how-akapulu-works"
+              "guides/getting-started/how-akapulu-works",
+              "agent-setup"
             ]
           },
           {
