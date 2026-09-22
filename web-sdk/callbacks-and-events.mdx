@@ -184,6 +184,18 @@ type TimeoutReason = "duration_limit_reached" | "participant_join_timeout";
   Event discriminator indicating the call reached ready state.
 </ParamField>
 
+### `duration_warning`
+
+Fired once, about 30 seconds before a live call hits its duration cap. `AkapuluConversation` shows this as a banner on the video. The call stays connected. Rooms of 30 seconds or less do not send it.
+
+<ParamField path="type" type='"duration_warning"'>
+  Event discriminator.
+</ParamField>
+
+<ParamField path="secondsRemaining" type="number">
+  Whole seconds until the call ends.
+</ParamField>
+
 ### `timeout`
 
 <ParamField path="type" type='"timeout"'>
