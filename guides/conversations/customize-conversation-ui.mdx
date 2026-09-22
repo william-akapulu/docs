@@ -278,7 +278,7 @@ Each slot has both a default class and a `data-slot` marker so users can inspect
 | `videoPane` | Video column container | `akapulu-video-pane` | `video-pane` |
 | `videoSurface` | Primary remote/bot video surface | `akapulu-video-surface` | `video-surface` |
 | `botStateBadge` | Speaking/listening/idle badge on video | `akapulu-bot-state-badge` | `bot-state-badge` |
-| `durationWarning` | Banner on the video while the call is in its last 30 seconds | `akapulu-duration-warning` | `duration-warning` |
+| `durationWarning` | Red banner on the video: session limit reached, upgrade for more minutes | `akapulu-duration-warning` | `duration-warning` |
 | `pip` | Local picture-in-picture preview tile | `akapulu-pip` | `pip` |
 | `waitingVideo` | Placeholder shown before video is available | `akapulu-waiting-video` | `waiting-video` |
 | `controlMic` | In-call mic button (video mode) | `akapulu-control-mic` | `control-mic` |
@@ -483,7 +483,7 @@ Event schema by `event.type`:
 
 #### `duration_warning`
 
-Fired once, about 30 seconds before a live call hits its duration cap. The prebuilt `AkapuluConversation` shows this as a banner on the video. The call stays connected. Rooms of 30 seconds or less do not send it.
+Fired once, about 30 seconds before a live call hits its duration cap. The prebuilt `AkapuluConversation` shows a red banner: the call is ending because the plan's session limit was reached, and to upgrade for longer calls and more minutes. The call stays connected. Rooms of 30 seconds or less do not send it.
 
 | Field | Type | Description |
 | --- | --- | --- |
