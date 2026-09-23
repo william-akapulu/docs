@@ -17,7 +17,7 @@ Required request fields:
 
 Optional request fields:
 
-- `llm_model` (defaults to `gpt-4.1-mini`; full-size models require a paid plan)
+- `llm_model` (defaults to `gpt-4.1-mini`. GPT-4.1, GPT-5.4, GPT-5.5, GPT-5.6 Sol, and GPT-6 Sol require a saved OpenAI key)
 - `hosted_links` — each link needs `avatar_id` and a `runtime_vars` key for every `{{runtime.*}}` variable the scenario references (blank values are allowed)
 
 The response `hosted_links` array includes the public `url` (`https://live.akapulu.com/session/<token>`).

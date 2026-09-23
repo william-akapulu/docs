@@ -2985,7 +2985,7 @@
       },
       "LlmModel": {
         "type": "string",
-        "description": "OpenAI chat model for this scenario. Defaults to gpt-4.1-mini. Full-size models require a paid plan.",
+        "description": "OpenAI chat model for this scenario. Defaults to gpt-4.1-mini. GPT-4.1, GPT-5.4, GPT-5.5, GPT-5.6 Sol, and GPT-6 Sol require a saved OpenAI key.",
         "enum": [
           "gpt-4.1-mini",
           "gpt-4.1",
@@ -2994,7 +2994,9 @@
           "gpt-5.4",
           "gpt-5.5",
           "gpt-5.6-luna",
-          "gpt-5.6-sol"
+          "gpt-5.6-sol",
+          "gpt-6-luna",
+          "gpt-6-sol"
         ]
       },
       "NodesJson": {
