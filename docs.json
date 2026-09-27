@@ -6,7 +6,7 @@
     "app-url": "https://akapulu.com",
     "api-base-url": "https://akapulu.com/api"
   },
-  "description": "Akapulu Labs is an AI research lab building a platform for live conversational avatars and scripted talking-avatar video. Avatars gesture naturally throughout the conversation.",
+  "description": "Akapulu Labs is an AI research lab building a platform for live conversational avatars and scripted talking-avatar video.",
   "markdown": {
     "instructions": [
       "Pick a path before writing code.",
