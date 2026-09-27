@@ -21,7 +21,7 @@ Each stage in that pipeline has a specific role, described below.
 - **STT (speech-to-text):** converts the user's spoken audio into text the LLM can process.
 - **LLM (reasoning layer):** reads the transcribed user input plus your instructions, then decides what to say and which tools to call.
 - **TTS (text-to-speech):** turns the LLM's text response into spoken audio for the bot.
-- **Avatar rendering/animation:** synchronizes the avatar's face and mouth movement to the generated speech so the response is delivered as a talking avatar.
+- **Avatar rendering/animation:** synchronizes the avatar's face and mouth movement to the generated speech so the response is delivered as a talking avatar. The avatar gestures naturally throughout the conversation.
 - **Avatar media output:** streams the bot's synthesized audio and rendered avatar video frames back to the user in real time.
 
 ### Conversation pipeline
