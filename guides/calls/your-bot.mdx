@@ -1,0 +1,61 @@
+---
+title: "Your bot"
+description: "Create the Daily room, start a live session, and send speech to the avatar."
+---
+
+You create the room. The live-session call starts the avatar. Your Pipecat process joins the same room and sends it the audio to speak.
+
+## 1. Create the room
+
+Create a private Daily room with room for the browser, your bot, and the avatar. Mint one meeting token for each.
+
+Send the avatar's token on the live-session call. Your bot joins with its token. The browser joins with its token. Keep the Akapulu API key on the server that mints those tokens and calls the API.
+
+## 2. Start the live session
+
+```bash
+curl -X POST "{{api-base-url}}/api/live-sessions/" \
+  -H "Authorization: Bearer $AKAPULU_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "avatar_id": "<avatar uuid>",
+    "show_ai_label": true,
+    "room_url": "https://<your-domain>.daily.co/<room>",
+    "avatar_token": "<avatar meeting token>"
+  }'
+```
+
+`show_ai_label` is a boolean. The response is `session_id`.
+
+The call returns when the session is stored and the avatar has been asked to start. It does not wait for the first frame. Loading status arrives on your bot as a server message with `type` `status`.
+
+## 3. Put AkapuluAvatar in the pipeline
+
+Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Place `AkapuluAvatar` after the audio you want the avatar to speak.
+
+```python
+from pipecat_akapulu import AkapuluAvatar
+from pipecat.transports.daily.transport import DailyParams, DailyTransport
+
+transport = DailyTransport(
+    room_url,
+    bot_token,
+    bot_name,
+    DailyParams(
+        audio_in_enabled=True,
+        audio_out_enabled=False,
+        video_out_enabled=False,
+    ),
+)
+avatar = AkapuluAvatar(sample_rate=24000, session_id=session_id)
+```
+
+`sample_rate` is a positive multiple of 25 and matches the assistant audio frames. `tail_secs` defaults to `0.6`, which is how long the audio stays open after speech stops.
+
+`audio_out_enabled` and `video_out_enabled` stay `False`. The avatar publishes the face and the played audio.
+
+The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples): a local server, a page, and a bot that speaks first.
+
+## Errors
+
+The JSON body includes `error` and `error_code`. Branch on `error_code`. The codes for this call are in the [API overview](/api-reference/introduction#error-responses).

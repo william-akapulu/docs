@@ -1,45 +1,23 @@
 ---
-title: "Using Public Avatars"
-description: "Browse the public catalog and use catalog avatars in conversations and clips."
+title: "Using public avatars"
+description: "Browse the catalog and pass an avatar id to a live session or a hosted link."
 ---
 
-Akapulu Labs provides a public catalog of avatars you can use in live conversations and [scripted clips](/guides/clips/overview).
-
-We add new public avatars regularly, so your available options continue to grow over time.
+The public catalog is a set of avatars you can use on a live call.
 
 <Note>
-If you need a custom avatar (for example custom backgrounds or other specific details), see our [Enterprise plan](https://akapulu.com/pricing).
+A custom avatar is part of the [Enterprise plan]({{app-url}}/pricing).
 </Note>
 
-## Browse the catalog
+## Browse
 
-You can view the public catalog at [akapulu.com/catalog](https://akapulu.com/catalog).
-
-Click any avatar row to open its detail page. Each entry includes an ID, name, profile image, description, and a sample video of how the avatar looks and sounds.
+Open [the catalog]({{app-url}}/catalog). Each row has an id, a name, a picture, a description, and a sample video.
 
 <img src="/images/guides/avatars/use-public-avatar/catalog-avatar-demo.png" alt="Public avatar catalog showing name, profile image, description, and sample video" style={{ borderRadius: 12 }} />
 
-## Use a catalog avatar in a conversation
+## Use an id
 
-Scenarios define **behavior** (nodes, tools, prompts). Which **avatar** performs the conversation is chosen separately when you start the conversation
+Pass that UUID as `avatar_id`.
 
-When you call [`POST /conversations/connect`](/api-reference/conversations/connect), include:
-
-- **`scenario_id`** — the scenario that controls the flow
-- **`avatar_id`** — the catalog avatar’s UUID
-
-Example:
-
-```json
-{
-  "scenario_id": "11111111-2222-3333-4444-555555555555",
-  "avatar_id": "66666666-7777-8888-9999-000000000000"
-}
-```
-
-
-For a fuller walkthrough of how scenarios and avatars fit together, see [How it works](/guides/getting-started/how-akapulu-works).
-
-## Use a catalog avatar in a clip
-
-The same catalog `avatar_id` is what you send when you [create a clip](/api-reference/clips/create). Live conversations and clips use the same catalog avatars.
+- On a [live session](/guides/calls/your-bot), it is the face that joins the room you created.
+- On a [hosted link](/guides/calls/hosted-links), it is the face you pick in the dashboard.

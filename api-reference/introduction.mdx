@@ -1,27 +1,19 @@
 ---
-title: "REST API Overview"
-description: "Overview of Akapulu Labs API authentication and base usage."
+title: "REST API overview"
+description: "Authentication, the live-session call, and the recording check."
 ---
 
-The Akapulu Labs API is the programmatic interface for building with Akapulu Labs: live conversations, scenarios, and scripted video clips.
+The API starts an avatar in a Daily room you create, and it reads the mark on a recording.
 
-<Note>
-For a browser conversation UI, use the [Akapulu Labs Web SDK](/web-sdk/overview) instead of calling connect and updates from frontend code. Put the API key on **your server**, have the browser call **your** connect route, and authenticate users on that route before starting a call. The SDK's client and server libraries implement that flow, session state, realtime media wiring, and conversation detail and recording retrieval.
-
-Scripted clips have no Web SDK. Call the [clip](/guides/clips/overview) REST endpoints, or start from the [Python example](/examples/clips/scripted-clip-workflow).
-</Note>
+A browser UI is your page plus your Pipecat bot. The API key stays on your server. See [Your bot](/guides/calls/your-bot).
 
 ## Authentication
-
-All Akapulu Labs API endpoints require a Bearer API key in the `Authorization` header.
 
 ```bash
 Authorization: Bearer <YOUR_AKAPULU_API_KEY>
 ```
 
-## API Keys
-
-To get started, create an account, sign in to Akapulu Labs, then create an [API key](https://akapulu.com/api-keys/) and send it in the `Authorization` header for every request.
+Create a key from the dashboard after you sign in: [API keys]({{app-url}}/settings/api-keys/).
 
 ## Base URL
 
@@ -29,55 +21,40 @@ To get started, create an account, sign in to Akapulu Labs, then create an [API 
 {{api-base-url}}
 ```
 
-## Example Request
+## Live session
 
 ```bash
-curl -X POST "https://akapulu.com/api/conversations/connect/" \
+curl -X POST "{{api-base-url}}/api/live-sessions/" \
   -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
   -H "Content-Type: application/json" \
   -d '{
-    "scenario_id": "<YOUR_SCENARIO_ID>",
-    "avatar_id": "<YOUR_AVATAR_ID>",
-    "runtime_vars": {
-      "user_name": "Alex",
-      "company_name": "Acme Corp",
-      "support_ticket_id": "TICK-1024"
-    }
+    "avatar_id": "<avatar uuid>",
+    "show_ai_label": true,
+    "room_url": "https://<your-domain>.daily.co/<room>",
+    "avatar_token": "<avatar meeting token>"
   }'
 ```
 
+The response is `{"session_id": "<uuid>"}`. Field rules are on [Create a live session](/api-reference/live-sessions/create).
+
 ## Error responses
 
-Conversation connect, updates, detail, recording, and system-message errors return JSON with:
-
-- `error`: human-readable message
-- `error_code`: stable string you can switch on
-
-HTTP status is still set, but several different failures share the same number (for example more than one kind of 403). Prefer `error_code`.
+Failed calls return JSON with `error` and `error_code`. Branch on `error_code`.
 
 | `error_code` | Typical status | When |
 | --- | --- | --- |
 | `AUTH_MISSING` | 401 | No Bearer API key |
 | `AUTH_INVALID` | 401 | API key not recognized |
-| `AUTH_DENIED` | 403 | Key does not own this scenario |
-| `VALIDATION` | 400 | Missing or invalid request fields |
-| `SCENARIO_NOT_FOUND` | 404 | `scenario_id` does not exist |
-| `AVATAR_NOT_FOUND` | 404 | `avatar_id` does not exist |
-| `SESSION_NOT_FOUND` | 404 | Conversation session does not exist |
-| `QUOTA_EXCEEDED` | 403 | No minutes (or call duration) remaining |
+| `VALIDATION` | 400 | Missing or invalid fields |
+| `AVATAR_NOT_FOUND` | 404 | `avatar_id` is not an avatar you can use |
+| `NOT_FOUND` | 404 | Video-mark check is missing, or the mp4 was not uploaded |
+| `ALREADY_READ` | 409 | That video-mark check was already read |
+| `QUOTA_EXCEEDED` | 403 | No minutes remaining |
 | `CONCURRENCY_LIMIT` | 403 | Too many concurrent calls for the plan |
-| `RECORDING_NOT_STARTED` | 404 | Recording was not enabled for this session |
-| `RECORDING_UNAVAILABLE` | 404 | Recording file is not available |
-| `RECORDING_PROCESSING` | 409 | Recording is not ready yet |
-| `SERVICE_UNAVAILABLE` | 503 | Could not enqueue a live system message |
-| `INTERNAL` | 500 | Unexpected server error |
+| `INTERNAL` | 500 | The server could not finish the call |
 
-The React SDK copies `error_code` onto `error.code` when the session fails. Client-only codes such as `UPDATES_TIMEOUT` are not returned by the REST API.
+## Next
 
-## Getting Started
-
-Use **Starting a conversation** for connecting and live status polling, **During a conversation** to inject context while a call is live, then **Transcripts and recordings** for conversation analysis.
-
-For talking-avatar video from a script, use **Clips**. The request-by-request flow is in [Workflow](/guides/clips/workflow).
-
-You can also create and manage **scenarios** (including hosted links), **endpoints**, and **knowledge bases** with the same Bearer API key. Secrets used in endpoint headers are still created in the [dashboard](https://akapulu.com/secrets/).
+- [Create a live session](/api-reference/live-sessions/create)
+- [Create a video mark](/api-reference/video-marks/create)
+- [Read a video mark](/api-reference/video-marks/read)

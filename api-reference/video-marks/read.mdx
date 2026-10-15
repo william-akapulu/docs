@@ -1,0 +1,40 @@
+---
+title: "Read a video mark"
+description: "Score an uploaded mp4 and delete it."
+---
+
+`POST /api/video-marks/<uuid>/read/`
+
+Scores the object from [create](/api-reference/video-marks/create), deletes it, and returns the result. The body is `{}`.
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+A 1280×720 picture is scored at that size. Any other size is scored as-is and again after a scale to 1280×720. The response is the score with the higher `separation`.
+
+```json
+{
+  "id": "11111111-2222-3333-4444-555555555555",
+  "match": true,
+  "bits_correct": 56,
+  "bits": 56,
+  "separation": 3.65,
+  "width": 1280,
+  "height": 720,
+  "scored_width": 1280,
+  "scored_height": 720,
+  "shift": { "dy": 0, "dx": 0 },
+  "message": "akapulu",
+  "mean_coef_one": 3.6,
+  "mean_coef_zero": -3.6,
+  "samples_per_bit_min": 3936
+}
+```
+
+`match` is true when the packed bits are `akapulu`. `message` is that text when every byte is printable, otherwise `null`. `width` and `height` are the file. `scored_width` and `scored_height` are the size that won.
+
+A second read is `409` `ALREADY_READ`. A missing upload is `404` `NOT_FOUND`, and that check stays unread. A body that is not empty is `400` `VALIDATION`. An mp4 that cannot be read is `400` `VALIDATION`, and the object stays. A file over 200MB is `400` `VALIDATION`, and the object stays. If the scored object cannot be deleted, the call is `500` `INTERNAL` and the check stays unread.
+
+Another user's check, or an unknown id, is `404`.

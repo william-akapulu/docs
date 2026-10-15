@@ -1,8 +1,0 @@
----
-title: "Get clip"
-openapi: "openapi/akapulu.json GET /clips/{clip_id}"
----
-
-Poll a clip job.
-
-`audio_url` and `video_url` are hour-long download links once those files exist; otherwise `null`. Call this again if a link expired. `status` is `generating`, `complete`, or `failed`.

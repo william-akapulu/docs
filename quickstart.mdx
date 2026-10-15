@@ -1,47 +1,33 @@
 ---
 title: "Quickstart"
-description: "Build your first live conversation or scripted clip in minutes."
+description: "Start a hosted call, or put an avatar in your own Pipecat bot."
 mode: "wide"
 ---
 
 ## About Akapulu Labs
 
-Akapulu Labs is an AI research lab building a platform for AI avatars: **live conversations** and **scripted video clips**.
+Akapulu Labs is an AI research lab. A live call has three participants in a Daily room: the person in the browser, your bot, and the avatar.
 
-You can launch an AI assistant that joins a live call with your users, responds naturally, and follows your defined behavior. You can also generate a talking-avatar video from a script, over the API.
+The avatar publishes the face and the played audio. Your bot listens to the browser and produces the speech. [AkapuluAvatar](https://github.com/Akapulu/pipecat-akapulu) sends that audio to the avatar.
 
-<video width="960" src="/james-postop-demo.mp4" autoPlay muted loop playsInline preload="metadata" style={{ borderRadius: 12 }}></video>
+A [hosted link](/guides/calls/hosted-links) is a public URL. You pick an avatar and write the prompt. Anyone with the link can start the call.
 
-## How it works
-
-During a live call, the bot follows your configured behavior, including:
-
-- global role prompts for overall persona and tone
-- stage-specific instructions for each part of the conversation
-- tool access for actions like transitions, endpoints, knowledge, or vision
-
-A scripted clip is offline: you supply the line, we generate talking-avatar audio and video. Clips do not use the Web SDK.
-
-For a full walkthrough of live calls, see [How it works](/guides/getting-started/how-akapulu-works). For clips, see [Overview](/guides/clips/overview).
-
-## Choose your starting path
-
-Pick the path that matches what you want to build first.
+## Choose a path
 
 <CardGroup cols={2}>
-  <Card title="Prebuilt UI" icon="sparkles" href="/examples/web-sdk/prebuilt-ui">
-    Start with the Akapulu Labs prebuilt conversation UI and a minimal Vite + Express integration.
+  <Card title="Hosted link" icon="link" href="/guides/calls/hosted-links">
+    Create the link in the dashboard and send the URL. No bot to run.
   </Card>
 
-  <Card title="Customized UI" icon="palette" href="/examples/web-sdk/customized-ui">
-    Build a fully custom interface with the Akapulu Labs headless React hooks.
+  <Card title="Your bot" icon="robot" href="/guides/calls/your-bot">
+    Create the Daily room, start a live session, and put AkapuluAvatar in your Pipecat pipeline.
   </Card>
 
-  <Card title="End-to-End Workflow" icon="stethoscope" href="/examples/scenarios/healthcare-intake-scheduling">
-    Build a full healthcare patient intake and scheduling workflow.
+  <Card title="Example" icon="github" href="/examples">
+    Run the public example: a local server, a browser page, and a bot.
   </Card>
 
-  <Card title="Scripted clip" icon="clapperboard" href="/examples/clips/scripted-clip-workflow">
-    Create a clip from a script, then download talking-avatar audio and video.
+  <Card title="Check a recording" icon="fingerprint" href="/guides/video-marks/verify">
+    Upload an mp4 and read the mark on the avatar frames.
   </Card>
 </CardGroup>

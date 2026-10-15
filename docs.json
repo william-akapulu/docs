@@ -6,17 +6,15 @@
     "app-url": "https://akapulu.com",
     "api-base-url": "https://akapulu.com/api"
   },
-  "description": "Akapulu Labs is an AI research lab building a platform for live conversational avatars and scripted talking-avatar video.",
+  "description": "Akapulu Labs is an AI research lab building live conversational avatars.",
   "markdown": {
     "instructions": [
-      "Pick a path before writing code.",
-      "Share a live avatar call with no code: use a hosted link (a public URL). No SDK and no API key in the customer's app.",
-      "Embed a live conversation in an app: use the Web SDK. @akapulu/server 1.0.4+ on the backend, @akapulu/react or @akapulu/react-ui in the browser. Do not call POST /conversations/connect or updates from frontend code with the API key. Do not reimplement those two calls with fetch.",
-      "Scripted talking-avatar video (offline, not a live call): use the clip REST API, or the Python clip example. No Web SDK.",
-      "Create and manage scenarios, hosted links, HTTP endpoints, knowledge bases and documents, and clips with the REST API. Keep AKAPULU_API_KEY on the server for every REST call. Never put the key in frontend or Vite code.",
-      "If embedding: the browser calls YOUR connect and updates routes. Authenticate users on those routes before starting a billed call. Demo examples skip that check. User auth is config.headers (object or a function called when the request is sent). connectBody is JSON payload, not auth.",
-      "Do not install Daily or Pipecat yourself; they come with @akapulu/react. Add @daily-co/daily-react only if your own files import DailyVideo.",
-      "Conversation API errors include error_code. Branch on that field, not the English error string."
+      "A hosted link is a public URL. Create it in the dashboard with a label, an avatar, a system prompt, and whether the video shows This is AI.",
+      "To embed the avatar, create a private Daily room for the browser, your bot, and the avatar. Mint a meeting token for each. POST /api/live-sessions/ from the server with avatar_id, show_ai_label (boolean), room_url, and avatar_token. The response is session_id.",
+      "Install pipecat-akapulu. Put AkapuluAvatar after the spoken audio, with sample_rate and session_id. Leave audio out and video out off. The avatar publishes the face and the played audio. Keep AKAPULU_API_KEY on the server.",
+      "Loading status is a server message with type status. Do not poll for it.",
+      "Every avatar frame has an invisible mark. Verify an mp4 with POST /api/video-marks/ and POST /api/video-marks/<id>/read/.",
+      "API errors include error_code. Branch on that field, not the English error string."
     ]
   },
   "redirects": [
@@ -39,14 +37,6 @@
     {
       "source": "/blog/what-is-akapulu/what-is-akapulu",
       "destination": "https://blog.akapulu.com/what-is-akapulu-labs"
-    },
-    {
-      "source": "/examples/basic/prebuilt-ui",
-      "destination": "/examples/web-sdk/prebuilt-ui"
-    },
-    {
-      "source": "/examples/basic/custom-ui",
-      "destination": "/examples/web-sdk/customized-ui"
     }
   ],
   "colors": {
@@ -69,14 +59,10 @@
             ]
           },
           {
-            "group": "Scenarios",
+            "group": "Calls",
             "pages": [
-              "guides/scenarios/overview",
-              "guides/scenarios/role-and-task-instructions",
-              "guides/scenarios/llm-test-mode",
-              "guides/scenarios/hosted-links",
-              "guides/scenarios/using-json",
-              "guides/scenarios/node-basics"
+              "guides/calls/your-bot",
+              "guides/calls/hosted-links"
             ]
           },
           {
@@ -86,37 +72,11 @@
             ]
           },
           {
-            "group": "Conversations",
+            "group": "Recordings",
             "pages": [
-              "guides/conversations/lifecycle",
-              "guides/conversations/updating-conversation-context",
-              "guides/conversations/customize-conversation-ui"
+              "guides/video-marks/verify"
             ]
-          },
-          {
-            "group": "Tools",
-            "pages": [
-              "guides/tools/transition-tools",
-              {
-                "group": "Endpoints",
-                "pages": [
-                  "guides/endpoints/create-endpoint",
-                  "guides/endpoints/templates-and-variables"
-                ]
-              },
-              "guides/knowledge-bases/overview",
-              "guides/vision/vision-tool-overview"
-            ]
-          },
-          {
-            "group": "Scripted Video Clips",
-            "pages": [
-              "guides/clips/overview",
-              "guides/clips/workflow",
-              "guides/clips/phonemes",
-              "guides/clips/ai-content-disclosure"
-            ]
-          }          
+          }
         ]
       },
       {
@@ -129,86 +89,16 @@
             ]
           },
           {
-            "group": "Starting a conversation",
+            "group": "Live sessions",
             "pages": [
-              "api-reference/conversations/connect",
-              "api-reference/conversations/updates"
+              "api-reference/live-sessions/create"
             ]
           },
           {
-            "group": "During a conversation",
+            "group": "Video marks",
             "pages": [
-              "api-reference/conversations/system-messages"
-            ]
-          },
-          {
-            "group": "Transcripts and recordings",
-            "pages": [
-              "api-reference/conversations/detail",
-              "api-reference/conversations/recording"
-            ]
-          },
-          {
-            "group": "Scenarios",
-            "pages": [
-              "api-reference/scenarios/list",
-              "api-reference/scenarios/create",
-              "api-reference/scenarios/get",
-              "api-reference/scenarios/update",
-              "api-reference/scenarios/delete"
-            ]
-          },
-          {
-            "group": "Endpoints",
-            "pages": [
-              "api-reference/endpoints/list",
-              "api-reference/endpoints/create",
-              "api-reference/endpoints/get",
-              "api-reference/endpoints/update",
-              "api-reference/endpoints/delete"
-            ]
-          },
-          {
-            "group": "Knowledge bases",
-            "pages": [
-              "api-reference/knowledge-bases/list",
-              "api-reference/knowledge-bases/create",
-              "api-reference/knowledge-bases/get",
-              "api-reference/knowledge-bases/update",
-              "api-reference/knowledge-bases/delete",
-              "api-reference/knowledge-bases/documents-list",
-              "api-reference/knowledge-bases/documents-create",
-              "api-reference/knowledge-bases/documents-delete"
-            ]
-          },
-          {
-            "group": "Clips",
-            "pages": [
-              "api-reference/clips/list",
-              "api-reference/clips/create",
-              "api-reference/clips/get",
-              "api-reference/clips/update",
-              "api-reference/clips/delete"
-            ]
-          }          
-        ]
-      },
-      {
-        "tab": "Web SDK",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "web-sdk/overview"
-            ]
-          },
-          {
-            "group": "Reference",
-            "pages": [
-              "web-sdk/callbacks-and-events",
-              "web-sdk/server-sdk",
-              "web-sdk/react-sdk",
-              "web-sdk/react-ui"
+              "api-reference/video-marks/create",
+              "api-reference/video-marks/read"
             ]
           }
         ]
@@ -220,27 +110,6 @@
             "group": "Overview",
             "pages": [
               "examples/index"
-            ]
-          },
-          {
-            "group": "Web SDK examples",
-            "pages": [
-              "examples/web-sdk/prebuilt-ui",
-              "examples/web-sdk/prebuilt-ui-styled",
-              "examples/web-sdk/customized-ui"
-            ]
-          },
-          {
-            "group": "Example scenarios",
-            "pages": [
-              "examples/scenarios/healthcare-intake-scheduling",
-              "examples/scenarios/sales-roleplay-training"
-            ]
-          },
-          {
-            "group": "Scripted video clips",
-            "pages": [
-              "examples/clips/scripted-clip-workflow"
             ]
           }
         ]
@@ -274,15 +143,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {

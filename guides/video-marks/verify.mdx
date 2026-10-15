@@ -1,0 +1,30 @@
+---
+title: "Verify a recording"
+description: "Read the invisible mark on avatar video."
+---
+
+Every avatar frame carries an invisible mark. A reader that knows the pattern recovers the text `akapulu`. The mark stays in the picture through a normal recording, including a Daily cloud recording.
+
+The **This is AI** card is a separate overlay. `show_ai_label` controls the card. Turning the card off leaves the mark.
+
+## Check a file
+
+The file is an mp4, at most 200MB, with content type `video/mp4`.
+
+1. `POST /api/video-marks/` with `{"content_type":"video/mp4"}`. The response includes `id` and `upload_url`. The upload URL lasts 15 minutes.
+2. `PUT` the mp4 bytes to `upload_url` with `Content-Type: video/mp4`.
+3. `POST /api/video-marks/<id>/read/` with `{}`.
+
+The read scores the file and deletes it. The response includes:
+
+- `match` — the recovered bits are `akapulu`
+- `bits_correct` and `bits` — how many of the 56 bits matched
+- `separation` — how far the two bit classes sit apart
+- `width` and `height` — the file's picture size
+- `scored_width` and `scored_height` — the size used for the score
+
+A 1280×720 picture is scored at that size. A different size is scored as-is and again after a scale back to 1280×720. The response keeps the stronger separation.
+
+A second read of the same id is `409` with `error_code` `ALREADY_READ`. The read body cannot include a URL. If the object is missing, the read is `404` and the check stays unread.
+
+Request and response fields are in [Create a video mark](/api-reference/video-marks/create) and [Read a video mark](/api-reference/video-marks/read).

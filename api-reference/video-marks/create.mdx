@@ -1,0 +1,35 @@
+---
+title: "Create a video mark"
+description: "Mint an id and a presigned URL for the mp4 you want checked."
+---
+
+`POST /api/video-marks/`
+
+Returns an id and a 15-minute presigned `PUT` for `users/{user_id}/video-marks/{id}/input.mp4`. You upload the bytes. The object stays private.
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+The body is exactly:
+
+```json
+{
+  "content_type": "video/mp4"
+}
+```
+
+```json
+{
+  "id": "11111111-2222-3333-4444-555555555555",
+  "upload_url": "https://...",
+  "s3_key": "users/1/video-marks/11111111-2222-3333-4444-555555555555/input.mp4",
+  "content_type": "video/mp4",
+  "expires_in": 900
+}
+```
+
+`PUT` the file to `upload_url` with `Content-Type: video/mp4`. Then [read the mark](/api-reference/video-marks/read).
+
+The file must be an mp4 of at most 200MB. A different content type on this call is `400` `VALIDATION`.

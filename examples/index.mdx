@@ -1,53 +1,36 @@
 ---
 title: "Examples"
-description: "Reference implementations you can clone and adapt."
+description: "The public example: a local server, a browser page, and a bot."
 ---
 
-Use these examples to accelerate your Akapulu Labs integration.
+The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples).
 
-## Web SDK examples
+It creates a private Daily room, mints the three meeting tokens, and calls `POST /api/live-sessions/`. The page joins with the browser token. The bot joins with its token, speaks first, and listens to the browser. Audio out and video out stay off. The avatar publishes the face and the played audio.
 
-Standalone apps (Vite + Express) that show how to run a conversation with the [Akapulu Labs Web SDK](/web-sdk/overview). Pick one as a starting point for your own UI.
+## Run
 
-<CardGroup cols={3}>
-  <Card title="Prebuilt UI" icon="message" href="/examples/web-sdk/prebuilt-ui">
-    Minimal `AkapuluConversation` — the fastest path to a working call.
-  </Card>
-  <Card title="Prebuilt UI (styled)" icon="palette" href="/examples/web-sdk/prebuilt-ui-styled">
-    Dark theme, custom tool toasts, and a post-call review screen.
-  </Card>
-  <Card title="Customized UI" icon="layout" href="/examples/web-sdk/customized-ui">
-    A fully custom call surface built from `@akapulu/react` hooks + Daily.
-  </Card>
-</CardGroup>
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Example scenarios
+Copy `.env.example` to `.env` and set:
 
-Scenario tutorials you can recreate in the dashboard and pair with any of the Web SDK examples above.
+- `DAILY_API_KEY`
+- `AKAPULU_API_KEY`
+- `AKAPULU_AVATAR_ID`
+- `AKAPULU_SHOW_AI_LABEL` as `true` or `false`
+- `OPENAI_API_KEY`
 
-<CardGroup cols={2}>
-  <Card title="Healthcare Intake & Scheduling" icon="heart-pulse" href="/examples/scenarios/healthcare-intake-scheduling">
-    End-to-end intake flow with booking, endpoint actions, and RAG-based clinic Q&A.
-  </Card>
-  <Card title="Sales Roleplay Training" icon="handshake" href="/examples/scenarios/sales-roleplay-training">
-    An avatar plays a named prospect across a full discovery call, then branches on whether the rep meets the close criteria.
-  </Card>
-</CardGroup>
+`AKAPULU_API_URL` is optional. When it is unset, the example uses the production origin. A set value has to be an `http` or `https` origin.
 
-## Scripted video clips
+```bash
+python server.py
+```
 
-A Python CLI for [scripted video clips](/guides/clips/overview): create a clip from a script, then download audio and video.
+Open `http://127.0.0.1:7860` and choose Start call. The server handles one call at a time. A second start while a call is running returns an error.
 
-<CardGroup cols={1}>
-  <Card title="Scripted clip workflow" icon="clapperboard" href="/examples/clips/scripted-clip-workflow">
-    Create a clip from a script, then download audio and video.
-  </Card>
-</CardGroup>
+The API key stays in that process. The page receives the Daily room URL and the browser token.
 
-## GitHub
-
-- [prebuilt-ui](https://github.com/Akapulu/prebuilt-ui)
-- [prebuilt-ui-styled](https://github.com/Akapulu/prebuilt-ui-styled)
-- [customized-ui](https://github.com/Akapulu/customized-ui)
-- [healthcare-intake-scheduling](https://github.com/Akapulu/healthcare-intake-scheduling)
-- [scripted-clip-workflow](https://github.com/Akapulu/scripted-clip-workflow)
+The room, the live-session body, and `AkapuluAvatar` are described in [Your bot](/guides/calls/your-bot).
