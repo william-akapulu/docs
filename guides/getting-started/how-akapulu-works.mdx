@@ -5,19 +5,21 @@ description: "The browser, your bot, and the avatar in one Daily room."
 
 A live call is a private Daily room with three participants.
 
-- **Browser.** The person on the call.
-- **Your bot.** It hears the browser and decides what to say. It does not publish a camera or a microphone.
-- **Avatar.** It joins after you start a live session and publishes the face and the played audio.
+<ul>
+  <li><strong style={{ color: "#EA580C" }}>Browser.</strong> The person on the call.</li>
+  <li><strong style={{ color: "#7C3AED" }}>Your bot.</strong> It hears the browser and decides what to say. It does not publish a camera or a microphone.</li>
+  <li><strong style={{ color: "#0284C7" }}>Avatar.</strong> It joins after you start a live session and publishes the face and the played audio.</li>
+</ul>
 
 ```mermaid
 flowchart TD
-  APP[Your server]
-  ROOM[Daily room]
-  API["POST /api/live-sessions/"]
-  AV[Avatar]
-  BOT[Your bot]
-  PIECE[AkapuluAvatar]
-  BROWSER[Browser]
+  APP[Your server]:::server
+  ROOM[Daily room]:::room
+  API["POST /api/live-sessions/"]:::server
+  AV[Avatar]:::avatar
+  BOT[Your bot]:::bot
+  PIECE[AkapuluAvatar]:::bot
+  BROWSER[Browser]:::browser
 
   APP -->|1. Create the room and three tokens| ROOM
   APP -->|2. avatar_id, show_ai_label, room_url, avatar_token| API
@@ -28,6 +30,12 @@ flowchart TD
   PIECE -->|6. Send the spoken audio| AV
   BOT -->|7. Join. Listen to the browser. Publish nothing| ROOM
   BROWSER -->|8. Join| ROOM
+
+  classDef server fill:#1E3F4D,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef room fill:#134E4A,stroke:#5EEAD4,color:#F8FAFC,stroke-width:2px
+  classDef avatar fill:#0C4A6E,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef bot fill:#3B0764,stroke:#C4B5FD,color:#F8FAFC,stroke-width:2px
+  classDef browser fill:#7C2D12,stroke:#FDBA74,color:#FFF7ED,stroke-width:2px
 ```
 
 ## What you send
