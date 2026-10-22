@@ -1,9 +1,9 @@
 ---
 title: "REST API overview"
-description: "Authentication, the live-session call, and the recording check."
+description: "Authentication, live sessions, hosted links, and the recording check."
 ---
 
-The API starts an avatar in a Daily room you create, and it reads the mark on a recording.
+The API starts an avatar in a Daily room you create, manages hosted-link rows, and reads the mark on a recording.
 
 A browser UI is your page plus your Pipecat bot. The API key stays on your server. See [Your bot](/guides/calls/your-bot).
 
@@ -37,6 +37,22 @@ curl -X POST "{{api-base-url}}/api/live-sessions/" \
 
 The response is `{"session_id": "<uuid>"}`. Field rules are on [Create a live session](/api-reference/live-sessions/create).
 
+## Hosted links
+
+```bash
+curl -X POST "{{api-base-url}}/api/hosted-links/" \
+  -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "label": "Desk",
+    "avatar_id": "<avatar uuid>",
+    "system_prompt": "Be brief.",
+    "show_ai_label": true
+  }'
+```
+
+The response includes `id`, `url`, and `token`. Share `url`. Full CRUD is under [Hosted links](/api-reference/hosted-links/list).
+
 ## Error responses
 
 Failed calls return JSON with `error` and `error_code`. Branch on `error_code`.
@@ -47,7 +63,7 @@ Failed calls return JSON with `error` and `error_code`. Branch on `error_code`.
 | `AUTH_INVALID` | 401 | API key not recognized |
 | `VALIDATION` | 400 | Missing or invalid fields |
 | `AVATAR_NOT_FOUND` | 404 | `avatar_id` is not an avatar you can use |
-| `NOT_FOUND` | 404 | Video-mark check is missing, or the mp4 was not uploaded |
+| `NOT_FOUND` | 404 | Hosted link or video-mark check is missing, or the mp4 was not uploaded |
 | `ALREADY_READ` | 409 | That video-mark check was already read |
 | `QUOTA_EXCEEDED` | 403 | No minutes remaining |
 | `CONCURRENCY_LIMIT` | 403 | Too many concurrent calls for the plan |
@@ -56,5 +72,7 @@ Failed calls return JSON with `error` and `error_code`. Branch on `error_code`.
 ## Next
 
 - [Create a live session](/api-reference/live-sessions/create)
+- [List hosted links](/api-reference/hosted-links/list)
+- [Create a hosted link](/api-reference/hosted-links/create)
 - [Create a video mark](/api-reference/video-marks/create)
 - [Read a video mark](/api-reference/video-marks/read)

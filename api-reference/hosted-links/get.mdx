@@ -1,0 +1,30 @@
+---
+title: "Get a hosted link"
+description: "Return one hosted link owned by the API key's account."
+---
+
+`GET /api/hosted-links/<id>/`
+
+`<id>` is the hosted link UUID from create or list.
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+
+```json
+{
+  "id": "11111111-2222-3333-4444-555555555555",
+  "token": "<public path token>",
+  "url": "https://akapulu.com/session/<public path token>",
+  "label": "Desk",
+  "avatar_id": "66666666-7777-8888-9999-000000000000",
+  "avatar_handle": "clara",
+  "system_prompt": "Be brief.",
+  "show_ai_label": true,
+  "created_at": "2026-10-22T20:00:00+00:00"
+}
+```
+
+A missing id, or an id owned by another account, is `404` `NOT_FOUND`. The response does not leak another account's token.
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).

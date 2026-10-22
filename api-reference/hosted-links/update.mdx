@@ -1,0 +1,26 @@
+---
+title: "Update a hosted link"
+description: "Replace the label, avatar, system prompt, and AI label on a hosted link."
+---
+
+`PUT /api/hosted-links/<id>/`
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+The body is the same four fields as [create](/api-reference/hosted-links/create). This is a full replace, not a partial patch. The public `token` and `url` stay the same.
+
+```json
+{
+  "label": "Lobby",
+  "avatar_id": "66666666-7777-8888-9999-000000000000",
+  "system_prompt": "Be warm.",
+  "show_ai_label": false
+}
+```
+
+Status is `200` with the updated row. Another account's id is `404` `NOT_FOUND`.
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).

@@ -1,0 +1,47 @@
+---
+title: "Create a hosted link"
+description: "Mint a public hosted-link URL for an avatar and system prompt."
+---
+
+`POST /api/hosted-links/`
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+The body is exactly these four fields:
+
+- `label` — string, at most 255 characters after trim (may be empty)
+- `avatar_id` — UUID of an avatar you own or a public catalog avatar
+- `system_prompt` — non-empty string after trim
+- `show_ai_label` — boolean JSON (`true` / `false`, not a string)
+
+```json
+{
+  "label": "Desk",
+  "avatar_id": "66666666-7777-8888-9999-000000000000",
+  "system_prompt": "Be brief.",
+  "show_ai_label": true
+}
+```
+
+```json
+{
+  "id": "11111111-2222-3333-4444-555555555555",
+  "token": "<public path token>",
+  "url": "https://akapulu.com/session/<public path token>",
+  "label": "Desk",
+  "avatar_id": "66666666-7777-8888-9999-000000000000",
+  "avatar_handle": "clara",
+  "system_prompt": "Be brief.",
+  "show_ai_label": true,
+  "created_at": "2026-10-22T20:00:00+00:00"
+}
+```
+
+Status is `200`. Share `url`. Anyone with that URL can open the page and start a call. The page never sees your API key.
+
+An unknown or private avatar you do not own is `404` `AVATAR_NOT_FOUND`. Extra body fields are `400` `VALIDATION`.
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).

@@ -1,0 +1,50 @@
+---
+title: "Delete hosted links"
+description: "Delete one hosted link by id, or several with a JSON ids list."
+---
+
+## One link
+
+`DELETE /api/hosted-links/<id>/`
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+
+```json
+{
+  "status": "ok"
+}
+```
+
+A missing id, or an id owned by another account, is `404` `NOT_FOUND`. Nothing is deleted in that case.
+
+## Several links
+
+`DELETE /api/hosted-links/`
+
+Required headers:
+
+- `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
+- `Content-Type: application/json`
+
+The body is exactly:
+
+```json
+{
+  "ids": [
+    "11111111-2222-3333-4444-555555555555",
+    "22222222-3333-4444-5555-666666666666"
+  ]
+}
+```
+
+Every id must be a UUID you own. A duplicate, a non-UUID, an empty list, or any id that is not yours is an error and **no** rows are deleted. Foreign or missing ids are `404` `NOT_FOUND`.
+
+```json
+{
+  "status": "ok"
+}
+```
+
+On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).

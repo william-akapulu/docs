@@ -9,14 +9,14 @@ You do not run a bot, and the page does not hold your API key.
 
 ## What you set
 
-Create the link in the dashboard.
+Create the link in the dashboard, or with the Bearer API ([Create a hosted link](/api-reference/hosted-links/create)).
 
 - **Label.** The title on the page and in your list.
 - **Avatar.** The face on the call. Use one from the [catalog](/guides/avatars/avatar-catalog).
 - **System prompt.** What the conversation is for.
 - **This is AI.** Whether the video shows that card. The visitor cannot turn it off.
 
-Copy the URL from the dashboard. It ends in `/session/<token>`. Anyone with the link can start a call. The visitor stays on that page.
+Copy the URL from the dashboard, or use `url` from the API response. It ends in `/session/<token>`. Anyone with the link can start a call. The visitor stays on that page. The page never sees your API key.
 
 ## Your own app
 
