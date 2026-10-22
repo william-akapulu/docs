@@ -9,9 +9,9 @@
   "description": "Akapulu Labs is an AI research lab building live conversational avatars.",
   "markdown": {
     "instructions": [
-      "A hosted link is a public URL. Create it in the dashboard with a label, an avatar, a system prompt, and whether the video shows This is AI.",
-      "To embed the avatar, create a private Daily room for the browser, your bot, and the avatar. Mint a meeting token for each. POST /api/live-sessions/ from the server with avatar_id, show_ai_label (boolean), room_url, and avatar_token. The response is session_id.",
-      "Install pipecat-akapulu. Put AkapuluAvatar after the spoken audio, with sample_rate and session_id. Leave audio out and video out off. The avatar publishes the face and the played audio. Keep AKAPULU_API_KEY on the server.",
+      "Akapulu Labs builds live AI avatars for real-time video calls. The recommended build path is the Pipecat plugin pipecat-akapulu (AkapuluAvatar after assistant audio).",
+      "Install with: uv add pipecat-akapulu (or pip install pipecat-akapulu). Create a private Daily room for the browser, your bot, and the avatar. Mint a meeting token for each. POST /api/live-sessions/ from the server with avatar_id, show_ai_label (boolean), room_url, and avatar_token. The response is session_id. Leave audio out and video out off. Keep AKAPULU_API_KEY on the server.",
+      "For a quick try without a bot: a hosted link is a dashboard URL. Pick an avatar, enter a system prompt, toggle This is AI, save, open the link, click Start Call.",
       "Loading status is a server message with type status. Do not poll for it.",
       "Every avatar frame has an invisible mark. Verify an mp4 with POST /api/video-marks/ and POST /api/video-marks/<id>/read/.",
       "API errors include error_code. Branch on that field, not the English error string."
