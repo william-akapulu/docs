@@ -1,12 +1,12 @@
 ---
 title: "Quickstart"
-description: "Live AI avatars — a talking face on a real-time call. Someone joins from a browser and sees the avatar respond."
+description: "Live AI avatars: a talking face on a real-time call. Someone joins from a browser and sees the avatar respond."
 mode: "wide"
 ---
 
 ## What Akapulu Labs is
 
-Akapulu Labs builds **live AI avatars** — a talking face (lip-synced video + voice) on a real-time call. Someone joins from a browser; they see and hear the avatar respond in the conversation.
+Akapulu Labs builds **live AI avatars**: a talking face (lip-synced video + voice) on a real-time call. Someone joins from a browser; they see and hear the avatar respond in the conversation.
 
 Calls use conversation minutes on your plan. [Pricing]({{app-url}}/pricing).
 
@@ -34,13 +34,13 @@ Best when you want a working call quickly, or something you can share.
 
 ### 2. Your own avatar chat
 
-You run a **voice pipeline** — speech-to-speech, STT → model → TTS, or anything else that produces assistant audio. Akapulu Labs adds the **avatar video** on top.
+You run a **voice pipeline**: speech-to-speech, STT → model → TTS, or anything else that produces assistant audio. Akapulu Labs adds the **avatar video** on top.
 
 Calls use [Daily](https://www.daily.co/) (WebRTC rooms). On this path **you** create the room. Three participants join it:
 
-- **Browser** — the person on the call
-- **Voice bot** — your pipeline; listens; does not publish camera or mic
-- **Akapulu Labs worker** — publishes the face and the played audio
+- **Browser**: the person on the call
+- **Voice bot**: your pipeline; listens; does not publish camera or mic
+- **Akapulu Labs worker**: publishes the face and the played audio
 
 In Pipecat, [`AkapuluAvatar`](https://github.com/Akapulu/pipecat-akapulu) sits **inside the voice bot**, after assistant audio, and sends that audio to the Akapulu Labs worker. It is not the worker itself.
 
@@ -51,13 +51,13 @@ Best when the avatar should live in your product or next to your own bot.
 1. [Sign up or sign in]({{app-url}}/).
 2. Pick a path below.
 
-### Path A — Hosted link
+### Path A: Hosted link
 
 In the dashboard, create a [hosted link](/guides/calls/hosted-links): avatar, system prompt, whether to show **This is AI**. Save, open the URL, click **Start Call**.
 
 You can also create the same row with an API key via [`POST /api/hosted-links/`](/api-reference/hosted-links/create).
 
-### Path B — Your own voice bot
+### Path B: Your own voice bot
 
 1. Create an [API key]({{app-url}}/settings/api-keys/) and a Daily API key.
 2. Either run the public [example](/examples) (OpenAI Live behind the scenes, local page + voice bot), or keep your own pipeline and add Daily + a live session + `AkapuluAvatar`.
