@@ -1,14 +1,14 @@
 ---
 title: "Quickstart"
-description: "Start a hosted call, or put an avatar in your own Pipecat bot."
+description: "What Akapulu Labs is, then a hosted link or your own voice bot with an avatar."
 mode: "wide"
 ---
 
-## About Akapulu Labs
+## What Akapulu Labs is
 
-Akapulu Labs is an AI research lab building real-time AI avatars.
+Akapulu Labs builds **live AI avatars** — a talking face (lip-synced video + voice) on a real-time call. Someone joins from a browser; they see and hear the avatar respond in the conversation.
 
-A call is a person on video with an avatar. Send a hosted link, or connect the avatar to your own bot.
+Calls use conversation minutes on your plan. [Pricing]({{app-url}}/pricing).
 
 <div style={{ display: "grid", margin: "28px 0 8px" }}>
   <div style={{ display: "grid", gridArea: "1 / 1", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -24,22 +24,46 @@ A call is a person on video with an avatar. Send a hosted link, or connect the a
   </div>
 </div>
 
-## Choose a path
+## Two ways to use it
 
-<CardGroup cols={2}>
-  <Card title="Hosted link" icon="link" href="/guides/calls/hosted-links">
-    Create the link in the dashboard and send the URL. No bot to run.
-  </Card>
+### 1. Hosted link
 
-  <Card title="Your bot" icon="robot" href="/guides/calls/your-bot">
-    Create the Daily room, start a live session, and put AkapuluAvatar in your Pipecat pipeline.
-  </Card>
+Akapulu Labs hosts a public page for you. You pick an avatar, write what the conversation is for, and get a URL. Anyone with the link opens it and clicks **Start Call**. You do not run a bot, and that page never sees your API key.
 
-  <Card title="Example" icon="github" href="/examples">
-    Run the public example: a local server, a browser page, and a bot.
-  </Card>
+Best when you want a working call quickly, or something you can share.
 
-  <Card title="Check a recording" icon="fingerprint" href="/guides/video-marks/verify">
-    Upload an mp4 and read the mark on the avatar frames.
-  </Card>
-</CardGroup>
+### 2. Your own avatar chat
+
+You run a **voice pipeline** — speech-to-speech, STT → model → TTS, or anything else that produces assistant audio. Akapulu Labs adds the **avatar video** on top.
+
+Calls use [Daily](https://www.daily.co/) (WebRTC rooms). On this path **you** create the room. Three participants join it:
+
+- **Browser** — the person on the call
+- **Voice bot** — your pipeline; listens; does not publish camera or mic
+- **Akapulu Labs worker** — publishes the face and the played audio
+
+In Pipecat, [`AkapuluAvatar`](https://github.com/Akapulu/pipecat-akapulu) sits **inside the voice bot**, after assistant audio, and sends that audio to the Akapulu Labs worker. It is not the worker itself.
+
+Best when the avatar should live in your product or next to your own bot.
+
+## Get started
+
+1. [Sign up or sign in]({{app-url}}/).
+2. Pick a path below.
+
+### Path A — Hosted link
+
+In the dashboard, create a [hosted link](/guides/calls/hosted-links): avatar, system prompt, whether to show **This is AI**. Save, open the URL, click **Start Call**.
+
+You can also create the same row with an API key via [`POST /api/hosted-links/`](/api-reference/hosted-links/create).
+
+### Path B — Your own voice bot
+
+1. Create an [API key]({{app-url}}/settings/api-keys/) and a Daily API key.
+2. Either run the public [example](/examples) (OpenAI Live behind the scenes, local page + voice bot), or keep your own pipeline and add Daily + a live session + `AkapuluAvatar`.
+
+How the room and live session fit together: [How it works](/guides/getting-started/how-akapulu-works) and [Your bot](/guides/calls/your-bot).
+
+## If you are setting this up with an agent
+
+Have the agent follow [Onboard your agent](/agent-setup) (skills, docs MCP, and the same paths with clearer ask steps).
