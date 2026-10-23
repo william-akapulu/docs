@@ -1,60 +1,169 @@
 ---
 title: "How it works"
-description: "The browser, your bot, and the avatar in one Daily room."
+description: "The browser, your voice bot, and the Akapulu Labs worker in one Daily room."
 ---
 
 A live call is a private Daily room with three participants.
 
 <ul>
-  <li><strong style={{ color: "#EA580C" }}>Browser.</strong> The person on the call.</li>
-  <li><strong style={{ color: "#7C3AED" }}>Your bot.</strong> It hears the browser and decides what to say. It does not publish a camera or a microphone.</li>
-  <li><strong style={{ color: "#0284C7" }}>Avatar.</strong> It joins after you start a live session and publishes the face and the played audio.</li>
+  <li><strong style={{ color: "#EA580C" }}>User browser.</strong> The person on the call.</li>
+  <li><strong style={{ color: "#7C3AED" }}>Your voice bot.</strong> It hears the browser, decides what to say, and produces the assistant audio. It does not publish a camera or a microphone back into the Daily room. <code>AkapuluAvatar</code> is the Pipecat plugin you add to that voice bot; it sends the assistant audio to the Akapulu Labs worker instead.</li>
+  <li><strong style={{ color: "#0284C7" }}>Akapulu Labs worker.</strong> It joins after the Akapulu Labs API <code>POST /api/live-sessions/</code> call and publishes the face and the played audio.</li>
 </ul>
 
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"15px","textColor":"#F8FAFC","nodeTextColor":"#F8FAFC","primaryTextColor":"#F8FAFC","secondaryTextColor":"#F8FAFC","tertiaryTextColor":"#F8FAFC","titleColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","defaultLinkColor":"#7DD3FC","edgeLabelBackground":"#0F172A","mainBkg":"#1E3F4D","nodeBorder":"#38BDF8","clusterBkg":"transparent","strokeWidth":2.5},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; background-color: #0F172A !important; color: #F8FAFC !important; } .edgeLabel rect, .labelBkg { opacity: 1 !important; fill: #0F172A !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .arrowMarkerPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
-flowchart TD
-  APP[Your server]:::server
-  ROOM[Daily room]:::room
-  API["POST /api/live-sessions/"]:::server
-  AV[Avatar]:::avatar
-  BOT[Your bot]:::bot
-  PIECE[AkapuluAvatar]:::bot
-  BROWSER[Browser]:::browser
+Your server talks to two APIs the same way: the **Daily API** (room and meeting tokens) and the **Akapulu Labs API** (`POST /api/live-sessions/`, which returns `session_id` and starts the worker).
 
-  APP -->|1. Create the room and three tokens| ROOM
-  APP -->|2. avatar_id, show_ai_label, room_url, avatar_token| API
-  API -->|3. Start the avatar| AV
-  AV -->|4. Join and publish the face and the voice| ROOM
-  APP -->|5. Start your bot with session_id| BOT
-  BOT --> PIECE
-  PIECE -->|6. Send the spoken audio| AV
-  BOT -->|7. Join. Listen to the browser. Publish nothing| ROOM
-  BROWSER -->|8. Join| ROOM
+## Akapulu Labs worker joins
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
+flowchart LR
+  S[Your server]:::server
+  D[Daily API]:::api
+  A[Akapulu Labs API]:::api
+  W[Akapulu Labs worker]:::avatar
+  R[Daily room]:::room
+
+  S -->|"1. create room"| D
+  D -->|"2. tokens"| S
+  D -->|"3. creates"| R
+  S -->|"4. live-sessions"| A
+  A -->|"5. session_id"| S
+  A -->|"6. starts"| W
+  W -->|"7. sends video and audio"| R
 
   classDef server fill:#1E3F4D,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef api fill:#1E293B,stroke:#94A3B8,color:#F8FAFC,stroke-width:2px
+  classDef room fill:#134E4A,stroke:#5EEAD4,color:#F8FAFC,stroke-width:2px
+  classDef avatar fill:#0C4A6E,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+```
+
+## Your voice bot joins
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
+flowchart LR
+  S[Your server]:::server
+  V[Your voice bot]:::bot
+  W[Akapulu Labs worker]:::avatar
+  R[Daily room]:::room
+
+  S -->|"1. Akapulu Labs session ID"| V
+  V -->|"2. joins"| R
+  V -->|"3. sends audio"| W
+  W -->|"4. sends video and audio"| R
+
+  classDef server fill:#1E3F4D,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef room fill:#134E4A,stroke:#5EEAD4,color:#F8FAFC,stroke-width:2px
+  classDef avatar fill:#0C4A6E,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef bot fill:#3B0764,stroke:#C4B5FD,color:#F8FAFC,stroke-width:2px
+```
+
+## User browser joins
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
+flowchart LR
+  S[Your server]:::server
+  B[User browser]:::browser
+  R[Daily room]:::room
+
+  S -->|"1. token"| B
+  B -->|"2. joins"| R
+
+  classDef server fill:#1E3F4D,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef room fill:#134E4A,stroke:#5EEAD4,color:#F8FAFC,stroke-width:2px
+  classDef browser fill:#7C2D12,stroke:#FDBA74,color:#FFF7ED,stroke-width:2px
+```
+
+## All together
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
+flowchart LR
+  S[Your server]:::server
+  D[Daily API]:::api
+  A[Akapulu Labs API]:::api
+  B[User browser]:::browser
+  V[Your voice bot]:::bot
+  W[Akapulu Labs worker]:::avatar
+  R[Daily room]:::room
+
+  S -->|"create room"| D
+  D -->|"creates"| R
+  S -->|"live-sessions"| A
+  A -->|"starts"| W
+  S -->|"token"| B
+  S -->|"session ID"| V
+  B -->|"joins"| R
+  V -->|"joins"| R
+  W -->|"sends video and audio"| R
+  V -->|"sends audio"| W
+
+  classDef server fill:#1E3F4D,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
+  classDef api fill:#1E293B,stroke:#94A3B8,color:#F8FAFC,stroke-width:2px
   classDef room fill:#134E4A,stroke:#5EEAD4,color:#F8FAFC,stroke-width:2px
   classDef avatar fill:#0C4A6E,stroke:#38BDF8,color:#F8FAFC,stroke-width:2px
   classDef bot fill:#3B0764,stroke:#C4B5FD,color:#F8FAFC,stroke-width:2px
   classDef browser fill:#7C2D12,stroke:#FDBA74,color:#FFF7ED,stroke-width:2px
 ```
 
+## Full sequence
+
+```mermaid
+%%{init: {"theme":"dark","themeVariables":{"fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","actorBkg":"#1E3F4D","actorBorder":"#38BDF8","actorTextColor":"#F8FAFC","actorLineColor":"#64748B","signalColor":"#7DD3FC","signalTextColor":"#F8FAFC","labelBoxBkgColor":"#0F172A","labelBoxBorderColor":"#38BDF8","labelTextColor":"#F8FAFC","sequenceNumberColor":"#0F172A"}}}%%
+sequenceDiagram
+  autonumber
+  participant S as Your server
+  participant D as Daily API
+  participant A as Akapulu Labs API
+  participant W as Akapulu Labs worker
+  participant V as Your voice bot
+  participant B as User browser
+  participant R as Daily room
+
+  S->>D: create room
+  D-->>S: tokens
+  D->>R: creates
+  S->>A: live-sessions
+  A-->>S: session_id
+
+  rect rgb(12, 74, 110)
+    Note over A,R: Akapulu Labs worker
+    A->>W: starts
+    W->>R: sends video and audio
+  end
+
+  rect rgb(59, 7, 100)
+    Note over S,R: Your voice bot
+    S->>V: Akapulu Labs session ID
+    V->>R: joins
+    V->>W: sends audio
+  end
+
+  rect rgb(124, 45, 18)
+    Note over S,R: User browser
+    S->>B: token
+    B->>R: joins
+  end
+```
+
 ## What you send
 
-`POST /api/live-sessions/` takes four fields:
+The Akapulu Labs API call is `POST /api/live-sessions/`. It takes four fields:
 
-- `avatar_id` — which face joins
-- `show_ai_label` — whether the picture shows **This is AI**
-- `room_url` — the Daily room you created
-- `avatar_token` — the meeting token the avatar joins with
+- `avatar_id`: which face joins
+- `show_ai_label`: whether the picture shows **This is AI**
+- `room_url`: the Daily room you created
+- `avatar_token`: the meeting token the Akapulu Labs worker joins with
 
-The response is `session_id`. Your bot passes that id to `AkapuluAvatar`.
+The response is `session_id`. Pass that id into `AkapuluAvatar`, the Pipecat plugin in your voice bot.
 
-The API key stays on your server. The browser receives its own meeting token from you, not the API key.
+The Akapulu Labs API key stays on your server. The browser receives its own meeting token from you, not the API key.
 
-## What the avatar publishes
+## What the Akapulu Labs worker publishes
 
-The face is lip-synced to the audio your bot sends. Leave audio out and video out off on your transport. If your bot also publishes audio or video, the room has two publishers.
+The face is lip-synced to the audio your voice bot sends through `AkapuluAvatar` (the Pipecat plugin). Leave audio out and video out off on your voice-bot transport. If your voice bot also publishes audio or video, the room has two publishers.
 
 Every frame carries an invisible mark that reads back as `akapulu`. That mark is separate from the **This is AI** card. [Verify a recording](/guides/video-marks/verify) uploads the mp4 and reads the mark.
 
@@ -62,4 +171,4 @@ Every frame carries an invisible mark that reads back as `akapulu`. That mark is
 
 A [hosted link](/guides/calls/hosted-links) is the same room, created for you. You set the avatar, the prompt, and the **This is AI** card. The visitor opens the URL and starts the call.
 
-The steps for your own bot are in [Your bot](/guides/calls/your-bot).
+The steps for your own voice bot are in [Your bot](/guides/calls/your-bot).

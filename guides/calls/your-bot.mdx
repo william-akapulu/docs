@@ -1,15 +1,15 @@
 ---
 title: "Your bot"
-description: "Create the Daily room, start a live session, and send speech to the avatar."
+description: "Create the Daily room, start a live session, and send speech to the Akapulu Labs worker."
 ---
 
-You create the room. The live-session call starts the avatar. Your Pipecat process joins the same room and sends it the audio to speak.
+You create the room. The live-session call starts the Akapulu Labs worker. Your voice bot joins the same room and sends it the audio to speak.
 
 ## 1. Create the room
 
-Create a private Daily room with room for the browser, your bot, and the avatar. Mint one meeting token for each.
+Create a private Daily room for three participants: the user browser, your voice bot, and the Akapulu Labs worker. Mint three meeting tokens, one for each participant.
 
-Send the avatar's token on the live-session call. Your bot joins with its token. The browser joins with its token. Keep the Akapulu API key on the server that mints those tokens and calls the API.
+When you `POST /api/live-sessions/`, put the Akapulu Labs worker's meeting token in `avatar_token`. Your voice bot joins Daily with its token. The browser joins Daily with its token.
 
 ## 2. Start the live session
 
@@ -25,17 +25,34 @@ curl -X POST "{{api-base-url}}/api/live-sessions/" \
   }'
 ```
 
-`show_ai_label` is a boolean. The response is `session_id`.
+`show_ai_label` is a boolean. On success the response is:
 
-The call returns when the session is stored and the avatar has been asked to start. It does not wait for the first frame. Loading status arrives on your bot as a server message with `type` `status`.
+```json
+{
+  "session_id": "11111111-2222-3333-4444-555555555555"
+}
+```
+
+The call returns when the session is stored and the Akapulu Labs worker has been asked to start. It does not wait for the first video frame.
+
+## Loading status
+
+`AkapuluAvatar` polls `GET /api/live-sessions/<session_id>/status/` while the worker comes up. Your voice bot then gets Pipecat server messages with `type` `status`. Those messages include:
+
+- `call_is_ready`: whether the worker has published the first frame
+- `completion_percent`: how far startup has gotten (0 to 100)
+- `latest_update_text`: the latest human-readable startup line
+
+Use those fields for a loading UI. `AkapuluAvatar` handles the status poll for you.
 
 ## 3. Put AkapuluAvatar in the pipeline
 
-Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Place `AkapuluAvatar` after the audio you want the avatar to speak.
+Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Put `AkapuluAvatar` after your TTS (or whatever produces assistant audio).
 
 ```python
-from pipecat_akapulu import AkapuluAvatar
+from pipecat.pipeline.pipeline import Pipeline
 from pipecat.transports.daily.transport import DailyParams, DailyTransport
+from pipecat_akapulu import AkapuluAvatar
 
 transport = DailyTransport(
     room_url,
@@ -47,15 +64,28 @@ transport = DailyTransport(
         video_out_enabled=False,
     ),
 )
+
+stt = YourVoiceBotSTT()
+llm = YourVoiceBotLLM()
+tts = YourVoiceBotTTS()
 avatar = AkapuluAvatar(sample_rate=24000, session_id=session_id)
+
+pipeline = Pipeline(
+    [
+        transport.input(),
+        stt,
+        llm,
+        tts,
+        avatar,
+        transport.output(),
+    ]
+)
 ```
 
-`sample_rate` is a positive multiple of 25 and matches the assistant audio frames. `tail_secs` defaults to `0.6`, which is how long the audio stays open after speech stops.
+`YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False`. The Akapulu Labs worker publishes the face and the played audio.
 
-`audio_out_enabled` and `video_out_enabled` stay `False`. The avatar publishes the face and the played audio.
-
-The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples): a local server, a page, and a bot that speaks first.
+The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples): a local server, a page, and a voice bot that speaks first.
 
 ## Errors
 
-The JSON body includes `error` and `error_code`. Branch on `error_code`. The codes for this call are in the [API overview](/api-reference/introduction#error-responses).
+When `POST /api/live-sessions/` fails, the response JSON includes `error` and `error_code`. Branch on `error_code`. The codes are in the [API overview](/api-reference/introduction#error-responses).
