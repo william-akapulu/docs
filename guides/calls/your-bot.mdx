@@ -70,7 +70,7 @@ transport = DailyTransport(
 stt = YourVoiceBotSTT()
 llm = YourVoiceBotLLM()
 tts = YourVoiceBotTTS()
-avatar = AkapuluAvatar(sample_rate=24000, session_id=session_id)
+avatar = AkapuluAvatar(session_id=session_id)
 
 pipeline = Pipeline(
     [
@@ -83,6 +83,8 @@ pipeline = Pipeline(
     ]
 )
 ```
+
+The sample rate is the pipeline audio-out rate (`PipelineParams.audio_out_sample_rate`). It must be a positive multiple of 25 and must match the assistant audio frames.
 
 `YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False`. The Akapulu Labs worker publishes the face and the played audio.
 
