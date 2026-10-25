@@ -24,7 +24,7 @@ Create a key from the dashboard after you sign in: [API keys]({{app-url}}/settin
 ## Live session
 
 ```bash
-curl -X POST "{{api-base-url}}/api/live-sessions/" \
+curl -X POST "{{api-base-url}}/live-sessions/" \
   -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -40,7 +40,7 @@ The response is `{"session_id": "<uuid>"}`. Field rules are on [Create a live se
 ## Hosted links
 
 ```bash
-curl -X POST "{{api-base-url}}/api/hosted-links/" \
+curl -X POST "{{api-base-url}}/hosted-links/" \
   -H "Authorization: Bearer <YOUR_AKAPULU_API_KEY>" \
   -H "Content-Type: application/json" \
   -d '{
