@@ -150,6 +150,8 @@ sequenceDiagram
 
 ## What you send
 
+`create_akapulu_call` in [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) does this from your server: the private Daily room, the three meeting tokens, and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The room lasts two hours unless you pass `room_exp_secs`. The code is on [Your bot](/guides/calls/your-bot). A server that already has a Daily room skips the helper and sends this POST itself.
+
 The Akapulu Labs API call is `POST /api/live-sessions/`. It takes four fields:
 
 - `avatar_id`: which face joins

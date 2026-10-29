@@ -148,6 +148,7 @@ Before wiring code, situate **Daily**, the **voice bot**, the **Akapulu Labs wor
 - **Voice bot** — their Pipecat process (or other voice pipeline). It hears the visitor and decides what to say. It produces **assistant audio**.
 - **Akapulu Labs worker** — Akapulu Labs’ avatar process. It joins the Daily room and publishes the lip-synced face and the played audio.
 - **`AkapuluAvatar`** — a Pipecat processor from [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). It runs **inside the voice bot**, after the assistant audio, and sends that audio to Akapulu Labs so the Akapulu Labs worker can speak it on the face. It is not the worker itself.
+- **`create_akapulu_call`**: a function in that same package. Their server calls it before the bot starts. It creates the private Daily room, mints the three meeting tokens, and starts the live session. The code is on [Your bot](/guides/calls/your-bot).
 
 ### What Daily is (and why it matters here)
 
@@ -173,13 +174,12 @@ Their **voice pipeline** can be speech-to-speech, STT → model → TTS, or anyt
 Recommended shape in Pipecat:
 
 1. Build (or keep) the voice pipeline as usual until there are assistant audio frames.
-2. Create the Daily room and three tokens on their server (browser, voice bot, Akapulu Labs worker).
-3. `POST /api/live-sessions/` with `avatar_id`, `show_ai_label`, `room_url`, and `avatar_token` → get `session_id` (this starts the **Akapulu Labs worker**).
-4. Put **`AkapuluAvatar`** in the **voice bot** pipeline **after** that assistant audio, with `session_id`.
-5. Join Daily with the **voice bot** using the voice-bot token. Leave voice-bot **audio out** and **video out** off. The voice bot's job is to send the assistant audio to the **Akapulu Labs worker**. The worker joins the call as a Daily participant and publishes the audio and the video. When the participant named **Avatar** joins, the voice bot calls `update_subscriptions` and sets that microphone to `unsubscribed`. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
-6. Join the browser with the browser token.
+2. On their server, call `create_akapulu_call` before the bot starts. It reads `DAILY_API_KEY` and `AKAPULU_API_KEY`, creates the private Daily room, mints the three meeting tokens, and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The room lasts two hours unless they pass `room_exp_secs`. A server that already has a Daily room skips it, mints the worker token, and makes that POST itself. The code is on [Your bot](/guides/calls/your-bot).
+3. Put **`AkapuluAvatar`** in the **voice bot** pipeline **after** that assistant audio, with `session_id`.
+4. Join Daily with the **voice bot** using the voice-bot token. Leave voice-bot **audio out** and **video out** off. The voice bot's job is to send the assistant audio to the **Akapulu Labs worker**. The worker joins the call as a Daily participant and publishes the audio and the video. When the participant named **Avatar** joins, the voice bot calls `update_subscriptions` and sets that microphone to `unsubscribed`. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
+5. Join the browser with the browser token.
 
-If they already have a voice bot: keep their pipeline; add Daily room ownership + live session + `AkapuluAvatar` on the assistant-audio path. The voice bot sends the assistant audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video, so voice-bot audio out and video out stay off. Unsubscribe the voice bot from the Avatar microphone when that participant joins. The code is on [Your bot](/guides/calls/your-bot).
+If they already have a voice bot: keep their pipeline. `create_akapulu_call` creates the Daily room and the live session. The voice bot sends the assistant audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video, so voice-bot audio out and video out stay off. Unsubscribe the voice bot from the Avatar microphone when that participant joins. The code is on [Your bot](/guides/calls/your-bot).
 
 Install: `uv add pipecat-akapulu` or `pip install pipecat-akapulu`. The public example already depends on it.
 
@@ -221,13 +221,13 @@ They **own** the Daily room on this path. Akapulu Labs does not create it for th
 
 ##### Lifecycle (in order)
 
-1. **Their server creates a Daily room** and mints three meeting tokens (browser, voice bot, Akapulu Labs worker).
-2. **Their server calls** `POST /api/live-sessions/` with Bearer `AKAPULU_API_KEY` and JSON:
+1. **Their server calls `create_akapulu_call`** with `avatar_id` and `show_ai_label`. Use the Clara `avatar_id` in the manual POST below unless they pick another from the catalog. It creates the private Daily room, mints the three meeting tokens, and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The room lasts two hours unless they pass `room_exp_secs`. That starts the **Akapulu Labs worker**. It does not wait for the first frame. The code is on [Your bot](/guides/calls/your-bot).
+2. A server that already has a Daily room skips `create_akapulu_call`. It mints the worker token and calls `POST /api/live-sessions/` with Bearer `AKAPULU_API_KEY` and JSON:
    - `avatar_id` (use Clara `1f777f64-3758-4a7d-9cbc-c64ae654f7d1` unless they pick another from https://akapulu.com/catalog)
    - `show_ai_label` (boolean)
    - `room_url` (the Daily room they just created)
    - `avatar_token` (the meeting token for the **Akapulu Labs worker**)
-3. The response is `session_id`. That **starts the Akapulu Labs worker**; it does not wait for the first frame.
+3. On that manual POST, the response is `session_id`. The helper already returned that same id. Pass it to `AkapuluAvatar`.
 4. **The voice bot starts**, joins the room with the voice-bot token, and passes `session_id` into **`AkapuluAvatar`** (after the assistant audio in the pipeline).
 5. **The browser joins** with the browser token (usually from their page / server).
 6. When the **voice bot** produces assistant audio, **`AkapuluAvatar`** sends that audio to Akapulu Labs; the **Akapulu Labs worker** publishes lip-synced video + that audio in the room.

@@ -7,11 +7,27 @@ You create the room. The live-session call starts the Akapulu Labs worker. Your 
 
 ## 1. Create the room
 
-Create a private Daily room for three participants: the user browser, your voice bot, and the Akapulu Labs worker. Mint three meeting tokens, one for each participant.
+`create_akapulu_call`, from [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu), runs on your server, before the voice bot starts. It reads `DAILY_API_KEY` and `AKAPULU_API_KEY`. It creates a private Daily room for three participants: the user browser, your voice bot, and the Akapulu Labs worker. It mints the three meeting tokens and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The worker token is sent to Akapulu Labs and is not returned.
 
-When you `POST /api/live-sessions/`, put the Akapulu Labs worker's meeting token in `avatar_token`. Your voice bot joins Daily with its token. The browser joins Daily with its token.
+The room lasts two hours unless you pass `room_exp_secs`. Daily removes everyone when the room expires. The browser joins as `You`. The worker joins as `Avatar`. Daily Prebuilt shows the browser and the avatar.
+
+```python
+from pipecat_akapulu import create_akapulu_call
+
+room_url, bot_token, browser_token, session_id = await create_akapulu_call(
+    avatar_id="<avatar uuid>",
+    show_ai_label=True,
+    session=session,
+)
+```
+
+`session` is an `aiohttp.ClientSession`. The voice bot joins Daily with `bot_token`. The browser joins with `browser_token`. Pass `session_id` to `AkapuluAvatar`.
+
+A bot that already has a Daily room skips `create_akapulu_call`. Mint the Akapulu Labs worker's meeting token and `POST /api/live-sessions/` yourself.
 
 ## 2. Start the live session
+
+This is the call `create_akapulu_call` makes. Use it yourself when the Daily room already exists. Put the Akapulu Labs worker's meeting token in `avatar_token`. Your voice bot joins Daily with its token. The browser joins Daily with its token.
 
 ```bash
 curl -X POST "{{api-base-url}}/live-sessions/" \
