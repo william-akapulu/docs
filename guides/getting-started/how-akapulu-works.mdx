@@ -163,7 +163,7 @@ The Akapulu Labs API key stays on your server. The browser receives its own meet
 
 ## What the Akapulu Labs worker publishes
 
-The face is lip-synced to the audio your voice bot sends through `AkapuluAvatar` (the Pipecat plugin). Leave audio out and video out off on your voice-bot transport. If your voice bot also publishes audio or video, the room has two publishers. When the participant named `Avatar` joins, the voice bot unsubscribes from that microphone. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
+The voice bot's job is to send the assistant audio to the Akapulu Labs worker through `AkapuluAvatar`. The worker joins the call as a Daily participant and publishes the audio and the video. Leave audio out and video out off on the voice bot. If the voice bot also publishes audio or video, the room has two publishers. When the participant named `Avatar` joins, the voice bot unsubscribes from that microphone. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
 
 Every frame carries an invisible mark that reads back as `akapulu`. That mark is separate from the **This is AI** card. [Verify a recording](/guides/video-marks/verify) uploads the mp4 and reads the mark.
 

@@ -3,7 +3,7 @@ title: "Your bot"
 description: "Create the Daily room, start a live session, and send speech to the Akapulu Labs worker."
 ---
 
-You create the room. The live-session call starts the Akapulu Labs worker. Your voice bot joins the same room and sends it the audio to speak.
+You create the room. The live-session call starts the Akapulu Labs worker. Your voice bot's job is to send the assistant audio to that worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
 
 ## 1. Create the room
 
@@ -49,7 +49,7 @@ Those are not Daily audio or video tracks. With RTVI on the call (for example `@
 
 ## 3. Put AkapuluAvatar in the pipeline
 
-Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio).
+Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio). `AkapuluAvatar` sends that audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video, so `audio_out_enabled` and `video_out_enabled` stay `False`.
 
 ```python
 from pipecat.pipeline.pipeline import Pipeline
@@ -86,7 +86,7 @@ pipeline = Pipeline(
 
 Assistant audio is resampled to 24000 Hz mono before it is sent. A frame that is already 24000 Hz mono is sent unchanged. The worker always receives 24000.
 
-`YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False`. Your voice bot does not publish a camera or a microphone. The Akapulu Labs worker publishes the face and the played audio.
+`YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False` because the voice bot's job is to send the assistant audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
 
 Pipecat subscribes your voice bot to every remote microphone. When the participant named `Avatar` joins, turn that microphone off. The voice bot still hears the browser. The browser stays subscribed to the Avatar microphone. That track is the voice the visitor hears.
 
