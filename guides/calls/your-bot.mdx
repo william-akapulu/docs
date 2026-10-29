@@ -86,7 +86,34 @@ pipeline = Pipeline(
 
 Assistant audio is resampled to 24000 Hz mono before it is sent. A frame that is already 24000 Hz mono is sent unchanged. The worker always receives 24000.
 
-`YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False`. The Akapulu Labs worker publishes the face and the played audio.
+`YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False`. Your voice bot does not publish a camera or a microphone. The Akapulu Labs worker publishes the face and the played audio.
+
+Pipecat subscribes your voice bot to every remote microphone. When the participant named `Avatar` joins, turn that microphone off. The voice bot still hears the browser. The browser stays subscribed to the Avatar microphone. That track is the voice the visitor hears.
+
+```python
+@transport.event_handler("on_participant_joined")
+async def on_participant_joined(_transport, participant):
+    info = participant.get("info")
+    if not isinstance(info, dict):
+        raise RuntimeError("Daily participant has no info")
+    name = info.get("userName")
+    if not isinstance(name, str) or not name:
+        raise RuntimeError("Daily participant has no userName")
+    if name != "Avatar":
+        return
+    participant_id = participant.get("id")
+    if not isinstance(participant_id, str) or not participant_id:
+        raise RuntimeError("Daily participant has no id")
+    error = await transport.update_subscriptions(
+        participant_settings={
+            participant_id: {"media": {"microphone": "unsubscribed"}},
+        },
+    )
+    if error:
+        raise RuntimeError(f"Daily avatar microphone unsubscribe failed: {error}")
+```
+
+Call this once, when Avatar joins. Do not set subscriptions again on a participant update.
 
 The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples): a local server, a page, and a voice bot that speaks first.
 

@@ -176,10 +176,10 @@ Recommended shape in Pipecat:
 2. Create the Daily room and three tokens on their server (browser, voice bot, Akapulu Labs worker).
 3. `POST /api/live-sessions/` with `avatar_id`, `show_ai_label`, `room_url`, and `avatar_token` → get `session_id` (this starts the **Akapulu Labs worker**).
 4. Put **`AkapuluAvatar`** in the **voice bot** pipeline **after** that assistant audio, with `session_id`.
-5. Join Daily with the **voice bot** using the voice-bot token; leave voice-bot **audio out** and **video out** off — the **Akapulu Labs worker** publishes the face and the played audio.
+5. Join Daily with the **voice bot** using the voice-bot token. Leave voice-bot **audio out** and **video out** off. The **Akapulu Labs worker** publishes the face and the played audio. When the participant named **Avatar** joins, the voice bot calls `update_subscriptions` and sets that microphone to `unsubscribed`. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
 6. Join the browser with the browser token.
 
-If they already have a voice bot: keep their pipeline; add Daily room ownership + live session + `AkapuluAvatar` on the assistant-audio path. Do not invent a second publisher of mic/camera from the voice bot.
+If they already have a voice bot: keep their pipeline; add Daily room ownership + live session + `AkapuluAvatar` on the assistant-audio path. Leave voice-bot audio out and video out off, and unsubscribe the voice bot from the Avatar microphone when that participant joins. The code is on [Your bot](/guides/calls/your-bot).
 
 Install: `uv add pipecat-akapulu` or `pip install pipecat-akapulu`. The public example already depends on it.
 
@@ -214,7 +214,7 @@ Still clone https://github.com/Akapulu/akapulu-examples as a **reference** (room
 Remind them of the Daily / `AkapuluAvatar` section above. Then spell out the **three participants** in the room they create:
 
 - **Browser** — the person on the call. Joins with a browser meeting token they mint.
-- **Voice bot** — their voice pipeline (Pipecat or otherwise). Joins with a voice-bot meeting token. **Listens** to the browser. Does **not** publish camera or mic. Runs **`AkapuluAvatar`** after assistant audio.
+- **Voice bot.** Their voice pipeline (Pipecat or otherwise). Joins with a voice-bot meeting token. Listens to the browser. Does not publish a camera or a microphone. When the participant named Avatar joins, unsubscribes from that microphone. The browser stays subscribed to it. Runs **`AkapuluAvatar`** after assistant audio. The code is on [Your bot](/guides/calls/your-bot).
 - **Akapulu Labs worker** — Akapulu Labs’ avatar process. Joins with an avatar meeting token. Publishes the face and the played audio.
 
 They **own** the Daily room on this path. Akapulu Labs does not create it for them.
