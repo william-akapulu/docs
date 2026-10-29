@@ -84,7 +84,7 @@ pipeline = Pipeline(
 )
 ```
 
-Assistant audio is resampled to 24000 Hz mono before it is sent. A frame that is already 24000 Hz mono is sent unchanged. The worker always receives 24000.
+Assistant audio is resampled to 24000 Hz mono before it is sent. A frame that is already 24000 Hz mono is sent unchanged. The worker always receives 24000. The pipeline audio-out rate does not have to be a multiple of 25.
 
 `YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False` because the voice bot's job is to send the assistant audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
 
