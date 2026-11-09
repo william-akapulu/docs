@@ -102,7 +102,7 @@ pipeline = Pipeline(
 
 `YourVoiceBotSTT`, `YourVoiceBotLLM`, and `YourVoiceBotTTS` are stand-ins for your own STT, LLM, and TTS. Leave `audio_out_enabled` and `video_out_enabled` as `False` because the voice bot's job is to send the assistant audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
 
-The worker starts the face only after a short stretch of assistant audio has arrived. Speech-to-speech models often reach that first audio quickly, then trickle, so the buffer fills slowly. A streaming TTS keeps the audio coming after the first chunk, which fills the buffer sooner. Cartesia has been the best mix we have tried: a low time to first audio, and audio that keeps arriving quickly enough to fill that buffer.
+The avatar worker needs about 800 ms of assistant audio before it starts rendering the video. The render itself, given the audio, only takes around 150ms. You might see added latency in your bot's response even if your TTS provider's TTFA is low, due to this buffer accumulation. A TTS that trickles audio in slowly fills that buffer late, so the response is slower and the avatar gestures less. We recommend a TTS that sends audio in waves. Cartesia has been the best in our testing.
 
 Pipecat subscribes your voice bot to every remote microphone. When the participant named `Avatar` joins, turn that microphone off. The voice bot still hears the browser. The browser stays subscribed to the Avatar microphone. That track is the voice the visitor hears.
 
