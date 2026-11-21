@@ -1,13 +1,15 @@
 ---
-title: "Your bot"
-description: "Create the Daily room, start a live session, and send speech to the Akapulu Labs worker."
+title: "Pipecat"
+description: "Create a Daily room, start a live session, and send speech to the Akapulu Labs worker with pipecat-akapulu."
 ---
 
-You create the room. The live-session call starts the Akapulu Labs worker. Your voice bot's job is to send the assistant audio to that worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
+You create the Daily room. The live-session call starts the Akapulu Labs worker. Your voice bot's job is to send the assistant audio to that worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video.
+
+For LiveKit Agents, see [LiveKit](/guides/calls/livekit).
 
 ## 1. Create the room
 
-`create_akapulu_call`, from [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu), runs on your server, before the voice bot starts. It reads `DAILY_API_KEY` and `AKAPULU_API_KEY`. It creates a private Daily room for three participants: the user browser, your voice bot, and the Akapulu Labs worker. It mints the three meeting tokens and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The worker token is sent to Akapulu Labs and is not returned.
+`create_akapulu_call`, from [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu), runs on your server, before the voice bot starts. It reads `DAILY_API_KEY` and `AKAPULU_API_KEY`. It creates a private Daily room for three participants: the user browser, your voice bot, and the Akapulu Labs worker. It mints the three meeting tokens and `POST /api/live-sessions/` (Daily transport). It returns the room URL, the bot token, the browser token, and `session_id`. The worker token is sent to Akapulu Labs and is not returned.
 
 The room lasts two hours unless you pass `room_exp_secs`. Daily removes everyone when the room expires. The browser joins as `You`. The worker joins as `Avatar`. Daily Prebuilt shows the browser and the avatar.
 
@@ -41,7 +43,7 @@ curl -X POST "{{api-base-url}}/live-sessions/" \
   }'
 ```
 
-`show_ai_label` is a boolean. On success the response is:
+Omit `transport` or set `"transport": "daily"`. `show_ai_label` is a boolean. On success the response is:
 
 ```json
 {
@@ -50,6 +52,8 @@ curl -X POST "{{api-base-url}}/live-sessions/" \
 ```
 
 The call returns when the session is stored and the Akapulu Labs worker has been asked to start. It does not wait for the first video frame.
+
+Field rules are on [Create a live session](/api-reference/live-sessions/create).
 
 ## Loading status
 

@@ -1,0 +1,107 @@
+---
+title: "LiveKit"
+description: "Create a LiveKit room, start a live session, and send speech to the Akapulu Labs worker with livekit-akapulu."
+---
+
+You create the LiveKit room. The live-session call starts the Akapulu Labs worker. Your LiveKit Agents voice session produces assistant audio. [`AvatarSession`](https://github.com/Akapulu/livekit-akapulu) sends that audio to the worker. The worker joins the LiveKit room as the `Avatar` participant and publishes the face and the played audio. Your voice agent does not publish the face.
+
+Requires `livekit-agents` 1.8 or newer. For Pipecat on Daily, see [Pipecat](/guides/calls/pipecat).
+
+## Install
+
+```bash
+uv add livekit-akapulu
+```
+
+Or `pip install livekit-akapulu`.
+
+## 1. Create the room
+
+`create_akapulu_livekit_call`, from [`livekit-akapulu`](https://github.com/Akapulu/livekit-akapulu), runs on your server before the agent starts. It reads `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, and `AKAPULU_API_KEY`. A missing or blank value raises. It creates a LiveKit room, mints the browser and voice-agent tokens, mints the Avatar token for Akapulu Labs, and `POST /api/live-sessions/` with `transport=livekit`. It returns the LiveKit URL, room name, agent token, browser token, and `session_id`. The Avatar token is sent to Akapulu Labs and is not returned.
+
+```python
+from livekit_akapulu import AvatarSession, create_akapulu_livekit_call
+
+livekit_url, room_name, agent_token, browser_token, session_id = (
+    await create_akapulu_livekit_call(
+        avatar_id="<avatar uuid>",
+        show_ai_label=True,
+        session=session,
+    )
+)
+avatar = AvatarSession(conversation_session_id=session_id)
+```
+
+`session` is an `aiohttp.ClientSession`. The voice agent joins with `agent_token`. The browser joins with `browser_token`. Pass `session_id` into `AvatarSession`, or let `AvatarSession.start` mint and POST when the agent is already in a room (see below).
+
+A bot that already has a LiveKit room skips `create_akapulu_livekit_call`. Mint the Avatar JWT (`publish_on_behalf` of your agent) and `POST /api/live-sessions/` yourself, or call `AvatarSession.start` so the plugin does that.
+
+## 2. Start the live session
+
+This is the call `create_akapulu_livekit_call` makes. Use it yourself when the LiveKit room already exists.
+
+```bash
+curl -X POST "{{api-base-url}}/live-sessions/" \
+  -H "Authorization: Bearer $AKAPULU_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "avatar_id": "<avatar uuid>",
+    "show_ai_label": true,
+    "transport": "livekit",
+    "room_url": "wss://<your-project>.livekit.cloud",
+    "room_name": "<room name>",
+    "avatar_token": "<avatar participant JWT>"
+  }'
+```
+
+`room_url` must be `wss://` (or `ws://`). `room_name` is required for LiveKit. On success the response is:
+
+```json
+{
+  "session_id": "11111111-2222-3333-4444-555555555555"
+}
+```
+
+The call returns when the session is stored and the Akapulu Labs worker has been asked to start. It does not wait for the first video frame.
+
+Field rules are on [Create a live session](/api-reference/live-sessions/create).
+
+## 3. Put AvatarSession on the agent
+
+When the voice agent is already in the LiveKit room (typical LiveKit Agents job), start the plugin on that room. Set `AKAPULU_API_URL`, `AKAPULU_API_KEY`, `AKAPULU_AVATAR_ID`, `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET`.
+
+```python
+from livekit_akapulu import AvatarSession
+
+avatar = AvatarSession(show_ai_label=True)
+await avatar.start(agent_session, ctx.room)
+await avatar.wait_until_call_ready()
+```
+
+`AvatarSession.start` mints the Avatar participant JWT (`publish_on_behalf` of your agent), `POST /api/live-sessions/` with `transport=livekit`, opens the worker sockets, and forwards assistant PCM.
+
+When Django (or your server) already created the conversation session and Avatar token, pass that id:
+
+```python
+avatar = AvatarSession(conversation_session_id=session_id)
+await avatar.start(agent_session, room)
+await avatar.wait_until_call_ready()
+```
+
+Keep the loading UI up until `call_is_ready` is true. `wait_until_call_ready()` waits until this session has decoded enough Avatar video frames.
+
+Mute caller audio into STT until that ready gate (same idea as the Pipecat Flux gate): after `session.start`, call `session.input.set_audio_enabled(False)`, then unmute after `wait_until_call_ready`.
+
+## Loading status
+
+While the worker boots, the plugin republishes loading status on LiveKit data topic `akapulu.avatar.status`. Each payload has the same fields as the Pipecat RTVI `type: status` body:
+
+- `call_is_ready`
+- `completion_percent`
+- `latest_update_text`
+
+Bot speaking edges go on `akapulu.avatar.speaking`. Subscribe in the browser with the LiveKit client data APIs. Keep the spinner up until `call_is_ready` is true.
+
+## Errors
+
+When `POST /api/live-sessions/` fails, the response JSON includes `error` and `error_code`. Branch on `error_code`. The codes are in the [API overview](/api-reference/introduction#error-responses).

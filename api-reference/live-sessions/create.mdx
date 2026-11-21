@@ -1,25 +1,36 @@
 ---
 title: "Create a live session"
-description: "Start the avatar in a Daily room you already created."
+description: "Start the avatar in a Daily or LiveKit room you already created."
 ---
 
 `POST /api/live-sessions/`
 
-You create the Daily room and the avatar's meeting token. This call stores them and starts the avatar. The response is `session_id`.
+You create the room and the avatar's join token. This call stores them and starts the avatar. The response is `session_id`.
 
-`create_akapulu_call` makes this request for you. The code is on [Your bot](/guides/calls/your-bot). A server that already has a Daily room sends this request itself.
+Helpers: `create_akapulu_call` ([Pipecat](/guides/calls/pipecat)) or `create_akapulu_livekit_call` ([LiveKit](/guides/calls/livekit)). A server that already has a room sends this request itself.
 
 Required headers:
 
 - `Authorization: Bearer <YOUR_AKAPULU_API_KEY>`
 - `Content-Type: application/json`
 
-Required JSON fields:
+Shared JSON fields:
 
 - `avatar_id` — UUID of the avatar
 - `show_ai_label` — boolean, whether the video shows **This is AI**
-- `room_url` — `https://` URL of the Daily room, at most 2048 characters, with a room name
-- `avatar_token` — meeting token the avatar joins with
+- `room_url` — room endpoint (see transport)
+- `avatar_token` — token the avatar joins with
+
+Optional:
+
+- `transport` — `"daily"` (default) or `"livekit"`
+
+### Daily
+
+Omit `transport` or set `"transport": "daily"`.
+
+- `room_url` — `https://` Daily room URL, at most 2048 characters, with a room name
+- Do not send `room_name`
 
 ```json
 {
@@ -30,12 +41,33 @@ Required JSON fields:
 }
 ```
 
+### LiveKit
+
+Set `"transport": "livekit"`.
+
+- `room_url` — LiveKit WebSocket URL (`wss://` or `ws://`)
+- `room_name` — LiveKit room name (required)
+- `avatar_token` — Avatar participant JWT (`publish_on_behalf` of your voice agent)
+
+```json
+{
+  "avatar_id": "66666666-7777-8888-9999-000000000000",
+  "show_ai_label": true,
+  "transport": "livekit",
+  "room_url": "wss://example.livekit.cloud",
+  "room_name": "my-room",
+  "avatar_token": "<avatar participant JWT>"
+}
+```
+
+### Response
+
 ```json
 {
   "session_id": "11111111-2222-3333-4444-555555555555"
 }
 ```
 
-Pass `session_id` to `AkapuluAvatar`. Loading status is a server message on your bot with `type` `status`.
+Pass `session_id` to `AkapuluAvatar` (Pipecat) or `AvatarSession` (LiveKit). Loading status uses the same `type: status` fields (`call_is_ready`, `completion_percent`, `latest_update_text`): RTVI on Daily, LiveKit data topic `akapulu.avatar.status` on LiveKit.
 
 On failure the body includes `error` and `error_code`. See [Error responses](/api-reference/introduction#error-responses).

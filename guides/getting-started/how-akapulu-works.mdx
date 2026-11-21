@@ -1,17 +1,17 @@
 ---
 title: "How it works"
-description: "The browser, your voice bot, and the Akapulu Labs worker in one Daily room."
+description: "The browser, your voice bot, and the Akapulu Labs worker in one WebRTC room."
 ---
 
-A live call is a private Daily room with three participants.
+A live call is a private WebRTC room with three participants. The room is either [Daily](https://www.daily.co/) ([Pipecat](/guides/calls/pipecat)) or [LiveKit](https://livekit.io/) ([LiveKit](/guides/calls/livekit)).
 
 <ul>
   <li><strong style={{ color: "#EA580C" }}>User browser.</strong> The person on the call.</li>
-  <li><strong style={{ color: "#7C3AED" }}>Your voice bot.</strong> It hears the browser, decides what to say, and produces the assistant audio. It does not publish a camera or a microphone back into the Daily room. <code>AkapuluAvatar</code> is the Pipecat plugin you add to that voice bot; it sends the assistant audio to the Akapulu Labs worker instead.</li>
-  <li><strong style={{ color: "#0284C7" }}>Akapulu Labs worker.</strong> It joins after the Akapulu Labs API <code>POST /api/live-sessions/</code> call and publishes the face and the played audio.</li>
+  <li><strong style={{ color: "#7C3AED" }}>Your voice bot.</strong> It hears the browser, decides what to say, and produces the assistant audio. It does not publish the face. On Pipecat that plugin is <code>AkapuluAvatar</code>. On LiveKit Agents it is <code>AvatarSession</code>. Either one sends assistant audio to the Akapulu Labs worker.</li>
+  <li><strong style={{ color: "#0284C7" }}>Akapulu Labs worker.</strong> It joins after <code>POST /api/live-sessions/</code> and publishes the face and the played audio.</li>
 </ul>
 
-Your server talks to two APIs the same way: the **Daily API** (room and meeting tokens) and the **Akapulu Labs API** (`POST /api/live-sessions/`, which returns `session_id` and starts the worker).
+Your server talks to two APIs: the **room provider** (Daily or LiveKit: create the room and mint tokens) and the **Akapulu Labs API** (`POST /api/live-sessions/`, which returns `session_id` and starts the worker).
 
 ## Akapulu Labs worker joins
 
@@ -19,10 +19,10 @@ Your server talks to two APIs the same way: the **Daily API** (room and meeting 
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
 flowchart LR
   S[Your server]:::server
-  D[Daily API]:::api
+  D[Room API]:::api
   A[Akapulu Labs API]:::api
   W[Akapulu Labs worker]:::avatar
-  R[Daily room]:::room
+  R[Room]:::room
 
   S -->|"1. create room"| D
   D -->|"2. tokens"| S
@@ -46,7 +46,7 @@ flowchart LR
   S[Your server]:::server
   V[Your voice bot]:::bot
   W[Akapulu Labs worker]:::avatar
-  R[Daily room]:::room
+  R[Room]:::room
 
   S -->|"1. Akapulu Labs session ID"| V
   V -->|"2. joins"| R
@@ -66,7 +66,7 @@ flowchart LR
 flowchart LR
   S[Your server]:::server
   B[User browser]:::browser
-  R[Daily room]:::room
+  R[Room]:::room
 
   S -->|"1. token"| B
   B -->|"2. joins"| R
@@ -82,12 +82,12 @@ flowchart LR
 %%{init: {"theme":"base","themeVariables":{"darkMode":true,"background":"transparent","fontFamily":"ui-sans-serif, system-ui, sans-serif","fontSize":"14px","textColor":"#F8FAFC","primaryTextColor":"#F8FAFC","lineColor":"#7DD3FC","arrowheadColor":"#7DD3FC","edgeLabelBackground":"#0F172A"},"themeCSS":".edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background: #0F172A !important; color: #F8FAFC !important; } .edgePath .path, .flowchart-link { stroke: #7DD3FC !important; stroke-width: 2.5px !important; } .arrowheadPath, .marker { fill: #7DD3FC !important; stroke: #7DD3FC !important; }"}}%%
 flowchart LR
   S[Your server]:::server
-  D[Daily API]:::api
+  D[Room API]:::api
   A[Akapulu Labs API]:::api
   B[User browser]:::browser
   V[Your voice bot]:::bot
   W[Akapulu Labs worker]:::avatar
-  R[Daily room]:::room
+  R[Room]:::room
 
   S -->|"create room"| D
   D -->|"creates"| R
@@ -115,12 +115,12 @@ flowchart LR
 sequenceDiagram
   autonumber
   participant S as Your server
-  participant D as Daily API
+  participant D as Room API
   participant A as Akapulu Labs API
   participant W as Akapulu Labs worker
   participant V as Your voice bot
   participant B as User browser
-  participant R as Daily room
+  participant R as Room
 
   S->>D: create room
   D-->>S: tokens
@@ -150,27 +150,29 @@ sequenceDiagram
 
 ## What you send
 
-`create_akapulu_call` in [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) does this from your server: the private Daily room, the three meeting tokens, and `POST /api/live-sessions/`. It returns the room URL, the bot token, the browser token, and `session_id`. The room lasts two hours unless you pass `room_exp_secs`. The code is on [Your bot](/guides/calls/your-bot). A server that already has a Daily room skips the helper and sends this POST itself.
+On Pipecat, `create_akapulu_call` in [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) creates the Daily room, mints the three meeting tokens, and `POST /api/live-sessions/`. On LiveKit, `create_akapulu_livekit_call` in [`livekit-akapulu`](https://github.com/Akapulu/livekit-akapulu) does the same for a LiveKit room. Both return tokens for the browser and the voice bot, plus `session_id`. A server that already has a room skips the helper and sends the live-sessions POST itself. Details: [Pipecat](/guides/calls/pipecat), [LiveKit](/guides/calls/livekit).
 
-The Akapulu Labs API call is `POST /api/live-sessions/`. It takes four fields:
+`POST /api/live-sessions/` always takes:
 
 - `avatar_id`: which face joins
 - `show_ai_label`: whether the picture shows **This is AI**
-- `room_url`: the Daily room you created
-- `avatar_token`: the meeting token the Akapulu Labs worker joins with
+- `room_url`: the room endpoint (`https://` Daily URL, or LiveKit `wss://` URL)
+- `avatar_token`: the token the Akapulu Labs worker joins with
 
-The response is `session_id`. Pass that id into `AkapuluAvatar`, the Pipecat plugin in your voice bot.
+For LiveKit also send `transport: "livekit"` and `room_name`. Daily is the default when `transport` is omitted. Full field rules: [Create a live session](/api-reference/live-sessions/create).
+
+The response is `session_id`. Pass that id into `AkapuluAvatar` (Pipecat) or `AvatarSession` (LiveKit).
 
 The Akapulu Labs API key stays on your server. The browser receives its own meeting token from you, not the API key.
 
 ## What the Akapulu Labs worker publishes
 
-The voice bot's job is to send the assistant audio to the Akapulu Labs worker through `AkapuluAvatar`. The worker joins the call as a Daily participant and publishes the audio and the video. Leave audio out and video out off on the voice bot. If the voice bot also publishes audio or video, the room has two publishers. When the participant named `Avatar` joins, the voice bot unsubscribes from that microphone. The browser stays subscribed to it. The code is on [Your bot](/guides/calls/your-bot).
+The voice bot sends assistant audio to the Akapulu Labs worker through the plugin. The worker joins as the `Avatar` participant and publishes the audio and the video. Do not publish a second face or a second copy of that audio from the voice bot. On Daily/Pipecat, unsubscribe the voice bot from the Avatar microphone when that participant joins; the browser stays subscribed. On LiveKit, keep the loading UI up until `call_is_ready` (and mute STT until then). Code: [Pipecat](/guides/calls/pipecat), [LiveKit](/guides/calls/livekit).
 
 Every frame carries an invisible mark that reads back as `akapulu`. That mark is separate from the **This is AI** card. [Verify a recording](/guides/video-marks/verify) uploads the mp4 and reads the mark.
 
 ## Hosted link
 
-A [hosted link](/guides/calls/hosted-links) is the same room, created for you. You set the avatar, the prompt, and the **This is AI** card. The visitor opens the URL and starts the call.
+A [hosted link](/guides/calls/hosted-links) is the same three-participant call, created for you. You set the avatar, the prompt, and the **This is AI** card. The visitor opens the URL and starts the call.
 
-The steps for your own voice bot are in [Your bot](/guides/calls/your-bot).
+For your own voice bot: [Pipecat](/guides/calls/pipecat) or [LiveKit](/guides/calls/livekit).
