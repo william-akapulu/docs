@@ -10,10 +10,10 @@ Requires `livekit-agents` 1.8 or newer. For Pipecat on Daily, see [Pipecat](/gui
 ## Install
 
 ```bash
-uv add livekit-akapulu==0.1.1
+uv add livekit-akapulu==0.1.3
 ```
 
-Or `pip install livekit-akapulu==0.1.1`.
+Or `pip install livekit-akapulu==0.1.3`.
 
 ## 1. Create the room
 
@@ -29,7 +29,7 @@ livekit_url, room_name, agent_token, browser_token, session_id = (
         session=session,
     )
 )
-avatar = AvatarSession(conversation_session_id=session_id)
+avatar = AvatarSession(session_id=session_id)
 ```
 
 `session` is an `aiohttp.ClientSession`. The voice agent joins with `agent_token`. The browser joins with `browser_token`. Pass `session_id` into `AvatarSession`, or let `AvatarSession.start` mint and POST when the agent is already in a room (see below).
@@ -83,7 +83,7 @@ await avatar.wait_until_call_ready()
 When Django (or your server) already created the conversation session and Avatar token, pass that id:
 
 ```python
-avatar = AvatarSession(conversation_session_id=session_id)
+avatar = AvatarSession(session_id=session_id)
 await avatar.start(agent_session, room)
 await avatar.wait_until_call_ready()
 ```

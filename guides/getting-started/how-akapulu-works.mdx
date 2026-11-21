@@ -167,7 +167,7 @@ The Akapulu Labs API key stays on your server. The browser receives its own meet
 
 ## What the Akapulu Labs worker publishes
 
-The voice bot sends assistant audio to the Akapulu Labs worker through the plugin. The worker joins as the `Avatar` participant and publishes the audio and the video. Do not publish a second face or a second copy of that audio from the voice bot. On Daily/Pipecat, unsubscribe the voice bot from the Avatar microphone when that participant joins; the browser stays subscribed. On LiveKit, keep the loading UI up until `call_is_ready` (and mute STT until then). Code: [Pipecat](/guides/calls/pipecat), [LiveKit](/guides/calls/livekit).
+The voice bot sends assistant audio to the Akapulu Labs worker through the plugin. The worker joins as the `Avatar` participant and publishes the audio and the video. Do not publish a second face or a second copy of that audio from the voice bot. On Daily/Pipecat, call `avatar.attach(transport)` and await `wait_until_call_ready` before greeting. On LiveKit, keep the loading UI up until `call_is_ready` (and mute STT until then). Code: [Pipecat](/guides/calls/pipecat), [LiveKit](/guides/calls/livekit).
 
 Every frame carries an invisible mark that reads back as `akapulu`. That mark is separate from the **This is AI** card. [Verify a recording](/guides/video-marks/verify) uploads the mp4 and reads the mark.
 
