@@ -10,10 +10,10 @@ Requires `livekit-agents` 1.8 or newer. For Pipecat on Daily, see [Pipecat](/gui
 ## Install
 
 ```bash
-uv add livekit-akapulu
+uv add livekit-akapulu==0.1.0
 ```
 
-Or `pip install livekit-akapulu`.
+Or `pip install livekit-akapulu==0.1.0`.
 
 ## 1. Create the room
 
@@ -105,3 +105,7 @@ Bot speaking edges go on `akapulu.avatar.speaking`. Subscribe in the browser wit
 ## Errors
 
 When `POST /api/live-sessions/` fails, the response JSON includes `error` and `error_code`. Branch on `error_code`. The codes are in the [API overview](/api-reference/introduction#error-responses).
+
+## Agent Console
+
+A minimal worker for LiveKit Agent Console is in [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent). Copy `.env.example`, run `python agent.py dev`, then Launch Console in your LiveKit Cloud project.

@@ -69,7 +69,7 @@ Those are not Daily audio or video tracks. With RTVI on the call (for example `@
 
 ## 3. Put AkapuluAvatar in the pipeline
 
-Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio). `AkapuluAvatar` sends that audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video, so `audio_out_enabled` and `video_out_enabled` stay `False`.
+Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) (`pipecat-akapulu==0.1.16`). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio). `AkapuluAvatar` sends that audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video, so `audio_out_enabled` and `video_out_enabled` stay `False`.
 
 ```python
 from pipecat.pipeline.pipeline import Pipeline
