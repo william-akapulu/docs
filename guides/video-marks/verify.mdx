@@ -7,6 +7,8 @@ Every avatar frame carries an invisible mark. A reader that knows the pattern re
 
 The **This is AI** card is a separate overlay. `show_ai_label` controls the card. Turning the card off leaves the mark.
 
+On a normal or longer recording, expect `match: true`. Short WebRTC browser captures are heavily compressed (LiveKit is a common case). Those files can return `match: false` even though most of the 56 bits are still correct. Read `bits_correct` and `separation`, not only `match`.
+
 ## Check a file
 
 The file is an mp4, at most 200MB, with content type `video/mp4`.
