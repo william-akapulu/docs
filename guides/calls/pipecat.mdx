@@ -61,15 +61,15 @@ The `AkapuluAvatar` Pipecat plugin connects to the Akapulu Labs worker in the ba
 
 While the Akapulu Labs worker boots, the plugin pushes **RTVI server messages** into your voice-bot pipeline. Each message body has `type` `status` and these fields:
 
-- `call_is_ready`: whether the Akapulu Labs worker has published the first frame
+- `call_is_ready`: whether this tap has decoded enough Avatar video frames (not the GPU first-publish stamp)
 - `completion_percent`: how far startup has gotten (0 to 100)
 - `latest_update_text`: the latest human-readable startup line
 
-Those are not Daily audio or video tracks. With RTVI on the call (for example `@pipecat-ai/client-js` in the browser), they arrive on the client as RTVI `ServerMessage` events over that same Daily connection. Use them for a loading spinner, percent, and copy. Keep the loading UI up until `call_is_ready` is true.
+Those are not Daily audio or video tracks. With RTVI on the call (for example `@pipecat-ai/client-js` in the browser), they arrive on the client as RTVI `ServerMessage` events over that same Daily connection. Use them for a loading spinner, percent, and copy. Keep the loading UI up until `call_is_ready` is true. When that gate opens the tap also sends `{"type":"call_ready"}` on the private audio socket so the worker can stamp Django `call_is_ready_at`.
 
 ## 3. Put AkapuluAvatar in the pipeline
 
-Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) (`pipecat-akapulu==0.1.16`). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio). `AkapuluAvatar` sends that audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video, so `audio_out_enabled` and `video_out_enabled` stay `False`.
+Install [`pipecat-akapulu`](https://github.com/Akapulu/pipecat-akapulu) (`pipecat-akapulu==0.1.17`). Put the `AkapuluAvatar` Pipecat plugin after your TTS (or whatever produces assistant audio). `AkapuluAvatar` sends that audio to the Akapulu Labs worker. The worker joins the call as a Daily participant and publishes the audio and the video. The voice bot does not publish audio or video, so `audio_out_enabled` and `video_out_enabled` stay `False`.
 
 ```python
 from pipecat.pipeline.pipeline import Pipeline
