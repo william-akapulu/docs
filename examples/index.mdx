@@ -1,15 +1,15 @@
 ---
 title: "Examples"
-description: "The public Pipecat/Daily example: a local server, a browser page, and a voice bot."
+description: "Public Pipecat/Daily and LiveKit browser examples: local server, page, and voice bot."
 ---
 
 ## Pipecat / Daily
 
-The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples).
+The public example is [akapulu-examples](https://github.com/Akapulu/akapulu-examples) (repo root).
 
 Deepgram Flux (`flux-general-multi`) hears the caller. OpenAI `gpt-5.4-mini` speaks, with reasoning off. Cartesia Sonic 3.6 speaks each finished sentence. It creates a private Daily room, mints the three meeting tokens, and calls `POST /api/live-sessions/`. The page joins with the browser token. Your voice bot joins with its token, speaks first, and listens to the browser. Leave audio out and video out off on your voice bot. It does not publish a camera or a microphone into the room. The avatar publishes the face and the played audio.
 
-## Run
+### Run
 
 ```bash
 python -m venv .venv
@@ -25,7 +25,8 @@ Copy `.env.example` to `.env` and set:
 - `DEEPGRAM_API_KEY`
 - `CARTESIA_API_KEY`
 
-The example uses Clara, leaves **This is AI** off, and calls the Akapulu Labs production API.
+The example uses Hollis, leaves **This is AI** off, and calls the Akapulu Labs production API.
+
 ```bash
 python server.py
 ```
@@ -38,4 +39,28 @@ The room, the live-session body, and `AkapuluAvatar` are described in [Pipecat](
 
 ## LiveKit
 
-There is no separate public example repo yet. Install `livekit-akapulu==0.1.3` and follow [LiveKit](/guides/calls/livekit). For Agent Console: https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent.
+The public browser example is [`akapulu-examples/livekit`](https://github.com/Akapulu/akapulu-examples/tree/main/livekit). Same repo as Pipecat/Daily, under `livekit/`.
+
+It uses `create_akapulu_livekit_call` and `AvatarSession` from `livekit-akapulu`. LiveKit Inference runs Flux / GPT / Cartesia. The page joins with livekit-client on `http://127.0.0.1:7861`.
+
+### Run
+
+```bash
+cd livekit
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Copy `.env.example` to `.env` and set:
+
+- `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` (LiveKit Cloud project with Inference enabled)
+- `AKAPULU_API_KEY`
+
+```bash
+python server.py
+```
+
+Open `http://127.0.0.1:7861` and choose Start Call. One call at a time.
+
+Details: [LiveKit](/guides/calls/livekit). For Agent Console only (not a browser page), see [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent) in the package repo.

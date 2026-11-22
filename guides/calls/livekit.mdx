@@ -106,6 +106,10 @@ Bot speaking edges go on `akapulu.avatar.speaking`. Subscribe in the browser wit
 
 When `POST /api/live-sessions/` fails, the response JSON includes `error` and `error_code`. Branch on `error_code`. The codes are in the [API overview](/api-reference/introduction#error-responses).
 
+## Public browser example
+
+[`akapulu-examples/livekit`](https://github.com/Akapulu/akapulu-examples/tree/main/livekit) is a local server, a browser page, and a LiveKit Agents voice bot with `AvatarSession`. Run `python server.py` in that folder and open `http://127.0.0.1:7861`. See [Examples](/examples).
+
 ## Agent Console
 
-A minimal worker for LiveKit Agent Console is in [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent). Copy `.env.example`, run `python agent.py dev`, then Launch Console in your LiveKit Cloud project.
+A minimal worker for LiveKit Agent Console (Cloud UI login, not the browser page above) is in [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent). Copy `.env.example`, run `python agent.py dev`, then Launch Console in your LiveKit Cloud project.
