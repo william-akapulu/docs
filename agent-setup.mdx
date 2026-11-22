@@ -194,11 +194,28 @@ Before wiring code, situate **LiveKit**, the **voice agent**, the **Akapulu Labs
 
 Install: `uv add livekit-akapulu==0.1.3` or `pip install livekit-akapulu==0.1.3`. Requires `livekit-agents` 1.8 or newer.
 
+> **User step.** Ask: are you okay using the public LiveKit browser example?
+
+#### Path 2b-i: Yes — use the example
+
+The public example is [`akapulu-examples/livekit`](https://github.com/Akapulu/akapulu-examples/tree/main/livekit): a local server, a browser page, and a LiveKit Agents voice bot with **`AvatarSession`**.
+
+> **User step.**
+
+- Create an Akapulu API key at [REDACTED]/settings/api-keys/ if they do not have one. Instruct them to activate `AKAPULU_API_KEY` in this environment (do not paste the key into chat).
+- They also need `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` (LiveKit Cloud with Inference enabled).
+
+Wait until those env vars are set. Clone https://github.com/Akapulu/akapulu-examples, `cd livekit`, follow that folder's README. Run the server, open `http://127.0.0.1:7861`, start a call.
+
+#### Path 2b-ii: No — bring their own LiveKit Agents pipeline
+
+Still clone [`akapulu-examples/livekit`](https://github.com/Akapulu/akapulu-examples/tree/main/livekit) as a **reference**. Then guide them through their own LiveKit Agents voice session with **`AvatarSession`**.
+
 > **User step.** Activate `AKAPULU_API_KEY`, `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` in this environment. Do not paste secrets into chat. Also set `AKAPULU_AVATAR_ID` when `AvatarSession.start` opens the session itself.
 
 Three participants in the LiveKit room: browser, voice agent (with `AvatarSession`), Akapulu Labs worker (`Avatar`). Keep `AKAPULU_API_KEY` on the server.
 
-Details: [How it works](/guides/getting-started/how-akapulu-works), [LiveKit](/guides/calls/livekit).
+Details: [How it works](/guides/getting-started/how-akapulu-works), [LiveKit](/guides/calls/livekit), [Examples](/examples).
 
 ## 4. After they try it
 
