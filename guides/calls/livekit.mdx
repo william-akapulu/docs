@@ -10,10 +10,10 @@ Requires `livekit-agents` 1.8 or newer. For Pipecat on Daily, see [Pipecat](/gui
 ## Install
 
 ```bash
-uv add livekit-akapulu==0.1.4
+uv add livekit-akapulu==0.1.6
 ```
 
-Or `pip install livekit-akapulu==0.1.4`.
+Or `pip install livekit-akapulu==0.1.6`.
 
 ## 1. Create the room
 
@@ -90,11 +90,11 @@ await avatar.wait_until_call_ready()
 
 Keep the loading UI up until `call_is_ready` is true. `wait_until_call_ready()` waits until this session has decoded enough Avatar video frames.
 
-Mute caller audio into STT until that ready gate (same idea as the Pipecat Flux gate): after `session.start`, call `session.input.set_audio_enabled(False)`, then unmute after `wait_until_call_ready`.
+Mute caller audio into STT until that ready gate: after `session.start`, call `session.input.set_audio_enabled(False)`, then unmute after `wait_until_call_ready`.
 
 ## Loading status
 
-While the worker boots, the plugin republishes loading status on LiveKit data topic `akapulu.avatar.status`. Each payload has the same fields as the Pipecat RTVI `type: status` body:
+While the worker boots, the plugin republishes loading status on LiveKit data topic `akapulu.avatar.status`. Each payload has:
 
 - `call_is_ready`
 - `completion_percent`
@@ -112,4 +112,4 @@ When `POST /api/live-sessions/` fails, the response JSON includes `error` and `e
 
 ## Agent Console
 
-A minimal worker for LiveKit Agent Console (Cloud UI login, not the browser page above) is in [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent). Copy `.env.example`, run `python agent.py dev`, then Launch Console in your LiveKit Cloud project.
+A minimal worker for LiveKit Agent Console is in [`examples/console_agent`](https://github.com/Akapulu/livekit-akapulu/tree/main/examples/console_agent). Copy `.env.example`, run `python agent.py dev`, then Launch Console in your LiveKit Cloud project.
